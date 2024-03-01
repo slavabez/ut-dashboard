@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 
-import { syncNomenclatureTypes } from "@/actions/sync";
+import { getManufacturerWithNomenclature } from "@/actions/nomenclature/items";
 
 const TestForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -16,12 +16,13 @@ const TestForm = () => {
     setData(undefined);
 
     startTransition(async () => {
-      const result = await syncNomenclatureTypes();
-      if (result.success) {
-        setSuccess("Sync successful");
-        setData(result.syncResult);
+      const result = await getManufacturerWithNomenclature(
+        "3eac83e2-623e-11ec-8f2b-54ee75d06a1b",
+      );
+      if (result) {
+        setData(result);
       } else {
-        setError(result.error);
+        setError("Error while fetching data");
       }
     });
   };
@@ -36,7 +37,7 @@ const TestForm = () => {
           disabled={isPending}
           onClick={handleClick}
         >
-          Sync nom types
+          Sync nom
         </button>
         {error && <div>Error: {error}</div>}
         {success && <div>Success: {success}</div>}

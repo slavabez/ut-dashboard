@@ -1,4 +1,5 @@
 import type { AdapterAccount } from "@auth/core/adapters";
+import { relations } from "drizzle-orm";
 import {
   boolean,
   foreignKey,
@@ -109,6 +110,20 @@ export const nomenclatureTypes = pgTable(
   },
 );
 
+export const nomTypesRelations = relations(
+  nomenclatureTypes,
+  ({ one, many }) => {
+    return {
+      parent: one(nomenclatureTypes, {
+        fields: [nomenclatureTypes.parentId],
+        references: [nomenclatureTypes.id],
+      }),
+      children: many(nomenclatureTypes),
+      nomenclatures: many(nomenclatures),
+    };
+  },
+);
+
 export const manufacturers = pgTable("manufacturer", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull().unique(),
@@ -116,6 +131,12 @@ export const manufacturers = pgTable("manufacturer", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   dataVersion: text("data_version"),
   deletionMark: boolean("deletion_mark").default(false).notNull(),
+});
+
+export const manufacturerRelations = relations(manufacturers, ({ many }) => {
+  return {
+    nomenclatures: many(nomenclatures),
+  };
 });
 
 export const nomenclatures = pgTable(
@@ -156,6 +177,19 @@ export const nomenclatures = pgTable(
     };
   },
 );
+
+export const nomenclatureRelations = relations(nomenclatures, ({ one }) => {
+  return {
+    manufacturer: one(manufacturers, {
+      fields: [nomenclatures.manufacturerId],
+      references: [manufacturers.id],
+    }),
+    type: one(nomenclatureTypes, {
+      fields: [nomenclatures.typeId],
+      references: [nomenclatureTypes.id],
+    }),
+  };
+});
 
 export const partners = pgTable("partner", {
   id: uuid("id").primaryKey().defaultRandom(),

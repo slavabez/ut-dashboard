@@ -28,7 +28,9 @@ interface SyncResult {
  *
  * @returns Promise<SyncResult>
  */
-export async function syncNomenclatureTypes(): Promise<SyncResult> {
+export async function syncNomenclatureTypes(
+  forceIncrement = false,
+): Promise<SyncResult> {
   try {
     const allTypes = await From1C.getAllNomenclatureTypes();
     // Hash the data to compare with the latest sync log
@@ -56,13 +58,13 @@ export async function syncNomenclatureTypes(): Promise<SyncResult> {
     };
 
     const latestHash = latestNomTypesSync[0]?.dataHash;
-    if (latestHash && latestHash === hashOf1CData) {
+    if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
       syncMeta.typesIgnored = allTypes.length;
       return saveSyncLog(hashOf1CData, syncMeta);
     }
 
-    if (totalTypesInDb === 0) {
+    if (totalTypesInDb === 0 && !forceIncrement) {
       // Empty database, run the initial sync
       await initialSync(allTypes, syncMeta);
     } else {
@@ -82,7 +84,7 @@ async function initialSync(
   syncMeta: NomenclatureTypesSyncMeta,
 ) {
   const formattedTypes = allTypes.map(ConvertFrom1C.nomenclatureType);
-  await db.insert(nomenclatureTypes).values(formattedTypes).returning();
+  await db.insert(nomenclatureTypes).values(formattedTypes);
   syncMeta.typesCreated = formattedTypes.length;
 }
 
