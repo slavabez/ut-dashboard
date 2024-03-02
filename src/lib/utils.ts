@@ -44,3 +44,19 @@ export function separateListIntoLevels<
   processHierarchyLevel("", 0);
   return result;
 }
+
+export function normalizePhoneNumber(
+  phone: string | null | undefined | number,
+): string {
+  if (!phone) {
+    return "";
+  }
+  if (typeof phone === "number") {
+    return normalizePhoneNumber(phone.toString());
+  }
+  let normalized = phone.replace(/\s/g, "");
+  if (normalized.startsWith("8")) {
+    normalized = normalized.replace("8", "+7");
+  }
+  return normalized;
+}

@@ -225,3 +225,5 @@ export type MeasurementUnitInsert = typeof measurementUnits.$inferInsert;
 export type PartnerInsert = typeof partners.$inferInsert;
 export type SyncLogInsert = typeof syncLogs.$inferInsert;
 export type SyncLogSelect = typeof syncLogs.$inferSelect;
+export type UserInsert = typeof users.$inferInsert;
+export type UserSelect = typeof users.$inferSelect;

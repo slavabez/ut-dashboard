@@ -1,9 +1,24 @@
 import { env } from "@/env.mjs";
 
-export type ODataResponse =
+export type ODataResponseArray =
   | {
       "odata.metadata": string;
       value: unknown[];
+    }
+  | {
+      "odata.error": {
+        code: string;
+        message: {
+          lang: string;
+          value: string;
+        };
+      };
+    };
+
+export type ODataResponseObject =
+  | {
+      "odata.metadata": string;
+      [key: string]: any;
     }
   | {
       "odata.error": {
@@ -179,7 +194,17 @@ export interface IUserFields {
   };
 }
 
-export async function getSpecificODataResponse({
+export interface IUserAdditionalFields {
+  ДополнительныеРеквизиты: {
+    LineNumber: string;
+    Свойство_Key: string;
+    Значение: string;
+    Значение_Type: string;
+    ТекстоваяСтрока: string;
+  }[];
+}
+
+export async function getSpecificODataResponseArray({
   path,
   filter,
   select,
@@ -221,7 +246,9 @@ export async function getSpecificODataResponse({
   }
   try {
     const fullUrl = `${baseUrl}${path}?${params}`;
-    console.info(`Fetching OData response from "${fullUrl}"`);
+    if (process.env.NODE_ENV === "development") {
+      console.info(`Fetching OData array response from "${fullUrl}"`);
+    }
     // Use fetch to get the response from the OData API
     const response = await fetch(fullUrl, {
       headers: {
@@ -229,8 +256,8 @@ export async function getSpecificODataResponse({
       },
     });
     // Get the JSON response from the OData API
-    const odataResponse: ODataResponse =
-      (await response.json()) as ODataResponse;
+    const odataResponse: ODataResponseArray =
+      (await response.json()) as ODataResponseArray;
     // Check if the response is an error
     if ("odata.error" in odataResponse) {
       throw new Error(odataResponse["odata.error"].message.value);
@@ -242,9 +269,54 @@ export async function getSpecificODataResponse({
   }
 }
 
+export async function getSpecificODataResponseObject({
+  path,
+  filter,
+  select,
+}: {
+  path: string;
+  filter?: string;
+  select?: string;
+}) {
+  const authHeader = env.ODATA_API_AUTH_HEADER;
+  const baseUrl = env.ODATA_API_URL;
+
+  // Cannot use URLParams because it encodes and breaks the OData query
+  let params = `$format=json`;
+  if (filter) {
+    params = `${params}&$filter=${filter}`;
+  }
+  if (select) {
+    params = `${params}&$select=${select}`;
+  }
+  try {
+    const fullUrl = `${baseUrl}${path}?${params}`;
+    if (process.env.NODE_ENV === "development") {
+      console.info(`Fetching OData object response from "${fullUrl}"`);
+    }
+    // Use fetch to get the response from the OData API
+    const response = await fetch(fullUrl, {
+      headers: {
+        Authorization: authHeader,
+      },
+    });
+    // Get the JSON response from the OData API
+    const odataResponse: ODataResponseObject =
+      (await response.json()) as ODataResponseObject;
+    // Check if the response is an error
+    if ("odata.error" in odataResponse) {
+      throw new Error(odataResponse["odata.error"].message.value);
+    }
+    return odataResponse;
+  } catch (e) {
+    console.error("Error while getting OData response", e);
+    throw e;
+  }
+}
+
 export class From1C {
   static async getAllNomenclatureTypes(): Promise<NomenclatureType1CFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_ВидыНоменклатуры",
       select:
         "Ref_Key,DeletionMark,Parent_Key,IsFolder,Description,Описание,DataVersion",
@@ -254,7 +326,7 @@ export class From1C {
   }
 
   static async getAllNomenclatureItems(): Promise<Nomenclature1CFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_Номенклатура",
       select:
         "Ref_Key,Parent_Key,IsFolder,ВидНоменклатуры_Key,Description,Code,Описание,ЕдиницаИзмерения_Key,Производитель_Key,DataVersion,DeletionMark,ДополнительныеРеквизиты/Ref_Key,ДополнительныеРеквизиты/Значение,ДополнительныеРеквизиты/Свойство_Key",
@@ -266,7 +338,7 @@ export class From1C {
   static async getNomenclatureByType(
     typeId: string,
   ): Promise<Nomenclature1CFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_Номенклатура",
       select:
         "Ref_Key,Parent_Key,IsFolder,Code,Description,ЕдиницаИзмерения_Key,Производитель_Key",
@@ -277,7 +349,7 @@ export class From1C {
   static async getNomenclatureItem(
     nId: string,
   ): Promise<Nomenclature1CFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_Номенклатура",
       select:
         "Ref_Key,Parent_Key,IsFolder,Code,Description,ЕдиницаИзмерения_Key,Производитель_Key",
@@ -286,7 +358,7 @@ export class From1C {
   }
 
   static async getAllNomenclatureFiles(): Promise<IFileFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_НоменклатураПрисоединенныеФайлы",
       select: "Ref_Key,ПутьКФайлу,ВладелецФайла_Key",
       filter: `DeletionMark eq false`,
@@ -295,7 +367,7 @@ export class From1C {
 
   static async getAllStock(): Promise<IStockFields[]> {
     const warehouseId = env.MAIN_WAREHOUSE_UUID;
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "AccumulationRegister_СвободныеОстатки/Balance(Dimensions='Номенклатура,Склад')",
       filter: `Склад_Key eq guid'${warehouseId}'`,
       select:
@@ -305,7 +377,7 @@ export class From1C {
 
   static async getStockForNomenclature(nId: string): Promise<IStockFields[]> {
     const warehouseId = env.MAIN_WAREHOUSE_UUID;
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "AccumulationRegister_СвободныеОстатки/Balance",
       filter: `Номенклатура_Key eq guid'${nId}' and Склад_Key eq guid'${warehouseId}'`,
     }) as Promise<IStockFields[]>;
@@ -313,7 +385,7 @@ export class From1C {
 
   static async getAllPrices(): Promise<IPriceFields[]> {
     const priceTypeId = env.MAIN_PRICE_TYPE_UUID;
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "InformationRegister_ЦеныНоменклатуры_RecordType/SliceLast",
       select: "Recorder,Period,Цена,Упаковка_Key,Номенклатура_Key",
       filter: `ВидЦены_Key eq guid'${priceTypeId}'`,
@@ -322,7 +394,7 @@ export class From1C {
 
   static async getPriceForNomenclature(nId: string): Promise<IPriceFields[]> {
     const priceTypeId = env.MAIN_PRICE_TYPE_UUID;
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "InformationRegister_ЦеныНоменклатуры_RecordType/SliceLast",
       select: "Цена,Period,Упаковка_Key",
       filter: `Номенклатура_Key eq guid'${nId}' and ВидЦены_Key eq guid'${priceTypeId}'`,
@@ -332,7 +404,7 @@ export class From1C {
   static async getNomenclatureMeasurementUnits(
     nId: string,
   ): Promise<IUnitFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_УпаковкиЕдиницыИзмерения",
       select: "Ref_Key,Description,Вес,Числитель,Знаменатель",
       filter: `Owner eq cast(guid'${nId}', 'Catalog_Номенклатура')`,
@@ -340,7 +412,7 @@ export class From1C {
   }
 
   static async getAllMeasurementUnits(): Promise<IUnitFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_УпаковкиЕдиницыИзмерения",
       select:
         "Ref_Key,Description,DeletionMark,DataVersion,Owner,Вес,Числитель,Знаменатель",
@@ -348,7 +420,7 @@ export class From1C {
   }
 
   static async getAllManufacturers(): Promise<Manufacturer1CFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_Производители",
       select: "Ref_Key,DataVersion,DeletionMark,IsFolder,Description",
       filter: `IsFolder eq false`,
@@ -364,7 +436,7 @@ export class From1C {
     startDate: string;
     endDate: string;
   }): Promise<IOrderFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Document_ЗаказКлиента",
       select:
         "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
@@ -382,7 +454,7 @@ export class From1C {
     startDate: string;
     endDate: string;
   }): Promise<IOrderFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Document_ЗаказКлиента",
       select:
         "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
@@ -394,7 +466,7 @@ export class From1C {
   static async getOrderContent(
     orderId: string,
   ): Promise<IOrderContentFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: `Document_ЗаказКлиента_Товары`,
       filter: `Ref_Key eq guid'${orderId}'`,
       expand: `Номенклатура`,
@@ -417,7 +489,7 @@ export class From1C {
     startDate: string;
     endDate: string;
   }) {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам')`,
       select:
         "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
@@ -442,7 +514,7 @@ export class From1C {
     startDate: string;
     endDate: string;
   }) {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаНоменклатуры')`,
       select:
         "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description",
@@ -467,7 +539,7 @@ export class From1C {
     startDate: string;
     endDate: string;
   }) {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам,АналитикаУчетаНоменклатуры'')`,
       select:
         "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
@@ -478,11 +550,92 @@ export class From1C {
   }
 
   static async getAllUsers(): Promise<IUserFields[]> {
-    return getSpecificODataResponse({
+    return getSpecificODataResponseArray({
       path: "Catalog_Пользователи",
       select:
         "Ref_Key,DataVersion,DeletionMark,Description,Недействителен,ДополнительныеРеквизиты/Свойство_Key,ДополнительныеРеквизиты/Значение,ФизическоеЛицо/Ref_Key,ФизическоеЛицо/DeletionMark,ФизическоеЛицо/Description,ФизическоеЛицо/ДатаРождения,ФизическоеЛицо/ИНН,ФизическоеЛицо/КонтактнаяИнформация/Тип,ФизическоеЛицо/КонтактнаяИнформация/Представление",
       expand: "ФизическоеЛицо",
+      filter: `Недействителен eq false and DeletionMark eq false`,
     }) as Promise<IUserFields[]>;
+  }
+
+  static async getUserByGuid(userId: string): Promise<IUserFields> {
+    const res = (await getSpecificODataResponseArray({
+      path: "Catalog_Пользователи",
+      select:
+        "Ref_Key,DataVersion,DeletionMark,Description,Недействителен,ДополнительныеРеквизиты/Свойство_Key,ДополнительныеРеквизиты/Значение,ФизическоеЛицо/Ref_Key,ФизическоеЛицо/DeletionMark,ФизическоеЛицо/Description,ФизическоеЛицо/ДатаРождения,ФизическоеЛицо/ИНН,ФизическоеЛицо/КонтактнаяИнформация/Тип,ФизическоеЛицо/КонтактнаяИнформация/Представление",
+      expand: "ФизическоеЛицо",
+      filter: `Ref_Key eq guid'${userId}'`,
+    })) as IUserFields[];
+    return res[0];
+  }
+
+  static async patchUserSitePassword({
+    userId,
+    newPassword,
+  }: {
+    userId: string;
+    newPassword: string;
+  }) {
+    try {
+      // First, get the fill additional fields for the user, PATCH requires the full object
+      const fullFields = (await getSpecificODataResponseObject({
+        path: `Catalog_Пользователи(guid'${userId}')`,
+        select: "ДополнительныеРеквизиты",
+      })) as unknown as IUserAdditionalFields;
+      // Find the field with the site password
+      const sitePasswordField = fullFields.ДополнительныеРеквизиты.find(
+        (f) => f.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+      );
+      // If the field exists, mutate it, otherwise, create it
+      if (sitePasswordField) {
+        sitePasswordField.Значение = newPassword;
+      } else {
+        // Determine the correct line number
+        const maxLineNumber = Math.max(
+          ...fullFields.ДополнительныеРеквизиты.map((f) =>
+            parseInt(f.LineNumber),
+          ),
+        );
+        fullFields.ДополнительныеРеквизиты.push({
+          LineNumber: (maxLineNumber + 1).toString(),
+          Свойство_Key: env.SITE_PASSWORD_PARAM_UUID,
+          Значение: newPassword,
+          Значение_Type: "Edm.String",
+          ТекстоваяСтрока: "",
+        });
+      }
+      // PATCH the user with the new site password
+      const patchResponse = await fetch(
+        `${env.ODATA_API_URL}Catalog_Пользователи(guid'${userId}')?$format=json`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: env.ODATA_API_AUTH_HEADER,
+          },
+          body: JSON.stringify(fullFields),
+        },
+      );
+      // Check if the response returns the new password
+      const patchedUser = (await patchResponse.json()) as IUserFields;
+      const sitePasswordFieldPatched =
+        patchedUser?.ДополнительныеРеквизиты?.find(
+          (f) => f.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+        );
+      if (sitePasswordFieldPatched?.Значение === newPassword) {
+        return {
+          success: true,
+        };
+      } else {
+        return {
+          success: false,
+          error: "Error while patching user site password",
+        };
+      }
+    } catch (e) {
+      console.error("Error while patching user site password", e);
+      return null;
+    }
   }
 }

@@ -9,10 +9,12 @@ import {
   IPriceFields,
   IStockFields,
   IUnitFields,
+  IUserFields,
   Manufacturer1CFields,
   Nomenclature1CFields,
   NomenclatureType1CFields,
 } from "@/lib/odata";
+import { normalizePhoneNumber } from "@/lib/utils";
 
 const minWeightPropertyKey = env.MINIMUM_WEIGHT_PARAM_UUID;
 
@@ -104,6 +106,51 @@ export class ConvertFrom1C {
       deletionMark: input.DeletionMark,
       dataVersion: input.DataVersion,
       denominator: input.Знаменатель,
+    };
+  }
+
+  static user(input: IUserFields) {
+    const phone = input.ФизическоеЛицо?.КонтактнаяИнформация.find(
+      (c) => c.Тип === "Телефон",
+    )?.Представление;
+    const email = input.ФизическоеЛицо?.КонтактнаяИнформация.find(
+      (c) => c.Тип === "АдресЭлектроннойПочты",
+    )?.Представление;
+    const showOnSite =
+      input.ДополнительныеРеквизиты.find(
+        (req) => req.Свойство_Key === env.SHOW_USER_ON_WEBSITE_PARAM_UUID,
+      )?.Значение ?? false;
+    const sitePassword = input.ДополнительныеРеквизиты.find(
+      (req) => req.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+    )?.Значение;
+    const siteRoleValue = input.ДополнительныеРеквизиты.find(
+      (req) => req.Свойство_Key === env.SITE_ROLE_PARAM_UUID,
+    )?.Значение;
+    let siteRole = null;
+    switch (siteRoleValue) {
+      case env.SITE_ROLE_USER_UUID:
+        siteRole = "user";
+        break;
+      case env.SITE_ROLE_ADMIN_UUID:
+        siteRole = "admin";
+        break;
+      default:
+        break;
+    }
+
+    return {
+      id: input.Ref_Key,
+      showOnSite,
+      isDeleted: input.DeletionMark,
+      name: input.Description,
+      inactive: input.Недействителен,
+      realId: input?.ФизическоеЛицо?.Ref_Key ?? null,
+      realName: input?.ФизическоеЛицо?.Description ?? "Не указано",
+      iin: input?.ФизическоеЛицо?.ИНН ?? "Не указано",
+      phone: normalizePhoneNumber(phone) ?? null,
+      email: email ?? null,
+      sitePassword: sitePassword ?? null,
+      siteRole,
     };
   }
 }

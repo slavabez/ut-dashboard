@@ -14,6 +14,10 @@ export const env = createEnv({
     ITEM_UUID: z.string().min(1),
     MINIMUM_WEIGHT_PARAM_UUID: z.string().min(1),
     SHOW_USER_ON_WEBSITE_PARAM_UUID: z.string().min(1),
+    SITE_PASSWORD_PARAM_UUID: z.string().min(1),
+    SITE_ROLE_PARAM_UUID: z.string().min(1),
+    SITE_ROLE_USER_UUID: z.string().min(1),
+    SITE_ROLE_ADMIN_UUID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -32,5 +36,9 @@ export const env = createEnv({
     MINIMUM_WEIGHT_PARAM_UUID: process.env.MINIMUM_WEIGHT_PARAM_UUID,
     SHOW_USER_ON_WEBSITE_PARAM_UUID:
       process.env.SHOW_USER_ON_WEBSITE_PARAM_UUID,
+    SITE_PASSWORD_PARAM_UUID: process.env.SITE_PASSWORD_PARAM_UUID,
+    SITE_ROLE_PARAM_UUID: process.env.SITE_ROLE_PARAM_UUID,
+    SITE_ROLE_USER_UUID: process.env.SITE_ROLE_USER_UUID,
+    SITE_ROLE_ADMIN_UUID: process.env.SITE_ROLE_ADMIN_UUID,
   },
 });
