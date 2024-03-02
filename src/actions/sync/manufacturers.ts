@@ -62,7 +62,7 @@ export async function syncManufacturers(
     if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
       syncMeta.manufacturersIgnored = allManufacturersRaw.length;
-      return saveSyncLog(hashOf1CData, syncMeta);
+      return saveSyncLog(hashOf1CData, syncMeta, "ignored");
     }
 
     if (totalManufacturersInDb === 0 && !forceIncrement) {
@@ -129,13 +129,14 @@ async function incrementalSync(
 async function saveSyncLog(
   hashOf1CData: string,
   syncMeta: ManufacturersSyncMeta,
+  status = "success",
 ) {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
       dataHash: hashOf1CData,
       type: "manufacturers",
-      status: "success",
+      status,
       metadata: syncMeta,
     })
     .returning();

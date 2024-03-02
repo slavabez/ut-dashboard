@@ -13,6 +13,7 @@ export const env = createEnv({
     KILOGRAM_UUID: z.string().min(1),
     ITEM_UUID: z.string().min(1),
     MINIMUM_WEIGHT_PARAM_UUID: z.string().min(1),
+    SHOW_USER_ON_WEBSITE_PARAM_UUID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -29,5 +30,7 @@ export const env = createEnv({
     KILOGRAM_UUID: process.env.KILOGRAM_UUID,
     ITEM_UUID: process.env.ITEM_UUID,
     MINIMUM_WEIGHT_PARAM_UUID: process.env.MINIMUM_WEIGHT_PARAM_UUID,
+    SHOW_USER_ON_WEBSITE_PARAM_UUID:
+      process.env.SHOW_USER_ON_WEBSITE_PARAM_UUID,
   },
 });

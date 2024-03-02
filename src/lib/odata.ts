@@ -47,12 +47,8 @@ export interface Nomenclature1CFields {
 
 export interface IFileFields {
   Ref_Key: string;
-  Description: string;
+  ПутьКФайлу: string;
   ВладелецФайла_Key: string;
-}
-
-export interface IBinaryFileFields {
-  ДвоичныеДанныеФайла_Base64Data: string;
 }
 
 export interface IStockFields {
@@ -87,6 +83,100 @@ export interface Manufacturer1CFields {
   Description: string;
   DataVersion: string;
   DeletionMark: boolean;
+}
+
+export interface IOrderFields {
+  Ref_Key: string;
+  Number: string;
+  СуммаДокумента: number;
+  Статус: string;
+  ФормаОплаты: string;
+  ДатаОтгрузки: string;
+  АдресДоставки: string;
+  СпособДоставки: string;
+  Партнер: {
+    Description: string;
+  };
+  DeletionMark: boolean;
+}
+
+export interface IOrderContentFields {
+  LineNumber: number;
+  Количество: number;
+  Цена: number;
+  Сумма: number;
+  СуммаНДС: number;
+  СуммаСНДС: number;
+  СуммаРучнойСкидки: number;
+  СуммаАвтоматическойСкидки: number;
+  Отменено: boolean;
+  Номенклатура: {
+    Description: string;
+  };
+}
+
+export interface ISalesByPartnersFields {
+  КоличествоTurnover: number;
+  СуммаВыручкиTurnover: number;
+  СуммаВыручкиБезНДСTurnover: number;
+  СуммаАвтоматическойСкидкиTurnover: number;
+  АналитикаУчетаПоПартнерам: {
+    Партнер_Key: string;
+    Контрагент: string;
+    Description: string;
+  };
+}
+
+export interface ISalesByNomenclatureFields {
+  КоличествоTurnover: number;
+  СуммаВыручкиTurnover: number;
+  СуммаВыручкиБезНДСTurnover: number;
+  СуммаАвтоматическойСкидкиTurnover: number;
+  АналитикаУчетаНоменклатуры: {
+    Номенклатура_Key: string;
+    Склад: string;
+    Description: string;
+  };
+}
+
+export interface ISalesByPartnersAndNomenclatureFields {
+  КоличествоTurnover: number;
+  СуммаВыручкиTurnover: number;
+  СуммаВыручкиБезНДСTurnover: number;
+  СуммаАвтоматическойСкидкиTurnover: number;
+  АналитикаУчетаНоменклатуры: {
+    Номенклатура_Key: string;
+    Склад: string;
+    Description: string;
+  };
+  АналитикаУчетаПоПартнерам: {
+    Партнер_Key: string;
+    Контрагент: string;
+    Description: string;
+  };
+}
+
+export interface IUserFields {
+  Ref_Key: string;
+  DataVersion: string;
+  DeletionMark: boolean;
+  Description: string;
+  Недействителен: boolean;
+  ДополнительныеРеквизиты: {
+    Свойство_Key: string;
+    Значение: string | number;
+  }[];
+  ФизическоеЛицо: {
+    Ref_Key: string;
+    DeletionMark: boolean;
+    Description: string;
+    ДатаРождения: string;
+    ИНН: string;
+    КонтактнаяИнформация: {
+      Тип: string;
+      Представление: string;
+    }[];
+  };
 }
 
 export async function getSpecificODataResponse({
@@ -130,8 +220,10 @@ export async function getSpecificODataResponse({
     params = `${params}&$skip=${skip}`;
   }
   try {
+    const fullUrl = `${baseUrl}${path}?${params}`;
+    console.info(`Fetching OData response from "${fullUrl}"`);
     // Use fetch to get the response from the OData API
-    const response = await fetch(`${baseUrl}${path}?${params}`, {
+    const response = await fetch(fullUrl, {
       headers: {
         Authorization: authHeader,
       },
@@ -193,22 +285,12 @@ export class From1C {
     }) as Promise<Nomenclature1CFields[]>;
   }
 
-  static async getNomenclatureFiles(nId: string): Promise<IFileFields[]> {
+  static async getAllNomenclatureFiles(): Promise<IFileFields[]> {
     return getSpecificODataResponse({
       path: "Catalog_НоменклатураПрисоединенныеФайлы",
-      select: "Ref_Key,ВладелецФайла_Key,Description",
-      filter: `DeletionMark eq false and ВладелецФайла_Key eq guid'${nId}'`,
+      select: "Ref_Key,ПутьКФайлу,ВладелецФайла_Key",
+      filter: `DeletionMark eq false`,
     }) as Promise<IFileFields[]>;
-  }
-
-  static async getNomenclatureFilesBinary(
-    fId: string,
-  ): Promise<IBinaryFileFields[]> {
-    return getSpecificODataResponse({
-      path: "InformationRegister_ДвоичныеДанныеФайлов",
-      select: "ДвоичныеДанныеФайла_Base64Data",
-      filter: `Файл eq cast(guid'${fId}', 'Catalog_НоменклатураПрисоединенныеФайлы')`,
-    }) as Promise<IBinaryFileFields[]>;
   }
 
   static async getAllStock(): Promise<IStockFields[]> {
@@ -257,11 +339,150 @@ export class From1C {
     }) as Promise<IUnitFields[]>;
   }
 
+  static async getAllMeasurementUnits(): Promise<IUnitFields[]> {
+    return getSpecificODataResponse({
+      path: "Catalog_УпаковкиЕдиницыИзмерения",
+      select:
+        "Ref_Key,Description,DeletionMark,DataVersion,Owner,Вес,Числитель,Знаменатель",
+    }) as Promise<IUnitFields[]>;
+  }
+
   static async getAllManufacturers(): Promise<Manufacturer1CFields[]> {
     return getSpecificODataResponse({
       path: "Catalog_Производители",
       select: "Ref_Key,DataVersion,DeletionMark,IsFolder,Description",
       filter: `IsFolder eq false`,
     }) as Promise<Manufacturer1CFields[]>;
+  }
+
+  static async getOrdersForUserByDate({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<IOrderFields[]> {
+    return getSpecificODataResponse({
+      path: "Document_ЗаказКлиента",
+      select:
+        "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
+      filter: `Менеджер_Key eq guid'${userId}' and Date ge datetime'${startDate}T00:00:00' and Date le datetime'${endDate}T23:59:59'`,
+      expand: "Партнер",
+    }) as Promise<IOrderFields[]>;
+  }
+
+  static async getOrdersForUserByDeliveryDate({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<IOrderFields[]> {
+    return getSpecificODataResponse({
+      path: "Document_ЗаказКлиента",
+      select:
+        "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
+      filter: `Менеджер_Key eq guid'${userId}' and ДатаОтгрузки ge datetime'${startDate}T00:00:00' and ДатаОтгрузки le datetime'${endDate}T23:59:59'`,
+      expand: "Партнер",
+    }) as Promise<any[]>;
+  }
+
+  static async getOrderContent(
+    orderId: string,
+  ): Promise<IOrderContentFields[]> {
+    return getSpecificODataResponse({
+      path: `Document_ЗаказКлиента_Товары`,
+      filter: `Ref_Key eq guid'${orderId}'`,
+      expand: `Номенклатура`,
+      select: `LineNumber,Количество,Цена,Сумма,СуммаНДС,СуммаСНДС,СуммаРучнойСкидки,СуммаАвтоматическойСкидки,Отменено,Номенклатура/Description`,
+    }) as Promise<any[]>;
+  }
+
+  /**
+   *
+   * @param managerId - guid
+   * @param startDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   * @param endDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   */
+  static async getSalesByManagerGroupedByPartners({
+    managerId,
+    startDate,
+    endDate,
+  }: {
+    managerId: string;
+    startDate: string;
+    endDate: string;
+  }) {
+    return getSpecificODataResponse({
+      path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам')`,
+      select:
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
+      filter: `Менеджер_Key eq guid'${managerId}'`,
+      expand: "АналитикаУчетаПоПартнерам",
+      orderBy: "СуммаВыручкиTurnover desc",
+    }) as Promise<ISalesByPartnersFields[]>;
+  }
+
+  /**
+   *
+   * @param managerId - guid
+   * @param startDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   * @param endDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   */
+  static async getSalesByManagerGroupedByNomenclature({
+    managerId,
+    startDate,
+    endDate,
+  }: {
+    managerId: string;
+    startDate: string;
+    endDate: string;
+  }) {
+    return getSpecificODataResponse({
+      path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаНоменклатуры')`,
+      select:
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description",
+      filter: `Менеджер_Key eq guid'${managerId}'`,
+      expand: "АналитикаУчетаНоменклатуры",
+      orderBy: "СуммаВыручкиTurnover desc",
+    }) as Promise<ISalesByNomenclatureFields[]>;
+  }
+
+  /**
+   *
+   * @param managerId - guid
+   * @param startDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   * @param endDate - has to be a string formatted as "YYYY-MM-DDTHH:MM:SS"
+   */
+  static async getSalesByManagerGroupedByPartnerAndNomenclature({
+    managerId,
+    startDate,
+    endDate,
+  }: {
+    managerId: string;
+    startDate: string;
+    endDate: string;
+  }) {
+    return getSpecificODataResponse({
+      path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам,АналитикаУчетаНоменклатуры'')`,
+      select:
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
+      filter: `Менеджер_Key eq guid'${managerId}'`,
+      expand: "АналитикаУчетаНоменклатуры,АналитикаУчетаПоПартнерам",
+      orderBy: "СуммаВыручкиTurnover desc",
+    }) as Promise<ISalesByPartnersAndNomenclatureFields[]>;
+  }
+
+  static async getAllUsers(): Promise<IUserFields[]> {
+    return getSpecificODataResponse({
+      path: "Catalog_Пользователи",
+      select:
+        "Ref_Key,DataVersion,DeletionMark,Description,Недействителен,ДополнительныеРеквизиты/Свойство_Key,ДополнительныеРеквизиты/Значение,ФизическоеЛицо/Ref_Key,ФизическоеЛицо/DeletionMark,ФизическоеЛицо/Description,ФизическоеЛицо/ДатаРождения,ФизическоеЛицо/ИНН,ФизическоеЛицо/КонтактнаяИнформация/Тип,ФизическоеЛицо/КонтактнаяИнформация/Представление",
+      expand: "ФизическоеЛицо",
+    }) as Promise<IUserFields[]>;
   }
 }

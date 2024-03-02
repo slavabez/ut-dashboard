@@ -61,7 +61,7 @@ export async function syncNomenclatureTypes(
     if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
       syncMeta.typesIgnored = allTypes.length;
-      return saveSyncLog(hashOf1CData, syncMeta);
+      return saveSyncLog(hashOf1CData, syncMeta, "ignored");
     }
 
     if (totalTypesInDb === 0 && !forceIncrement) {
@@ -127,13 +127,14 @@ async function incrementalSync(
 async function saveSyncLog(
   hashOf1CData: string,
   syncMeta: NomenclatureTypesSyncMeta,
+  status = "ignored",
 ) {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
       dataHash: hashOf1CData,
       type: "nomenclatureTypes",
-      status: "success",
+      status,
       metadata: syncMeta,
     })
     .returning();

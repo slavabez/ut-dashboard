@@ -73,18 +73,30 @@ export const authToken = pgTable(
 
 export const measurementUnits = pgTable("measurement_unit", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull().unique(),
+  name: text("name").notNull(),
   weight: real("weight"),
   numerator: real("numerator"),
   denominator: real("denominator"),
-  nomenclatureId: uuid("nomenclature_id")
-    .notNull()
-    .references(() => nomenclatures.id),
+  nomenclatureId: uuid("nomenclature_id").references(() => nomenclatures.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   dataVersion: text("data_version"),
   deletionMark: boolean("deletion_mark").default(false).notNull(),
 });
+
+export const measurementUnitRelations = relations(
+  measurementUnits,
+  ({ one }) => {
+    return {
+      nomenclature: one(nomenclatures, {
+        fields: [measurementUnits.nomenclatureId],
+        references: [nomenclatures.id],
+      }),
+    };
+  },
+);
 
 export const nomenclatureTypes = pgTable(
   "nomenclature_type",
@@ -120,13 +132,14 @@ export const nomTypesRelations = relations(
       }),
       children: many(nomenclatureTypes),
       nomenclatures: many(nomenclatures),
+      measurementUnits: many(measurementUnits),
     };
   },
 );
 
 export const manufacturers = pgTable("manufacturer", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull().unique(),
+  name: text("name").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   dataVersion: text("data_version"),
@@ -139,61 +152,53 @@ export const manufacturerRelations = relations(manufacturers, ({ many }) => {
   };
 });
 
-export const nomenclatures = pgTable(
-  "nomenclature",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    name: text("name").notNull(),
-    description: text("description"),
-    isFolder: boolean("is_folder").default(false).notNull(),
-    parentId: uuid("parent_id"),
-    typeId: uuid("type_id").references(() => nomenclatureTypes.id),
-    manufacturerId: uuid("manufacturer_id").references(() => manufacturers.id),
-    baseUnitId: uuid("base_unit_id"),
-    code: text("code"),
-    isWeightGoods: boolean("is_weight_goods").default(false).notNull(),
-    minimumWeight: real("minimum_weight"),
-    price: integer("price"),
-    priceDate: timestamp("price_date"),
-    priceUpdatedAt: timestamp("price_updated_at"),
-    stock: real("stock"),
-    stockDate: timestamp("stock_date"),
-    stockUpdatedAt: timestamp("stock_updated_at"),
-    showOnSite: boolean("show_on_site").default(false).notNull(),
-    minQuantityConsideredHigh: real("min_quantity_considered_high"),
-    coverImage: text("cover_image"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    dataVersion: text("data_version"),
-    deletionMark: boolean("deletion_mark").default(false).notNull(),
-  },
-  (ni) => {
+export const nomenclatures = pgTable("nomenclature", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isFolder: boolean("is_folder").default(false).notNull(),
+  parentId: uuid("parent_id"),
+  typeId: uuid("type_id").references(() => nomenclatureTypes.id),
+  manufacturerId: uuid("manufacturer_id").references(() => manufacturers.id),
+  baseUnitId: uuid("base_unit_id"),
+  code: text("code"),
+  isWeightGoods: boolean("is_weight_goods").default(false).notNull(),
+  minimumWeight: real("minimum_weight"),
+  price: integer("price"),
+  priceDate: timestamp("price_date"),
+  priceUpdatedAt: timestamp("price_updated_at"),
+  stock: real("stock"),
+  stockDate: timestamp("stock_date"),
+  stockUpdatedAt: timestamp("stock_updated_at"),
+  showOnSite: boolean("show_on_site").default(false).notNull(),
+  minQuantityConsideredHigh: real("min_quantity_considered_high"),
+  coverImage: text("cover_image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  dataVersion: text("data_version"),
+  deletionMark: boolean("deletion_mark").default(false).notNull(),
+});
+
+export const nomenclatureRelations = relations(
+  nomenclatures,
+  ({ one, many }) => {
     return {
-      parentReference: foreignKey({
-        columns: [ni.parentId],
-        foreignColumns: [ni.id],
-        name: "nomenclature_parent_id_fkey",
+      manufacturer: one(manufacturers, {
+        fields: [nomenclatures.manufacturerId],
+        references: [manufacturers.id],
       }),
+      type: one(nomenclatureTypes, {
+        fields: [nomenclatures.typeId],
+        references: [nomenclatureTypes.id],
+      }),
+      measurementUnits: many(measurementUnits),
     };
   },
 );
 
-export const nomenclatureRelations = relations(nomenclatures, ({ one }) => {
-  return {
-    manufacturer: one(manufacturers, {
-      fields: [nomenclatures.manufacturerId],
-      references: [manufacturers.id],
-    }),
-    type: one(nomenclatureTypes, {
-      fields: [nomenclatures.typeId],
-      references: [nomenclatureTypes.id],
-    }),
-  };
-});
-
 export const partners = pgTable("partner", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull().unique(),
+  name: text("name").notNull(),
   isClient: boolean("is_client").default(false).notNull(),
   isSupplier: boolean("is_supplier").default(false).notNull(),
   address: text("address"),

@@ -1,10 +1,14 @@
 import {
   ManufacturerInsert,
+  MeasurementUnitInsert,
   NomenclatureInsert,
   NomenclatureTypeInsert,
 } from "@/drizzle/schema";
 import { env } from "@/env.mjs";
 import {
+  IPriceFields,
+  IStockFields,
+  IUnitFields,
   Manufacturer1CFields,
   Nomenclature1CFields,
   NomenclatureType1CFields,
@@ -68,6 +72,38 @@ export class ConvertFrom1C {
       deletionMark: input.DeletionMark,
       id: input.Ref_Key,
       name: input.Description,
+    };
+  }
+
+  static price(input: IPriceFields) {
+    return {
+      price: input.Цена,
+      period: new Date(input.Period),
+      nomenclatureId: input.Номенклатура_Key,
+    };
+  }
+
+  static stock(input: IStockFields) {
+    return {
+      nomenclatureId: input.Номенклатура_Key,
+      stock:
+        input.ВНаличииBalance -
+        input.ВРезервеПодЗаказBalance -
+        input.ВРезервеСоСкладаBalance,
+      stockDate: new Date(),
+    };
+  }
+
+  static measurementUnit(input: IUnitFields): MeasurementUnitInsert {
+    return {
+      id: input.Ref_Key,
+      name: input.Description,
+      weight: input.Вес,
+      numerator: input.Числитель,
+      nomenclatureId: input.Owner,
+      deletionMark: input.DeletionMark,
+      dataVersion: input.DataVersion,
+      denominator: input.Знаменатель,
     };
   }
 }

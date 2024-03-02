@@ -2,7 +2,14 @@ import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { nomenclatureTypes, syncLogs } from "@/drizzle/schema";
+import {
+  manufacturers,
+  measurementUnits,
+  nomenclatureTypes,
+  nomenclatures,
+  partners,
+  syncLogs,
+} from "@/drizzle/schema";
 
 config({
   path: ".env.local",
@@ -19,11 +26,20 @@ if (!process.env.PG_URL) {
 
   const db = drizzle(client);
   // Delete all data from the database
-  console.log("Clearing the database");
+  console.log("Dropping the database...");
+
+  await db.delete(syncLogs);
+  console.log("Dropped syncLogs");
+  await db.delete(measurementUnits);
+  console.log("Dropped measurementUnits");
+  await db.delete(partners);
+  console.log("Dropped partners");
+  await db.delete(nomenclatures);
+  console.log("Dropped nomenclature items");
   await db.delete(nomenclatureTypes);
   console.log("Cleared nomenclatureTypes");
-  await db.delete(syncLogs);
-  console.log("Cleared syncLogs");
+  await db.delete(manufacturers);
+  console.log("Cleared manufacturers");
 
   await client.end();
 })();

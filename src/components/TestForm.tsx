@@ -2,7 +2,13 @@
 
 import React, { useState, useTransition } from "react";
 
-import { getManufacturerWithNomenclature } from "@/actions/nomenclature/items";
+import { syncManufacturers } from "@/actions/sync/manufacturers";
+import { syncMeasurementUnits } from "@/actions/sync/measurement-units";
+import { syncNomenclature } from "@/actions/sync/nomenclature";
+import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
+import { syncPrices } from "@/actions/sync/prices";
+import { syncStock } from "@/actions/sync/stock";
+import { testAction } from "@/actions/test";
 
 const TestForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -16,9 +22,7 @@ const TestForm = () => {
     setData(undefined);
 
     startTransition(async () => {
-      const result = await getManufacturerWithNomenclature(
-        "3eac83e2-623e-11ec-8f2b-54ee75d06a1b",
-      );
+      const result = await testAction();
       if (result) {
         setData(result);
       } else {
