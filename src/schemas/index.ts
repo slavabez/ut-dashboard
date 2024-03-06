@@ -1,26 +1,32 @@
 import * as z from "zod";
 
 export const LoginSchema = z.object({
-  email: z.string().email(),
+  phone: z
+    .string()
+    .min(11, {
+      message: "Номер телефона должен содержать не менее 11 символов",
+    })
+    .max(20, {
+      message: "Номер телефона должен содержать не более 20 символов",
+    })
+    .startsWith("+7", {
+      message: "Номер телефона должен начинаться с +7",
+    })
+    .regex(/^(8|\+7)[\d\-()]+$/, "Неправильные символы в номере телефона"),
   password: z.string(),
 });
-
-// +77017054345
 
 export const RegisterSchema = z.object({
   phone: z
     .string()
     .min(11, {
-      message: "Номер телефона должен содержать 11 или 12 символов",
+      message: "Номер телефона должен содержать не менее 11 символов",
     })
-    .max(12, {
-      message: "Номер телефона должен содержать 11 или 12 символов",
+    .max(20, {
+      message: "Номер телефона должен содержать не более 20 символов",
     })
     .startsWith("+7", {
       message: "Номер телефона должен начинаться с +7",
-    }),
-});
-
-export const ResetSchema = z.object({
-  email: z.string().email(),
+    })
+    .regex(/^(8|\+7)[\d\-()]+$/, "Неправильные символы в номере телефона"),
 });

@@ -28,6 +28,7 @@ export const users = pgTable("user", {
   image: text("image"),
   password: text("password"),
   role: userRole("role").default("client").notNull(),
+  meta: json("meta"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

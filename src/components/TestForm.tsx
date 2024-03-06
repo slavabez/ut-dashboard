@@ -9,6 +9,7 @@ import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
 import { syncPrices } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
 import { testAction } from "@/actions/test";
+import { Button } from "@/components/ui/button";
 
 const TestForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -35,14 +36,10 @@ const TestForm = () => {
     <div>
       <h2>Test form</h2>
       <form>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
-          type="submit"
-          disabled={isPending}
-          onClick={handleClick}
-        >
-          Sync nom
-        </button>
+        <Button onClick={handleClick} disabled={isPending} type="button">
+          Test action
+        </Button>
+
         {error && <div>Error: {error}</div>}
         {success && <div>Success: {success}</div>}
         <pre>{JSON.stringify(data, null, 2)}</pre>

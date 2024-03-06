@@ -54,9 +54,20 @@ export function normalizePhoneNumber(
   if (typeof phone === "number") {
     return normalizePhoneNumber(phone.toString());
   }
-  let normalized = phone.replace(/\s/g, "");
+  // Replace spaces, brackets and dashes
+  let normalized = phone.replace(/[\s()-]/g, "");
   if (normalized.startsWith("8")) {
     normalized = normalized.replace("8", "+7");
   }
   return normalized;
+}
+
+export function parseBoolean(value: string | boolean | number): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return value !== 0;
+  }
+  return value === "true";
 }

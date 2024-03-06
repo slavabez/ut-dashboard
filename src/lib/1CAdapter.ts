@@ -14,9 +14,24 @@ import {
   Nomenclature1CFields,
   NomenclatureType1CFields,
 } from "@/lib/odata";
-import { normalizePhoneNumber } from "@/lib/utils";
+import { normalizePhoneNumber, parseBoolean } from "@/lib/utils";
 
 const minWeightPropertyKey = env.MINIMUM_WEIGHT_PARAM_UUID;
+
+export interface IParsedUser {
+  id: string;
+  showOnSite: boolean;
+  isDeleted: boolean;
+  name: string;
+  inactive: boolean;
+  realId: string | null;
+  realName: string | null;
+  iin: string | null;
+  phone: string | null;
+  email: string | null;
+  sitePassword: string | null;
+  siteRole: string | null;
+}
 
 const assignProperId = (id: string | number) => {
   if (typeof id !== "string") {
@@ -109,7 +124,7 @@ export class ConvertFrom1C {
     };
   }
 
-  static user(input: IUserFields) {
+  static user(input: IUserFields): IParsedUser {
     const phone = input.ФизическоеЛицо?.КонтактнаяИнформация.find(
       (c) => c.Тип === "Телефон",
     )?.Представление;
@@ -126,7 +141,7 @@ export class ConvertFrom1C {
     const siteRoleValue = input.ДополнительныеРеквизиты.find(
       (req) => req.Свойство_Key === env.SITE_ROLE_PARAM_UUID,
     )?.Значение;
-    let siteRole = null;
+    let siteRole;
     switch (siteRoleValue) {
       case env.SITE_ROLE_USER_UUID:
         siteRole = "user";
@@ -135,21 +150,22 @@ export class ConvertFrom1C {
         siteRole = "admin";
         break;
       default:
+        siteRole = null;
         break;
     }
 
     return {
       id: input.Ref_Key,
-      showOnSite,
+      showOnSite: parseBoolean(showOnSite),
       isDeleted: input.DeletionMark,
       name: input.Description,
-      inactive: input.Недействителен,
+      inactive: parseBoolean(input.Недействителен),
       realId: input?.ФизическоеЛицо?.Ref_Key ?? null,
       realName: input?.ФизическоеЛицо?.Description ?? "Не указано",
       iin: input?.ФизическоеЛицо?.ИНН ?? "Не указано",
       phone: normalizePhoneNumber(phone) ?? null,
       email: email ?? null,
-      sitePassword: sitePassword ?? null,
+      sitePassword: sitePassword?.toString() ?? null,
       siteRole,
     };
   }

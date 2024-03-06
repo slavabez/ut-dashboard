@@ -3,11 +3,12 @@ import NextAuth, { DefaultSession } from "next-auth";
 
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
-import { UserRole } from "@/db-schema";
-import { db } from "@/lib/drizzle";
+import { db } from "@/drizzle/db";
+import { userRoleValues } from "@/drizzle/schema";
 
 export type ExtendedUser = DefaultSession["user"] & {
-  role: UserRole;
+  role: userRoleValues;
+  phone: string;
 };
 
 declare module "next-auth" {
@@ -23,25 +24,18 @@ export const {
   signOut,
 } = NextAuth({
   callbacks: {
-    async signIn({ user, account }) {
-      const existingUser = await getUserById(user.id ?? "");
-
-      if (!existingUser || !existingUser.emailVerified) {
-        return false;
-      }
-      // TODO: add 2fa check
-
-      console.log("Sign in", user, account);
-
-      return true;
+    async signIn({ user }) {
+      return !!(await getUserById(user.id ?? ""));
     },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
       if (token.role && session.user) {
-        session.user.role = token.role as UserRole;
+        session.user.role = token.role as userRoleValues;
       }
+      if (token.phone) session.user.phone = token.phone as string;
+      if (token.name) session.user.name = token.name as string;
 
       return session;
     },
@@ -50,6 +44,8 @@ export const {
       const user = await getUserById(token.sub);
       if (!user) return token;
       token.role = user.role;
+      token.phone = user.phone;
+      token.name = user.name;
 
       return token;
     },
