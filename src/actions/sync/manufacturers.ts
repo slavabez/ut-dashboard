@@ -5,22 +5,11 @@ import hash from "hash-it";
 
 import { db } from "@/drizzle/db";
 import { SyncLogSelect, manufacturers, syncLogs } from "@/drizzle/schema";
-import { ConvertFrom1C } from "@/lib/1CAdapter";
+import { ConvertFrom1C } from "@/lib/1c-adapter";
+import { currentRole } from "@/lib/auth";
+import { IActionResponse } from "@/lib/common-types";
 import { From1C, Manufacturer1CFields } from "@/lib/odata";
-
-export interface ManufacturersSyncMeta {
-  totalFrom1C: number;
-  manufacturersCreated: number;
-  manufacturersUpdated: number;
-  manufacturersMarkedDeleted: number;
-  manufacturersIgnored: number;
-}
-
-interface SyncResult {
-  success: boolean;
-  error?: string;
-  syncResult?: SyncLogSelect;
-}
+import { ISyncLogMeta } from "@/lib/sync";
 
 /**
  * Sync manufacturers from 1C to the database.
@@ -29,8 +18,17 @@ interface SyncResult {
  */
 export async function syncManufacturers(
   forceIncrement = false,
-): Promise<SyncResult> {
+): Promise<IActionResponse<SyncLogSelect>> {
   try {
+    const role = await currentRole();
+
+    if (role !== "admin") {
+      return {
+        status: "error",
+        error: "У вас недостаточно прав для этого действия",
+      };
+    }
+
     const allManufacturersRaw = await From1C.getAllManufacturers();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allManufacturersRaw).toString();
@@ -50,18 +48,18 @@ export async function syncManufacturers(
       ],
     );
 
-    let syncMeta = {
-      totalFrom1C: allManufacturersRaw.length,
-      manufacturersCreated: 0,
-      manufacturersUpdated: 0,
-      manufacturersMarkedDeleted: 0,
-      manufacturersIgnored: 0,
+    let syncMeta: ISyncLogMeta = {
+      entitiesFrom1C: allManufacturersRaw.length,
+      entitiesCreated: 0,
+      entitiesUpdated: 0,
+      entitiesMarkedDeleted: 0,
+      entitiesIgnored: 0,
     };
 
     const latestHash = latestManufacturersSync[0]?.dataHash;
     if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
-      syncMeta.manufacturersIgnored = allManufacturersRaw.length;
+      syncMeta.entitiesIgnored = allManufacturersRaw.length;
       return saveSyncLog(hashOf1CData, syncMeta, "ignored");
     }
 
@@ -76,24 +74,24 @@ export async function syncManufacturers(
     return saveSyncLog(hashOf1CData, syncMeta);
   } catch (e) {
     console.error(e);
-    return { success: false, error: "Error while syncing manufacturers" };
+    return { status: "error", error: "Error while syncing manufacturers" };
   }
 }
 
 async function initialSync(
   allManufacturersRaw: Manufacturer1CFields[],
-  syncMeta: ManufacturersSyncMeta,
+  syncMeta: ISyncLogMeta,
 ) {
   const formattedManufacturers = allManufacturersRaw.map(
     ConvertFrom1C.manufacturer,
   );
   await db.insert(manufacturers).values(formattedManufacturers);
-  syncMeta.manufacturersCreated = formattedManufacturers.length;
+  syncMeta.entitiesCreated = formattedManufacturers.length;
 }
 
 async function incrementalSync(
   allManufacturersRaw: Manufacturer1CFields[],
-  syncMeta: ManufacturersSyncMeta,
+  syncMeta: ISyncLogMeta,
 ) {
   const formattedManufacturers = allManufacturersRaw.map(
     ConvertFrom1C.manufacturer,
@@ -104,7 +102,7 @@ async function incrementalSync(
     const existing = allManufacturersInDb.find((m) => m.id === manufacturer.id);
     if (!existing) {
       await db.insert(manufacturers).values(manufacturer);
-      syncMeta.manufacturersCreated++;
+      syncMeta.entitiesCreated++;
     } else {
       // Check and update only if dataVersion has changed
       if (existing.dataVersion !== manufacturer.dataVersion) {
@@ -112,7 +110,7 @@ async function incrementalSync(
           .update(manufacturers)
           .set(manufacturer)
           .where(eq(manufacturers.id, manufacturer.id as string));
-        syncMeta.manufacturersUpdated++;
+        syncMeta.entitiesUpdated++;
       }
       // Check and update deletion mark, set/unset
       if (manufacturer.deletionMark !== existing.deletionMark) {
@@ -120,7 +118,7 @@ async function incrementalSync(
           .update(manufacturers)
           .set({ deletionMark: manufacturer.deletionMark })
           .where(eq(manufacturers.id, manufacturer.id as string));
-        syncMeta.manufacturersMarkedDeleted++;
+        syncMeta.entitiesMarkedDeleted++;
       }
     }
   }
@@ -128,9 +126,9 @@ async function incrementalSync(
 
 async function saveSyncLog(
   hashOf1CData: string,
-  syncMeta: ManufacturersSyncMeta,
+  syncMeta: ISyncLogMeta,
   status = "success",
-) {
+): Promise<IActionResponse<SyncLogSelect>> {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
@@ -143,13 +141,13 @@ async function saveSyncLog(
 
   if (syncResultFromDB.length === 0) {
     return {
-      success: false,
+      status: "error",
       error: "Failed to log sync result",
     };
   }
 
   return {
-    success: true,
-    syncResult: syncResultFromDB[0],
+    status: "success",
+    data: syncResultFromDB[0],
   };
 }

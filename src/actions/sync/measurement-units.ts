@@ -10,22 +10,11 @@ import {
   nomenclatures,
   syncLogs,
 } from "@/drizzle/schema";
-import { ConvertFrom1C } from "@/lib/1CAdapter";
+import { ConvertFrom1C } from "@/lib/1c-adapter";
+import { currentRole } from "@/lib/auth";
+import { IActionResponse } from "@/lib/common-types";
 import { From1C, IUnitFields } from "@/lib/odata";
-
-export interface MeasurementUnitsSyncMeta {
-  totalFrom1C: number;
-  unitsCreated: number;
-  unitsUpdated: number;
-  unitsMarkedDeleted: number;
-  unitsIgnored: number;
-}
-
-interface SyncResult {
-  success: boolean;
-  error?: string;
-  syncResult?: SyncLogSelect;
-}
+import { ISyncLogMeta } from "@/lib/sync";
 
 /**
  * Sync measurement units from 1C to the database.
@@ -34,8 +23,17 @@ interface SyncResult {
  */
 export async function syncMeasurementUnits(
   forceIncrement = false,
-): Promise<SyncResult> {
+): Promise<IActionResponse<SyncLogSelect>> {
   try {
+    const role = await currentRole();
+
+    if (role !== "admin") {
+      return {
+        status: "error",
+        error: "У вас недостаточно прав для этого действия",
+      };
+    }
+
     const allMeasurementsRaw = await From1C.getAllMeasurementUnits();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allMeasurementsRaw).toString();
@@ -54,18 +52,18 @@ export async function syncMeasurementUnits(
           .then((res) => res[0]?.value || 0),
       ]);
 
-    let syncMeta = {
-      totalFrom1C: allMeasurementsRaw.length,
-      unitsCreated: 0,
-      unitsUpdated: 0,
-      unitsMarkedDeleted: 0,
-      unitsIgnored: 0,
+    let syncMeta: ISyncLogMeta = {
+      entitiesFrom1C: allMeasurementsRaw.length,
+      entitiesCreated: 0,
+      entitiesUpdated: 0,
+      entitiesMarkedDeleted: 0,
+      entitiesIgnored: 0,
     };
 
     const latestHash = latestMeasurementUnitsSync[0]?.dataHash;
     if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
-      syncMeta.unitsIgnored = allMeasurementsRaw.length;
+      syncMeta.entitiesIgnored = allMeasurementsRaw.length;
       return saveSyncLog(hashOf1CData, syncMeta, "ignored");
     }
 
@@ -93,14 +91,11 @@ export async function syncMeasurementUnits(
     return saveSyncLog(hashOf1CData, syncMeta);
   } catch (e) {
     console.error(e);
-    return { success: false, error: "Error while syncing measurement units" };
+    return { status: "error", error: "Error while syncing measurement units" };
   }
 }
 
-async function initialSync(
-  allUnitsRaw: IUnitFields[],
-  syncMeta: MeasurementUnitsSyncMeta,
-) {
+async function initialSync(allUnitsRaw: IUnitFields[], syncMeta: ISyncLogMeta) {
   const formattedUnits = allUnitsRaw.map(ConvertFrom1C.measurementUnit);
   const CHUNK_SIZE = 100;
   await db.transaction(async (tx) => {
@@ -110,12 +105,12 @@ async function initialSync(
         .values(formattedUnits.slice(i, i + CHUNK_SIZE));
     }
   });
-  syncMeta.unitsCreated = formattedUnits.length;
+  syncMeta.entitiesCreated = formattedUnits.length;
 }
 
 async function incrementalSync(
   allUnitsRaw: IUnitFields[],
-  syncMeta: MeasurementUnitsSyncMeta,
+  syncMeta: ISyncLogMeta,
 ) {
   const formattedUnits = allUnitsRaw.map(ConvertFrom1C.measurementUnit);
   const allUnitsInDb = await db.select().from(measurementUnits);
@@ -124,7 +119,7 @@ async function incrementalSync(
     const existing = allUnitsInDb.find((m) => m.id === unit.id);
     if (!existing) {
       await db.insert(measurementUnits).values(unit);
-      syncMeta.unitsCreated++;
+      syncMeta.entitiesCreated++;
     } else {
       // Check and update only if dataVersion has changed
       if (existing.dataVersion !== unit.dataVersion) {
@@ -132,7 +127,7 @@ async function incrementalSync(
           .update(measurementUnits)
           .set(unit)
           .where(eq(measurementUnits.id, unit.id as string));
-        syncMeta.unitsUpdated++;
+        syncMeta.entitiesUpdated++;
       }
       // Check and update deletion mark, set/unset
       if (unit.deletionMark !== existing.deletionMark) {
@@ -140,7 +135,7 @@ async function incrementalSync(
           .update(measurementUnits)
           .set({ deletionMark: unit.deletionMark })
           .where(eq(measurementUnits.id, unit.id as string));
-        syncMeta.unitsMarkedDeleted++;
+        syncMeta.entitiesMarkedDeleted++;
       }
     }
   }
@@ -148,9 +143,9 @@ async function incrementalSync(
 
 async function saveSyncLog(
   hashOf1CData: string,
-  syncMeta: MeasurementUnitsSyncMeta,
+  syncMeta: ISyncLogMeta,
   status = "success",
-) {
+): Promise<IActionResponse<SyncLogSelect>> {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
@@ -163,13 +158,13 @@ async function saveSyncLog(
 
   if (syncResultFromDB.length === 0) {
     return {
-      success: false,
+      status: "error",
       error: "Failed to log sync result",
     };
   }
 
   return {
-    success: true,
-    syncResult: syncResultFromDB[0],
+    status: "success",
+    data: syncResultFromDB[0],
   };
 }

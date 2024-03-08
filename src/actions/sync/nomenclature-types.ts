@@ -5,23 +5,12 @@ import hash from "hash-it";
 
 import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatureTypes, syncLogs } from "@/drizzle/schema";
-import { ConvertFrom1C } from "@/lib/1CAdapter";
+import { ConvertFrom1C } from "@/lib/1c-adapter";
+import { currentRole } from "@/lib/auth";
+import { IActionResponse } from "@/lib/common-types";
 import { From1C, NomenclatureType1CFields } from "@/lib/odata";
+import { ISyncLogMeta } from "@/lib/sync";
 import { separateListIntoLevels as separateArraysByLevel } from "@/lib/utils";
-
-export interface NomenclatureTypesSyncMeta {
-  totalFrom1C: number;
-  typesCreated: number;
-  typesUpdated: number;
-  typesMarkedDeleted: number;
-  typesIgnored: number;
-}
-
-interface SyncResult {
-  success: boolean;
-  error?: string;
-  syncResult?: SyncLogSelect;
-}
 
 /**
  * Sync nomenclature types from 1C to the database.
@@ -30,8 +19,17 @@ interface SyncResult {
  */
 export async function syncNomenclatureTypes(
   forceIncrement = false,
-): Promise<SyncResult> {
+): Promise<IActionResponse<SyncLogSelect>> {
   try {
+    const role = await currentRole();
+
+    if (role !== "admin") {
+      return {
+        status: "error",
+        error: "У вас недостаточно прав для этого действия",
+      };
+    }
+
     const allTypes = await From1C.getAllNomenclatureTypes();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allTypes).toString();
@@ -40,7 +38,7 @@ export async function syncNomenclatureTypes(
       db
         .select()
         .from(syncLogs)
-        .where(eq(syncLogs.type, "nomenclatureTypes"))
+        .where(eq(syncLogs.type, "nomenclature-types"))
         .orderBy(desc(syncLogs.createdAt))
         .limit(1),
       db
@@ -49,18 +47,18 @@ export async function syncNomenclatureTypes(
         .then((res) => res[0]?.value || 0),
     ]);
 
-    let syncMeta = {
-      totalFrom1C: allTypes.length,
-      typesCreated: 0,
-      typesUpdated: 0,
-      typesMarkedDeleted: 0,
-      typesIgnored: 0,
+    let syncMeta: ISyncLogMeta = {
+      entitiesFrom1C: allTypes.length,
+      entitiesCreated: 0,
+      entitiesUpdated: 0,
+      entitiesMarkedDeleted: 0,
+      entitiesIgnored: 0,
     };
 
     const latestHash = latestNomTypesSync[0]?.dataHash;
     if (latestHash && latestHash === hashOf1CData && !forceIncrement) {
       // No changes since the last sync, ignore
-      syncMeta.typesIgnored = allTypes.length;
+      syncMeta.entitiesIgnored = allTypes.length;
       return saveSyncLog(hashOf1CData, syncMeta, "ignored");
     }
 
@@ -75,22 +73,22 @@ export async function syncNomenclatureTypes(
     return saveSyncLog(hashOf1CData, syncMeta);
   } catch (e) {
     console.error(e);
-    return { success: false, error: "Error while syncing nomenclature types" };
+    return { status: "error", error: "Error while syncing nomenclature types" };
   }
 }
 
 async function initialSync(
   allTypes: NomenclatureType1CFields[],
-  syncMeta: NomenclatureTypesSyncMeta,
+  syncMeta: ISyncLogMeta,
 ) {
   const formattedTypes = allTypes.map(ConvertFrom1C.nomenclatureType);
   await db.insert(nomenclatureTypes).values(formattedTypes);
-  syncMeta.typesCreated = formattedTypes.length;
+  syncMeta.entitiesCreated = formattedTypes.length;
 }
 
 async function incrementalSync(
   allTypes: NomenclatureType1CFields[],
-  syncMeta: NomenclatureTypesSyncMeta,
+  syncMeta: ISyncLogMeta,
 ) {
   const formattedTypes = allTypes.map(ConvertFrom1C.nomenclatureType);
   const separated = separateArraysByLevel(formattedTypes);
@@ -101,7 +99,7 @@ async function incrementalSync(
       const existing = allTypesInDb.find((t) => t.id === nomType.id);
       if (!existing) {
         await db.insert(nomenclatureTypes).values(nomType);
-        syncMeta.typesCreated++;
+        syncMeta.entitiesCreated++;
       } else {
         // Check and update only if dataVersion has changed
         if (existing.dataVersion !== nomType.dataVersion) {
@@ -109,7 +107,7 @@ async function incrementalSync(
             .update(nomenclatureTypes)
             .set(nomType)
             .where(eq(nomenclatureTypes.id, nomType.id as string));
-          syncMeta.typesUpdated++;
+          syncMeta.entitiesUpdated++;
         }
         // Check and update deletion mark, set/unset
         if (nomType.deletionMark !== existing.deletionMark) {
@@ -117,7 +115,7 @@ async function incrementalSync(
             .update(nomenclatureTypes)
             .set({ deletionMark: nomType.deletionMark })
             .where(eq(nomenclatureTypes.id, nomType.id as string));
-          syncMeta.typesMarkedDeleted++;
+          syncMeta.entitiesMarkedDeleted++;
         }
       }
     }
@@ -126,14 +124,14 @@ async function incrementalSync(
 
 async function saveSyncLog(
   hashOf1CData: string,
-  syncMeta: NomenclatureTypesSyncMeta,
-  status = "ignored",
-) {
+  syncMeta: ISyncLogMeta,
+  status = "success",
+): Promise<IActionResponse<SyncLogSelect>> {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
       dataHash: hashOf1CData,
-      type: "nomenclatureTypes",
+      type: "nomenclature-types",
       status,
       metadata: syncMeta,
     })
@@ -141,13 +139,13 @@ async function saveSyncLog(
 
   if (syncResultFromDB.length === 0) {
     return {
-      success: false,
+      status: "error",
       error: "Failed to log sync result",
     };
   }
 
   return {
-    success: true,
-    syncResult: syncResultFromDB[0],
+    status: "success",
+    data: syncResultFromDB[0],
   };
 }

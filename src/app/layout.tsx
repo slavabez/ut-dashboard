@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 
+import Breadcrumbs from "@/app/_components/breadcrumbs";
 import { siteConfig } from "@/siteConfig";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,23 +21,22 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body
-        className={`${inter.className} w-screen min-h-screen flex flex-col`}
+        className={`${inter.className} w-screen max-w-full min-h-screen flex flex-col`}
       >
-        <header className="w-full bg-orange-500 text-white flex flex-col p-4">
-          <Link className="text-2xl" href="/">
-            Сказка
-          </Link>
+        <header className="w-full bg-orange-500 text-white flex flex-col p-2">
+          <div className="max-w-[800px] mx-auto">
+            <Link className="text-2xl" href="/">
+              Сказка
+            </Link>
+          </div>
         </header>
-        <nav className="flex h-5 items-center p-4 space-x-4 text-lg w-full justify-between">
-          <Link href="/panel" className="">
-            Для торговых
-          </Link>
-          <Link href="/user">Для клиентов</Link>
-        </nav>
-        <main className="w-full h-full justify-center items-center flex-grow">
+        <Breadcrumbs />
+        <main className="max-w-[800px] w-full mx-auto h-full justify-center items-center flex-grow">
           {children}
         </main>
-        <footer>Footer</footer>
+        <footer className="bg-orange-500 text-white p-2">
+          <div className="max-w-[800px] mx-auto">Footer</div>
+        </footer>
       </body>
     </html>
   );

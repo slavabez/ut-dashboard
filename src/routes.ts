@@ -1,12 +1,12 @@
 /**
  * @description Publicly accessible routes
  */
-export const publicRoutes = ["/", "/auth/confirm-email"];
+export const publicRoutes = ["/"];
 
 /**
  * @description Authenticated routes.
  * These are used for authentication.
- * Logged in users will be redirected to /settings
+ * Logged in users will be redirected to /profile
  */
 export const authRoutes = [
   "/auth/login",
@@ -23,4 +23,4 @@ export const apiAuthPrefix = "/api/auth";
 /**
  * @description Default post-login redirect.
  */
-export const DEFAULT_LOGIN_REDIRECT = `/settings`;
+export const DEFAULT_LOGIN_REDIRECT = `/profile`;

@@ -2,13 +2,19 @@
 
 import React, { useState, useTransition } from "react";
 
+import { syncAll } from "@/actions/sync/common";
 import { syncManufacturers } from "@/actions/sync/manufacturers";
 import { syncMeasurementUnits } from "@/actions/sync/measurement-units";
 import { syncNomenclature } from "@/actions/sync/nomenclature";
 import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
 import { syncPrices } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
-import { testAction } from "@/actions/test";
+import {
+  adminAction,
+  employeeAction,
+  testAction,
+  userAction,
+} from "@/actions/test";
 import { Button } from "@/components/ui/button";
 
 const TestForm = () => {
@@ -23,7 +29,7 @@ const TestForm = () => {
     setData(undefined);
 
     startTransition(async () => {
-      const result = await testAction();
+      const result = await syncAll();
       if (result) {
         setData(result);
       } else {

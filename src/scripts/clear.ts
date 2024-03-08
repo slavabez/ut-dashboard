@@ -37,9 +37,9 @@ if (!process.env.PG_URL) {
   await db.delete(nomenclatures);
   console.log("Dropped nomenclature items");
   await db.delete(nomenclatureTypes);
-  console.log("Cleared nomenclatureTypes");
+  console.log("Dropped nomenclatureTypes");
   await db.delete(manufacturers);
-  console.log("Cleared manufacturers");
+  console.log("Dropped manufacturers");
 
   await client.end();
 })();

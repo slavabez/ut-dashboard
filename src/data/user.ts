@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/drizzle/db";
 import { UserSelect, users } from "@/drizzle/schema";
-import { ConvertFrom1C, IParsedUser } from "@/lib/1CAdapter";
+import { ConvertFrom1C, IParsedUser } from "@/lib/1c-adapter";
 import { From1C } from "@/lib/odata";
 import { normalizePhoneNumber } from "@/lib/utils";
 

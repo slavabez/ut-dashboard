@@ -5,29 +5,33 @@ import hash from "hash-it";
 
 import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatures, syncLogs } from "@/drizzle/schema";
-import { ConvertFrom1C } from "@/lib/1CAdapter";
+import { ConvertFrom1C } from "@/lib/1c-adapter";
+import { currentRole } from "@/lib/auth";
+import { IActionResponse } from "@/lib/common-types";
 import { From1C } from "@/lib/odata";
+import { ISyncLogMeta } from "@/lib/sync";
 
-export interface StockSyncMeta {
-  totalFrom1C: number;
-  stockUpdated: number;
-  stockIgnored: number;
-}
-
-interface SyncResult {
-  success: boolean;
-  error?: string;
-  syncResult?: SyncLogSelect;
-}
-
-export async function syncStock(forceIncremental = false): Promise<SyncResult> {
+export async function syncStock(
+  forceIncremental = false,
+): Promise<IActionResponse<SyncLogSelect>> {
   try {
+    const role = await currentRole();
+
+    if (role !== "admin") {
+      return {
+        status: "error",
+        error: "У вас недостаточно прав для этого действия",
+      };
+    }
+
     const allStockData = await From1C.getAllStock();
     const hashOf1CData = hash(allStockData).toString();
-    const syncResultMeta = {
-      totalFrom1C: allStockData.length,
-      stockUpdated: 0,
-      stockIgnored: 0,
+    const syncResultMeta: ISyncLogMeta = {
+      entitiesFrom1C: allStockData.length,
+      entitiesUpdated: 0,
+      entitiesIgnored: 0,
+      entitiesMarkedDeleted: 0,
+      entitiesCreated: 0,
     };
 
     const lastStockSync = await db.query.syncLogs.findFirst({
@@ -38,7 +42,7 @@ export async function syncStock(forceIncremental = false): Promise<SyncResult> {
     const latestHash = lastStockSync?.dataHash;
     if (latestHash && latestHash === hashOf1CData && !forceIncremental) {
       // No changes in the data, no need to sync
-      syncResultMeta.stockIgnored = allStockData.length;
+      syncResultMeta.entitiesIgnored = allStockData.length;
       return saveSyncLog(hashOf1CData, syncResultMeta, "ignored");
     }
 
@@ -73,9 +77,9 @@ export async function syncStock(forceIncremental = false): Promise<SyncResult> {
                 })
                 .where(eq(nomenclatures.id, p.nomenclatureId)),
             );
-            syncResultMeta.stockUpdated++;
+            syncResultMeta.entitiesUpdated++;
           } else {
-            syncResultMeta.stockIgnored++;
+            syncResultMeta.entitiesIgnored++;
           }
         }
       });
@@ -87,7 +91,7 @@ export async function syncStock(forceIncremental = false): Promise<SyncResult> {
   } catch (e) {
     console.error("Error while syncing prices", e);
     return {
-      success: false,
+      status: "error",
       error: "Error while syncing prices",
     };
   }
@@ -95,9 +99,9 @@ export async function syncStock(forceIncremental = false): Promise<SyncResult> {
 
 async function saveSyncLog(
   hashOf1CData: string,
-  syncMeta: StockSyncMeta,
+  syncMeta: ISyncLogMeta,
   status = "success",
-) {
+): Promise<IActionResponse<SyncLogSelect>> {
   const syncResultFromDB = await db
     .insert(syncLogs)
     .values({
@@ -110,13 +114,13 @@ async function saveSyncLog(
 
   if (syncResultFromDB.length === 0) {
     return {
-      success: false,
+      status: "error",
       error: "Failed to log sync result",
     };
   }
 
   return {
-    success: true,
-    syncResult: syncResultFromDB[0],
+    status: "success",
+    data: syncResultFromDB[0],
   };
 }

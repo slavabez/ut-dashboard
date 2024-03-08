@@ -3,7 +3,7 @@ import React from "react";
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 
-const SettingsPage = async () => {
+const ProfilePage = async () => {
   const session = await auth();
 
   return (
@@ -21,4 +21,4 @@ const SettingsPage = async () => {
   );
 };
 
-export default SettingsPage;
+export default ProfilePage;

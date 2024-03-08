@@ -23,6 +23,10 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
   callbacks: {
     async signIn({ user }) {
       return !!(await getUserById(user.id ?? ""));
