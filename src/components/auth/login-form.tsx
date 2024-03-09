@@ -28,6 +28,7 @@ const LoginForm = () => {
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       phone: "",
+      password: "",
     },
   });
 

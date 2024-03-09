@@ -1,6 +1,18 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { SyncFormType } from "@/app/(protected)/admin/sync/_components/SyncForm";
+import { SyncType } from "@/lib/sync";
+
+const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
+  timeStyle: "short",
+  dateStyle: "medium",
+});
+
+const relativeDateFormatter = new Intl.RelativeTimeFormat("ru-RU", {
+  numeric: "auto",
+});
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -70,4 +82,42 @@ export function parseBoolean(value: string | boolean | number): boolean {
     return value !== 0;
   }
   return value === "true";
+}
+
+export function translateSyncType(type: SyncFormType): string {
+  switch (type) {
+    case "all":
+      return "Все данные";
+    case "manufacturers":
+      return "Производители";
+    case "measurement-units":
+      return "Единицы измерения";
+    case "nomenclature":
+      return "Номенклатура";
+    case "nomenclature-types":
+      return "Типы номенклатуры";
+    case "prices":
+      return "Цены";
+    case "stock":
+      return "Остатки";
+  }
+}
+
+export function formatDate(date: Date): string {
+  return dateFormatter.format(date);
+}
+
+export function formatRelativeDate(date: Date): string {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  return relativeDateFormatter.format(Math.round(diff / 1000), "seconds");
+}
+
+export function formatHoursAgo(date: Date): string {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  return relativeDateFormatter.format(
+    Math.round(diff / (60 * 60 * 1000)),
+    "hours",
+  );
 }

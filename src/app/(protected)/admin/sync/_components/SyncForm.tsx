@@ -15,16 +15,28 @@ import { Button } from "@/components/ui/button";
 import { IActionResponse } from "@/lib/common-types";
 import { ISyncLogMeta, SyncType } from "@/lib/sync";
 
-type SyncFormType = SyncType | "all";
+export type SyncFormType = SyncType | "all";
 
 interface SyncFormProps {
   syncType: SyncFormType;
+  skeleton?: boolean;
 }
 
-const SyncForm = ({ syncType }: SyncFormProps) => {
+const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+
+  if (skeleton) {
+    return (
+      <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
+        <h2 className="text-xl">Синхронизация</h2>
+        <Button disabled={true} type="button">
+          Синхронизировать ...
+        </Button>
+      </div>
+    );
+  }
 
   let formTitle;
   let action: () => Promise<IActionResponse<any>>;

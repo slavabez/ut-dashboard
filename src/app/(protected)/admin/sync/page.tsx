@@ -37,7 +37,6 @@ const SyncMainPage = async ({
   return (
     <div className="max-w-full">
       <h1 className="text-2xl my-4 text-center">Раздел синхронизации</h1>
-      <p className="text-center">Всего синхронизаций: {totalSyncs?.data}</p>
       <SyncForm syncType="all" />
       <UniversalPagination
         currentPage={currentPage}
@@ -50,6 +49,7 @@ const SyncMainPage = async ({
         totalPages={maxPage}
         baseRoute="/admin/sync"
       />
+      <p className="text-center">Всего синхронизаций: {totalSyncs?.data}</p>
     </div>
   );
 };

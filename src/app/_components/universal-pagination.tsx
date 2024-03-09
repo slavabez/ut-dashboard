@@ -12,13 +12,33 @@ interface IUniversalPaginationProps {
   currentPage: number;
   totalPages: number;
   baseRoute: string;
+  skeleton?: boolean;
 }
 
 export const UniversalPagination = ({
   currentPage,
   totalPages,
   baseRoute,
+  skeleton,
 }: IUniversalPaginationProps) => {
+  if (skeleton) {
+    return (
+      <Pagination className="m-2">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationLink href={`${baseRoute}?page=1`}>1</PaginationLink>
+          </PaginationItem>
+          <PaginationEllipsis />
+          <PaginationItem>
+            <PaginationLink href={`${baseRoute}?page=10`}>X</PaginationLink>
+          </PaginationItem>
+        </PaginationContent>
+        <PaginationNext href={`${baseRoute}?page=${currentPage + 1}`}>
+          Следующая
+        </PaginationNext>
+      </Pagination>
+    );
+  }
   if (totalPages <= 1) return null;
   // If there are more than 5 pages, we will show the first 2 pages, the last 2 pages, and the current page
   if (totalPages > 5) {

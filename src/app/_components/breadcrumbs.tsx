@@ -8,7 +8,6 @@ import React, { Fragment } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
@@ -26,7 +25,7 @@ const Breadcrumbs = () => {
 
   return (
     <Breadcrumb className="bg-orange-100">
-      <BreadcrumbList className="p-2 gap-2 max-w-[800px] mx-auto">
+      <BreadcrumbList className="px-4 py-2 gap-2 max-w-[800px] mx-auto">
         {allBreadcrumbs.map((item, index) => {
           const innerItems = getSubNavItems(item.href ?? "");
           if (!innerItems || innerItems.length === 0) {

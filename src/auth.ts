@@ -46,6 +46,7 @@ export const {
     async jwt({ token }) {
       if (!token.sub) return token;
       const user = await getUserById(token.sub);
+
       if (!user) return token;
       token.role = user.role;
       token.phone = user.phone;
