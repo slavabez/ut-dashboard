@@ -21,7 +21,7 @@ export const siteConfig: SiteConfig = {
   description: "Панель управления для ИП Бегачева О.А., г. Кокшетау, Казахстан",
   keywords: [],
   url: {
-    base: env.NEXT_PUBLIC_APP_URL,
+    base: env.NEXT_PUBLIC_APP_URL ?? "",
     author: "https://bezgachev.com",
   },
   links: {

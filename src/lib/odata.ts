@@ -252,7 +252,7 @@ export async function getSpecificODataResponseArray({
     // Use fetch to get the response from the OData API
     const response = await fetch(fullUrl, {
       headers: {
-        Authorization: authHeader,
+        Authorization: authHeader ?? "",
       },
     });
     // Get the JSON response from the OData API
@@ -297,7 +297,7 @@ export async function getSpecificODataResponseObject({
     // Use fetch to get the response from the OData API
     const response = await fetch(fullUrl, {
       headers: {
-        Authorization: authHeader,
+        Authorization: authHeader ?? "",
       },
     });
     // Get the JSON response from the OData API
@@ -599,7 +599,7 @@ export class From1C {
         );
         fullFields.ДополнительныеРеквизиты.push({
           LineNumber: (maxLineNumber + 1).toString(),
-          Свойство_Key: env.SITE_PASSWORD_PARAM_UUID,
+          Свойство_Key: env.SITE_PASSWORD_PARAM_UUID ?? "",
           Значение: newPassword,
           Значение_Type: "Edm.String",
           ТекстоваяСтрока: "",
@@ -612,7 +612,7 @@ export class From1C {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: env.ODATA_API_AUTH_HEADER,
+            Authorization: env.ODATA_API_AUTH_HEADER ?? "",
           },
           body: JSON.stringify(fullFields),
         },
