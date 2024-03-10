@@ -1,8 +1,16 @@
 import { type ClassValue, clsx } from "clsx";
+import React from "react";
+import { BiBasket } from "react-icons/bi";
+import { CiBoxes } from "react-icons/ci";
+import { IoIosPricetags } from "react-icons/io";
+import {
+  MdOutlineFactory,
+  MdOutlineShoppingBasket,
+  MdOutlineWarehouse,
+} from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 import { SyncFormType } from "@/app/(protected)/admin/sync/_components/SyncForm";
-import { SyncType } from "@/lib/sync";
 
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   timeStyle: "short",
@@ -95,11 +103,33 @@ export function translateSyncType(type: SyncFormType): string {
     case "nomenclature":
       return "Номенклатура";
     case "nomenclature-types":
-      return "Типы номенклатуры";
+      return "Виды номенклатуры";
     case "prices":
       return "Цены";
     case "stock":
       return "Остатки";
+    default:
+      return "Неизвестный тип";
+  }
+}
+
+export function getIconForSyncType(type: SyncFormType) {
+  switch (type) {
+    case "manufacturers":
+      return <MdOutlineFactory />;
+    case "measurement-units":
+      return <CiBoxes />;
+    case "nomenclature":
+      return <BiBasket />;
+    case "nomenclature-types":
+      return <BiBasket />;
+    case "prices":
+      return <IoIosPricetags />;
+    case "stock":
+      return <MdOutlineWarehouse />;
+    case "all":
+    default:
+      return <MdOutlineShoppingBasket />;
   }
 }
 
@@ -109,8 +139,28 @@ export function formatDate(date: Date): string {
 
 export function formatRelativeDate(date: Date): string {
   const now = new Date();
-  const diff = date.getTime() - now.getTime();
-  return relativeDateFormatter.format(Math.round(diff / 1000), "seconds");
+  const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
+  const months = Math.round(days / 30);
+  const years = Math.round(days / 365);
+
+  const rtf = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
+
+  if (seconds < 60) {
+    return rtf.format(-seconds, "second");
+  } else if (minutes < 60) {
+    return rtf.format(-minutes, "minute");
+  } else if (hours < 24) {
+    return rtf.format(-hours, "hour");
+  } else if (days < 30) {
+    return rtf.format(-days, "day");
+  } else if (months < 12) {
+    return rtf.format(-months, "month");
+  } else {
+    return rtf.format(-years, "year");
+  }
 }
 
 export function formatHoursAgo(date: Date): string {

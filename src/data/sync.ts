@@ -6,13 +6,19 @@ import { syncLogs } from "@/drizzle/schema";
 export const getLatestSyncs = async (params: {
   limit: number;
   offset: number;
+  type?: string;
 }) => {
-  const { limit, offset } = params;
-  return db.query.syncLogs.findMany({
-    limit: limit ?? 10,
-    offset: offset ?? 0,
-    orderBy: [desc(syncLogs.createdAt)],
-  });
+  const { limit, offset, type } = params;
+  const condition = db
+    .select()
+    .from(syncLogs)
+    .orderBy(desc(syncLogs.createdAt))
+    .limit(limit)
+    .offset(offset);
+  if (type) {
+    condition.where(eq(syncLogs.type, type));
+  }
+  return condition;
 };
 
 export const getSyncCount = async (type?: string) => {

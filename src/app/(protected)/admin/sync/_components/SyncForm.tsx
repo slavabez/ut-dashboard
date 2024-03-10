@@ -14,6 +14,7 @@ import FormSuccess from "@/components/form-success";
 import { Button } from "@/components/ui/button";
 import { IActionResponse } from "@/lib/common-types";
 import { ISyncLogMeta, SyncType } from "@/lib/sync";
+import { translateSyncType } from "@/lib/utils";
 
 export type SyncFormType = SyncType | "all";
 
@@ -27,49 +28,57 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
 
-  if (skeleton) {
-    return (
-      <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
-        <h2 className="text-xl">Синхронизация</h2>
-        <Button disabled={true} type="button">
-          Синхронизировать ...
-        </Button>
-      </div>
-    );
-  }
-
   let formTitle;
   let action: () => Promise<IActionResponse<any>>;
+  let buttonText = `Синхронизировать `;
   switch (syncType) {
     case "manufacturers":
       formTitle = "Синхронизация производителей";
       action = syncManufacturers;
+      buttonText += "производителей";
       break;
     case "measurement-units":
       formTitle = "Синхронизация единиц измерения";
       action = syncMeasurementUnits;
+      buttonText += "единицы измерения";
       break;
     case "nomenclature":
       formTitle = "Синхронизация номенклатуры";
       action = syncNomenclature;
+      buttonText += "номенклатуру";
       break;
     case "nomenclature-types":
-      formTitle = "Синхронизация типов номенклатуры";
+      formTitle = "Синхронизация видов номенклатуры";
       action = syncNomenclatureTypes;
+      buttonText += "виды номенклатуры";
       break;
     case "prices":
       formTitle = "Синхронизация цен";
       action = syncPrices;
+      buttonText += "цены";
       break;
     case "stock":
       formTitle = "Синхронизация остатков";
       action = syncStock;
+      buttonText += "остатки";
       break;
     case "all":
     default:
       formTitle = "Синхронизация всех данных";
       action = syncAll;
+      buttonText += "все данные";
       break;
+  }
+
+  if (skeleton) {
+    return (
+      <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
+        <h2 className="text-xl text-center">{formTitle}</h2>
+        <Button disabled={true} type="button">
+          {buttonText}
+        </Button>
+      </div>
+    );
   }
 
   const handleClick = () => {
@@ -87,8 +96,6 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
           entitiesUpdated: 0,
         };
         if (Array.isArray(result.data)) {
-          console.log(typeof result.data);
-          console.log(result.data);
           for (const syncMeta of result.data) {
             meta.entitiesCreated += syncMeta.metadata.entitiesCreated;
             meta.entitiesFrom1C += syncMeta.metadata.entitiesFrom1C;
@@ -122,9 +129,14 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
 
   return (
     <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
-      <h2 className="text-xl">{formTitle}</h2>
-      <Button onClick={handleClick} disabled={isPending} type="button">
-        Синхронизировать {isPending ? "..." : ""}
+      <h2 className="text-xl text-center">{formTitle}</h2>
+      <Button
+        onClick={handleClick}
+        disabled={isPending}
+        type="button"
+        className="capitalize"
+      >
+        {buttonText} {isPending && "..."}
       </Button>
       {error && <FormError message={error} />}
       {success && <FormSuccess message={success} />}

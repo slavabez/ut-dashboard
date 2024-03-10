@@ -8,6 +8,13 @@
       "when": 1709223433131,
       "tag": "0000_grey_genesis",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1710083996711,
+      "tag": "0001_next_firebrand",
+      "breakpoints": true
     }
   ]
 }

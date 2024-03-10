@@ -14,9 +14,11 @@ import { IActionResponse } from "@/lib/common-types";
 export const getLatestSyncLogs = async ({
   limit,
   offset,
+  type,
 }: {
   limit: number;
   offset: number;
+  type?: string;
 }): Promise<IActionResponse<SyncLogSelect[]>> => {
   try {
     const role = await currentRole();
@@ -30,6 +32,7 @@ export const getLatestSyncLogs = async ({
     const latest = await getLatestSyncs({
       limit,
       offset,
+      type,
     });
     return {
       status: "success",
