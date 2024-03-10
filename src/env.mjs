@@ -3,8 +3,8 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    AUTH_SECRET: z.string().min(1).optional(),
-    PG_URL: z.string().min(1).optional(),
+    AUTH_SECRET: z.string().min(1),
+    PG_URL: z.string().min(1),
     PUBLIC_FILE_URL: z.string().min(1).optional(),
     ODATA_API_URL: z.string().min(1).optional(),
     ODATA_API_AUTH_HEADER: z.string().min(1).optional(),
