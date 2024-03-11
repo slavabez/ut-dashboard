@@ -45,14 +45,19 @@ export const {
     },
     async jwt({ token }) {
       if (!token.sub) return token;
-      const user = await getUserById(token.sub);
+      try {
+        const user = await getUserById(token.sub);
 
-      if (!user) return token;
-      token.role = user.role;
-      token.phone = user.phone;
-      token.name = user.name;
+        if (!user) return token;
+        token.role = user.role;
+        token.phone = user.phone;
+        token.name = user.name;
 
-      return token;
+        return token;
+      } catch (e) {
+        console.error(e);
+        return token;
+      }
     },
   },
   adapter: DrizzleAdapter(db),

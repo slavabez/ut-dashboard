@@ -6,6 +6,7 @@
     "dev": "next dev -p 3063",
     "build": "next build",
     "start": "next start",
+    "start:standalone": "node .next/standalone/server.js",
     "lint": "next lint",
     "migration:generate": "drizzle-kit generate:pg",
     "migration:run": "tsx src/lib/migrate.ts",
