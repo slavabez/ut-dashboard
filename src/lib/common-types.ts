@@ -1,3 +1,5 @@
+import { UserSelect } from "@/drizzle/schema";
+
 export type IActionResponse<T> =
   | {
       data: T;
@@ -21,3 +23,5 @@ export type IUserMeta = {
   email: string;
   siteRole: "admin" | "user";
 };
+
+export type UserSelectNonSensitive = Omit<UserSelect, "password">;

@@ -19,6 +19,36 @@ export type userRoleValues = "client" | "employee" | "admin";
 
 export const userRole = pgEnum("user_role", ["client", "employee", "admin"]);
 
+export const UserRoleMap = new Map<
+  string,
+  {
+    label: string;
+    value: userRoleValues;
+  }
+>([
+  [
+    "client",
+    {
+      label: "Клиент",
+      value: "client",
+    },
+  ],
+  [
+    "employee",
+    {
+      label: "Сотрудник",
+      value: "employee",
+    },
+  ],
+  [
+    "admin",
+    {
+      label: "Администратор",
+      value: "admin",
+    },
+  ],
+]);
+
 export const users = pgTable("user", {
   id: uuid("id").notNull().defaultRandom().primaryKey(),
   name: text("name"),
