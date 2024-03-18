@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { infer, z } from "zod";
 
 import { getUserById } from "@/data/user";
@@ -135,6 +136,7 @@ export async function updateUserById(
       if (user.password) user.password = "hidden";
       // @ts-ignore cba to type the whole meta object atm
       if (user.meta?.sitePassword) user.meta.sitePassword = "hidden";
+      revalidatePath(`/admin/users/${result[0].id}`);
       return {
         status: "success",
         data: user,
@@ -216,6 +218,8 @@ export async function fetchMetaFrom1C(
     .set({ meta: newMeta, updatedAt: new Date() })
     .where(eq(users.phone, parsed.phone))
     .returning();
+
+  revalidatePath(`/admin/users/${existingUser[0].id}`);
 
   if (result.length === 0) {
     return {
