@@ -71,6 +71,9 @@ const UserMetaUpdateForm = ({ initialUserMeta }: UserUpdateFormProps) => {
             <Button onClick={fetchUserMeta} disabled={isMetaFetchPending}>
               Обновить данные из 1С {isMetaFetchPending ? "..." : ""}
             </Button>
+            <p className="muted">
+              Это действие обновит данные пользователя из 1С
+            </p>
           </div>
         </AccordionContent>
       </AccordionItem>

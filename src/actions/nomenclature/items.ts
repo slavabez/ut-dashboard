@@ -1,9 +1,12 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, gt, gte, lte } from "drizzle-orm";
 
+import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
-import { manufacturers } from "@/drizzle/schema";
+import { manufacturers, nomenclatures } from "@/drizzle/schema";
+import { NomenclatureWithChildren } from "@/lib/common-types";
+import { separateListIntoLevels, sortLevelsIntoTree } from "@/lib/utils";
 
 export async function getManufacturerWithNomenclature(manufacturerId: string) {
   if (!manufacturerId) {
@@ -15,4 +18,75 @@ export async function getManufacturerWithNomenclature(manufacturerId: string) {
       nomenclatures: true,
     },
   });
+}
+
+interface IItemFilter {
+  manufacturerId?: string;
+  parentId?: string;
+  typeId?: string;
+  isFolder?: boolean;
+  inStock?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  limit?: number;
+}
+
+export async function getNomenclatureItems(filter: IItemFilter) {
+  const where = {
+    manufacturerId: filter?.manufacturerId
+      ? eq(nomenclatures.manufacturerId, filter.manufacturerId)
+      : undefined,
+    parentId: filter?.parentId
+      ? eq(nomenclatures.parentId, filter.parentId)
+      : undefined,
+    typeId: filter?.typeId
+      ? eq(nomenclatures.typeId, filter.typeId)
+      : undefined,
+    isFolder:
+      typeof filter?.isFolder === "boolean"
+        ? eq(nomenclatures.isFolder, filter.isFolder)
+        : undefined,
+    inStock: filter?.inStock ? gt(nomenclatures.stock, 0) : undefined,
+    minPrice: filter?.minPrice
+      ? gte(nomenclatures.price, filter.minPrice)
+      : undefined,
+    maxPrice: filter?.maxPrice
+      ? lte(nomenclatures.price, filter.maxPrice)
+      : undefined,
+  };
+
+  return db.query.nomenclatures.findMany({
+    where: and(
+      where.manufacturerId,
+      where.parentId,
+      where.typeId,
+      where.isFolder,
+      where.inStock,
+      where.minPrice,
+      where.maxPrice,
+    ),
+    limit: filter.limit ?? 10,
+  });
+}
+
+export async function getNomenclatureHierarchy(): Promise<
+  Partial<NomenclatureWithChildren>[]
+> {
+  const allFolders = await db.query.nomenclatures.findMany({
+    where: eq(nomenclatures.isFolder, true),
+    columns: {
+      id: true,
+      name: true,
+      parentId: true,
+    },
+  });
+
+  const withCounts = await injectCountsIntoNomenclature(allFolders);
+
+  // TODO: Implement a proper type conversion, need to add children: T[] and count: number to the type
+  // Might need to ad Pick<> to the type
+  const levels = separateListIntoLevels(withCounts);
+  // @ts-ignore
+  const tree = sortLevelsIntoTree(levels);
+  return tree;
 }

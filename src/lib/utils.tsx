@@ -25,9 +25,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Generic function to arrange a list of objects (that have id and parentId) into a hierarchy
+/** Generic function to arrange a list of objects (that have id and parentId) into a hierarchy
+ *
+ * @param items
+ */
 export function separateListIntoLevels<
-  T extends { id?: string | undefined; parentId?: string | null },
+  T extends { id?: string | null; parentId?: string | null },
 >(items: T[]): { level: number; items: T[] }[] {
   const hierarchyMap: {
     [parentId: string]: T[];
@@ -63,6 +66,30 @@ export function separateListIntoLevels<
 
   processHierarchyLevel("", 0);
   return result;
+}
+
+export function sortLevelsIntoTree<
+  T extends { id: string; parentId: string; children: T[] },
+>(levels: { level: number; items: T[] }[]): T[] {
+  const tree: T[] = [];
+  const levelMap: { [id: string]: T } = {};
+
+  for (const level of levels) {
+    for (const item of level.items) {
+      const parent = levelMap[item.parentId];
+      if (parent) {
+        if (!parent.children) {
+          parent.children = [];
+        }
+        parent.children.push(item);
+      } else {
+        tree.push(item);
+      }
+      levelMap[item.id] = item;
+    }
+  }
+
+  return tree;
 }
 
 export function normalizePhoneNumber(

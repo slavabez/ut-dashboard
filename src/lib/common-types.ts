@@ -1,4 +1,4 @@
-import { UserSelect } from "@/drizzle/schema";
+import { NomenclatureSelect, UserSelect } from "@/drizzle/schema";
 
 export type IActionResponse<T> =
   | {
@@ -25,3 +25,8 @@ export type IUserMeta = {
 };
 
 export type UserSelectNonSensitive = Omit<UserSelect, "password">;
+
+export interface NomenclatureWithChildren extends NomenclatureSelect {
+  children: NomenclatureWithChildren[];
+  count: number;
+}

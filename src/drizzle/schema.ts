@@ -251,6 +251,7 @@ export const syncLogs = pgTable("sync_log", {
 
 export type NomenclatureTypeInsert = typeof nomenclatureTypes.$inferInsert;
 export type NomenclatureInsert = typeof nomenclatures.$inferInsert;
+export type NomenclatureSelect = typeof nomenclatures.$inferSelect;
 export type ManufacturerInsert = typeof manufacturers.$inferInsert;
 export type MeasurementUnitInsert = typeof measurementUnits.$inferInsert;
 export type PartnerInsert = typeof partners.$inferInsert;
