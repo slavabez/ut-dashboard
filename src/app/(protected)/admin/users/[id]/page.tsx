@@ -2,6 +2,8 @@ import React from "react";
 
 import { getUserByIdAction } from "@/actions/user/all-users";
 import UserForm from "@/app/(protected)/admin/users/_components/user-form";
+import UserMetaUpdateForm from "@/app/(protected)/admin/users/_components/user-meta-update-section";
+import { IUserMeta } from "@/lib/common-types";
 
 const UserDetailsPage = async ({ params }: { params: { id: string } }) => {
   const userId = params.id;
@@ -16,7 +18,7 @@ const UserDetailsPage = async ({ params }: { params: { id: string } }) => {
 
   return (
     <div>
-      <UserForm initialData={userDetails} />
+      <UserForm userData={userDetails} />
     </div>
   );
 };

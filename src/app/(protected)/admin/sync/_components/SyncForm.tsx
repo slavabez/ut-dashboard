@@ -14,7 +14,6 @@ import FormSuccess from "@/components/form-success";
 import { Button } from "@/components/ui/button";
 import { IActionResponse } from "@/lib/common-types";
 import { ISyncLogMeta, SyncType } from "@/lib/sync";
-import { translateSyncType } from "@/lib/utils";
 
 export type SyncFormType = SyncType | "all";
 

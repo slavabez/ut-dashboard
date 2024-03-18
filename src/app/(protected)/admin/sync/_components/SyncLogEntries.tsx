@@ -10,7 +10,6 @@ import { HiChevronUpDown } from "react-icons/hi2";
 import SyncLogItem from "@/app/(protected)/admin/sync/_components/SyncLogItem";
 import { OneCIcon } from "@/components/custom-icons";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
