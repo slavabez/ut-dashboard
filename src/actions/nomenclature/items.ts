@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, gt, gte, lte } from "drizzle-orm";
+import { and, asc, eq, gt, gte, inArray, lte } from "drizzle-orm";
 
 import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
@@ -22,7 +22,7 @@ export async function getManufacturerWithNomenclature(manufacturerId: string) {
 
 interface IItemFilter {
   manufacturerId?: string;
-  parentId?: string;
+  parentIds?: string[];
   typeId?: string;
   isFolder?: boolean;
   inStock?: boolean;
@@ -36,8 +36,8 @@ export async function getNomenclatureItems(filter: IItemFilter) {
     manufacturerId: filter?.manufacturerId
       ? eq(nomenclatures.manufacturerId, filter.manufacturerId)
       : undefined,
-    parentId: filter?.parentId
-      ? eq(nomenclatures.parentId, filter.parentId)
+    parentId: filter?.parentIds
+      ? inArray(nomenclatures.parentId, filter.parentIds)
       : undefined,
     typeId: filter?.typeId
       ? eq(nomenclatures.typeId, filter.typeId)
@@ -79,6 +79,7 @@ export async function getNomenclatureHierarchy(): Promise<
       name: true,
       parentId: true,
     },
+    orderBy: asc(nomenclatures.name),
   });
 
   const withCounts = await injectCountsIntoNomenclature(allFolders);

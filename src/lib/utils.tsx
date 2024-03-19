@@ -92,6 +92,19 @@ export function sortLevelsIntoTree<
   return tree;
 }
 
+export function flattenTree<T extends { id: string; children: T[] }>(
+  tree: T[],
+): T[] {
+  const result: T[] = [];
+  for (const item of tree) {
+    result.push(item);
+    if (item.children) {
+      result.push(...flattenTree(item.children));
+    }
+  }
+  return result;
+}
+
 export function normalizePhoneNumber(
   phone: string | null | undefined | number,
 ): string {

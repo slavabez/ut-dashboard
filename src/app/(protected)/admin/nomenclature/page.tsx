@@ -1,6 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 
-import { getNomenclatureHierarchy } from "@/actions/nomenclature/items";
+import {
+  getNomenclatureHierarchy,
+  getNomenclatureItems,
+} from "@/actions/nomenclature/items";
+import FormComboBoxSelect from "@/app/(protected)/admin/nomenclature/_components/FormComboBoxSelect";
+import NomenclatureFilterList from "@/app/(protected)/admin/nomenclature/_components/NomenclatureFilterList";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -44,18 +49,30 @@ const DDMenuItem = (element: Partial<NomenclatureWithChildren>) => {
   }
 };
 
-const NomenclaturePage = async () => {
+const NomenclaturePage = async ({
+  searchParams,
+}: {
+  searchParams: {
+    parentIds?: string;
+  };
+}) => {
   const allHierarchy = await getNomenclatureHierarchy();
+  const nomenclatureItems = await getNomenclatureItems({
+    parentIds: searchParams.parentIds?.split("_").filter((i) => i !== ""),
+    isFolder: false,
+  });
   return (
-    <div>
+    <div className="p-4">
       <h1>Номенклатура</h1>
-      <DropdownMenu>
-        <DropdownMenuTrigger>Меню</DropdownMenuTrigger>
-        <DropdownMenuContent className="w-60 ">
-          {allHierarchy.map((element) => DDMenuItem(element))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <pre>{JSON.stringify(allHierarchy, null, 2)}</pre>
+      <Suspense fallback={<div>Loading...</div>}>
+        <NomenclatureFilterList items={allHierarchy} />
+      </Suspense>
+
+      <pre>
+        {nomenclatureItems.map((item) => (
+          <div key={item.id}>{item.name}</div>
+        ))}
+      </pre>
     </div>
   );
 };
