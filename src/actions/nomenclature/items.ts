@@ -4,7 +4,11 @@ import { and, asc, eq, gt, gte, inArray, lte } from "drizzle-orm";
 
 import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
-import { manufacturers, nomenclatures } from "@/drizzle/schema";
+import {
+  manufacturers,
+  measurementUnits,
+  nomenclatures,
+} from "@/drizzle/schema";
 import { NomenclatureWithChildren } from "@/lib/common-types";
 import { separateListIntoLevels, sortLevelsIntoTree } from "@/lib/utils";
 
@@ -29,6 +33,9 @@ interface IItemFilter {
   minPrice?: number;
   maxPrice?: number;
   limit?: number;
+  includeManufacturers?: boolean;
+  includeMeasurementUnits?: boolean;
+  includeType?: boolean;
 }
 
 export async function getNomenclatureItems(filter: IItemFilter) {
@@ -66,6 +73,18 @@ export async function getNomenclatureItems(filter: IItemFilter) {
       where.maxPrice,
     ),
     limit: filter.limit ?? 10,
+    with: {
+      manufacturer: filter?.includeManufacturers
+        ? {
+            columns: {
+              id: true,
+              name: true,
+            },
+          }
+        : undefined,
+      measurementUnits: filter?.includeMeasurementUnits ? true : undefined,
+      type: filter?.includeType ? true : undefined,
+    },
   });
 }
 

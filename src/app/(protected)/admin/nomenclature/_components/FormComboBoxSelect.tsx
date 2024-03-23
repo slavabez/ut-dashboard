@@ -62,6 +62,7 @@ const FormComboBoxSelect = (props: IFormComboBoxSelectProps) => {
               navigateToNewParent(selectedParentId);
               setIsOpen(false);
             }}
+            className="flex gap-2"
             keywords={[element.name ?? ""]}
           >
             <Badge
@@ -111,7 +112,7 @@ const FormComboBoxSelect = (props: IFormComboBoxSelectProps) => {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-[250px] justify-between"
+          className="w-full justify-between"
           role="combobox"
           aria-expanded={isOpen}
         >

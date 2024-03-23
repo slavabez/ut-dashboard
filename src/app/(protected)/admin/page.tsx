@@ -11,7 +11,13 @@ const AdminPage = () => {
             <Link href="/admin/sync">Синхронизация</Link>
           </li>
           <li>
+            <Link href="/admin/prices">Цены из 1С</Link>
+          </li>
+          <li>
             <Link href="/admin/users">Пользователи</Link>
+          </li>
+          <li>
+            <Link href="/admin/site-settings">Глобальные настройки сайта</Link>
           </li>
         </ul>
       </nav>

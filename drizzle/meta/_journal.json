@@ -15,6 +15,34 @@
       "when": 1710083996711,
       "tag": "0001_next_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1711010166371,
+      "tag": "0002_damp_baron_strucker",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1711010912993,
+      "tag": "0003_glorious_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1711043791447,
+      "tag": "0004_third_pepper_potts",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1711218457183,
+      "tag": "0005_condemned_roxanne_simpson",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from "react";
 
 import { syncAll } from "@/actions/sync/common";
+import { testAction } from "@/actions/test";
 import { Button } from "@/components/ui/button";
 
 const TestForm = () => {
@@ -17,7 +18,7 @@ const TestForm = () => {
     setData(undefined);
 
     startTransition(async () => {
-      const result = await syncAll();
+      const result = await testAction();
       if (result) {
         setData(result);
       } else {

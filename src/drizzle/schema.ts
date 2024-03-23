@@ -5,10 +5,12 @@ import {
   foreignKey,
   integer,
   json,
+  jsonb,
   pgEnum,
   pgTable,
   primaryKey,
   real,
+  serial,
   text,
   timestamp,
   unique,
@@ -86,6 +88,13 @@ export const accounts = pgTable(
     }),
   }),
 );
+
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
+  settings: jsonb("settings"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const authToken = pgTable(
   "auth_token",
@@ -223,6 +232,7 @@ export const nomenclatureRelations = relations(
         references: [nomenclatureTypes.id],
       }),
       measurementUnits: many(measurementUnits),
+      prices: many(pricesToNomenclature),
     };
   },
 );
@@ -249,6 +259,58 @@ export const syncLogs = pgTable("sync_log", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const prices = pgTable("price", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  code: text("code"),
+  currency: text("currency"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const pricesRelations = relations(prices, ({ many }) => ({
+  nomenclatureToPrices: many(pricesToNomenclature),
+}));
+
+export const pricesToNomenclature = pgTable(
+  "price_to_nomenclature",
+  {
+    priceId: uuid("price_id")
+      .notNull()
+      .references(() => prices.id),
+    nomenclatureId: uuid("nomenclature_id")
+      .notNull()
+      .references(() => nomenclatures.id),
+    price: integer("price"),
+    currency: text("currency"),
+    measureUnitId: uuid("measurement_unit_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => {
+    return {
+      pk: primaryKey({
+        columns: [t.priceId, t.nomenclatureId],
+      }),
+    };
+  },
+);
+
+export const pricesToNomenclatureRelations = relations(
+  pricesToNomenclature,
+  ({ one }) => ({
+    price: one(prices, {
+      fields: [pricesToNomenclature.priceId],
+      references: [prices.id],
+    }),
+    user: one(nomenclatures, {
+      fields: [pricesToNomenclature.nomenclatureId],
+      references: [nomenclatures.id],
+    }),
+  }),
+);
+
 export type NomenclatureTypeInsert = typeof nomenclatureTypes.$inferInsert;
 export type NomenclatureInsert = typeof nomenclatures.$inferInsert;
 export type NomenclatureSelect = typeof nomenclatures.$inferSelect;
@@ -259,3 +321,6 @@ export type SyncLogInsert = typeof syncLogs.$inferInsert;
 export type SyncLogSelect = typeof syncLogs.$inferSelect;
 export type UserInsert = typeof users.$inferInsert;
 export type UserSelect = typeof users.$inferSelect;
+export type SettingsSelect = typeof siteSettings.$inferSelect;
+export type PriceSelect = typeof prices.$inferSelect;
+export type PriceInsert = typeof prices.$inferInsert;

@@ -4,50 +4,8 @@ import {
   getNomenclatureHierarchy,
   getNomenclatureItems,
 } from "@/actions/nomenclature/items";
-import FormComboBoxSelect from "@/app/(protected)/admin/nomenclature/_components/FormComboBoxSelect";
 import NomenclatureFilterList from "@/app/(protected)/admin/nomenclature/_components/NomenclatureFilterList";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { NomenclatureWithChildren } from "@/lib/common-types";
-
-const DDSubMenuItem = (element: Partial<NomenclatureWithChildren>) => {
-  if (element.children && element.children.length > 0) {
-    return (
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>Э</DropdownMenuSubTrigger>
-        <DropdownMenuPortal>
-          <DropdownMenuSubContent>
-            {element.children.map((child) => (
-              <DDMenuItem key={child.id} {...child} />
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuPortal>
-      </DropdownMenuSub>
-    );
-  }
-  return null;
-};
-
-const DDMenuItem = (element: Partial<NomenclatureWithChildren>) => {
-  if (element?.count && element.count > 0) {
-    return (
-      <DropdownMenuItem>
-        <span>{element.name}</span>
-        <Badge>{element.count}</Badge>
-        {DDSubMenuItem(element)}
-      </DropdownMenuItem>
-    );
-  }
-};
+import NomenclatureList from "@/app/(protected)/admin/nomenclature/_components/NomenclatureList";
 
 const NomenclaturePage = async ({
   searchParams,
@@ -60,19 +18,16 @@ const NomenclaturePage = async ({
   const nomenclatureItems = await getNomenclatureItems({
     parentIds: searchParams.parentIds?.split("_").filter((i) => i !== ""),
     isFolder: false,
+    limit: 80,
   });
   return (
     <div className="p-4">
-      <h1>Номенклатура</h1>
+      <h1 className="text-2xl text-center pb-4">Номенклатура</h1>
       <Suspense fallback={<div>Loading...</div>}>
         <NomenclatureFilterList items={allHierarchy} />
       </Suspense>
 
-      <pre>
-        {nomenclatureItems.map((item) => (
-          <div key={item.id}>{item.name}</div>
-        ))}
-      </pre>
+      <NomenclatureList items={nomenclatureItems} />
     </div>
   );
 };

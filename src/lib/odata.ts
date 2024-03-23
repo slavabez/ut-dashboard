@@ -638,4 +638,114 @@ export class From1C {
       return null;
     }
   }
+  static async getAllWarehouses(): Promise<
+    {
+      Ref_Key: string;
+      Description: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "Catalog_Склады",
+      select: "Ref_Key,Description",
+      filter: `DeletionMark eq false and IsFolder eq false`,
+    }) as Promise<
+      {
+        Ref_Key: string;
+        Description: string;
+      }[]
+    >;
+  }
+
+  static async getAllPriceTypes(): Promise<
+    {
+      Ref_Key: string;
+      Description: string;
+      Идентификатор: string;
+      ВалютаЦены: {
+        Description: string;
+      };
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "Catalog_ВидыЦен",
+      select: "Ref_Key,Description,Идентификатор,ВалютаЦены/Description",
+      filter: `DeletionMark eq false and IsFolder eq false and ИспользоватьПриПродаже eq true`,
+      expand: "ВалютаЦены",
+    }) as Promise<
+      {
+        Ref_Key: string;
+        Description: string;
+        Идентификатор: string;
+        ВалютаЦены: {
+          Description: string;
+        };
+      }[]
+    >;
+  }
+
+  static async getAllAdditionalProperties(): Promise<
+    {
+      Ref_Key: string;
+      DataVersion: string;
+      Description: string;
+      Имя: string;
+      Заголовок: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "ChartOfCharacteristicTypes_ДополнительныеРеквизитыИСведения",
+      select: "Ref_Key,DataVersion,Description,Имя,Заголовок",
+      filter: `DeletionMark eq false`,
+    }) as Promise<
+      {
+        Ref_Key: string;
+        DataVersion: string;
+        Description: string;
+        Имя: string;
+        Заголовок: string;
+      }[]
+    >;
+  }
+
+  static async getMainUnits(): Promise<
+    {
+      Ref_Key: string;
+      DataVersion: string;
+      Description: string;
+      КодЭСФ: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "Catalog_УпаковкиЕдиницыИзмерения",
+      select: "Ref_Key,DataVersion,Description,КодЭСФ",
+      filter: `КодЭСФ eq '796' or КодЭСФ eq '166'`,
+    }) as Promise<
+      {
+        Ref_Key: string;
+        DataVersion: string;
+        Description: string;
+        КодЭСФ: string;
+      }[]
+    >;
+  }
+
+  static async getAllPropertyValues(): Promise<
+    {
+      Ref_Key: string;
+      DataVersion: string;
+      Description: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "Catalog_ЗначенияСвойствОбъектов",
+      select: "Ref_Key,DataVersion,Description",
+      filter: `DeletionMark eq false`,
+    }) as Promise<
+      {
+        Ref_Key: string;
+        DataVersion: string;
+        Description: string;
+      }[]
+    >;
+  }
 }
