@@ -54,12 +54,6 @@ export async function getNomenclatureItems(filter: IItemFilter) {
         ? eq(nomenclatures.isFolder, filter.isFolder)
         : undefined,
     inStock: filter?.inStock ? gt(nomenclatures.stock, 0) : undefined,
-    minPrice: filter?.minPrice
-      ? gte(nomenclatures.price, filter.minPrice)
-      : undefined,
-    maxPrice: filter?.maxPrice
-      ? lte(nomenclatures.price, filter.maxPrice)
-      : undefined,
   };
 
   return db.query.nomenclatures.findMany({
@@ -69,8 +63,6 @@ export async function getNomenclatureItems(filter: IItemFilter) {
       where.typeId,
       where.isFolder,
       where.inStock,
-      where.minPrice,
-      where.maxPrice,
     ),
     limit: filter.limit ?? 10,
     with: {

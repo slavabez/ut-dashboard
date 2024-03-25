@@ -2,8 +2,6 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/drizzle/db";
 import { UserSelect, users } from "@/drizzle/schema";
-import { ConvertFrom1C, IParsedUser } from "@/lib/1c-adapter";
-import { From1C } from "@/lib/odata";
 import { normalizePhoneNumber } from "@/lib/utils";
 
 export const getUserByEmail = async (
@@ -47,11 +45,4 @@ export const getUserById = async (id: string): Promise<UserSelect | null> => {
     console.error(error);
     return null;
   }
-};
-
-export const getUsersParsed = async (): Promise<IParsedUser[]> => {
-  const allUsersRaw = await From1C.getAllUsers();
-  return allUsersRaw.map((user) => {
-    return ConvertFrom1C.user(user);
-  });
 };

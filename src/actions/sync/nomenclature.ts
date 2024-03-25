@@ -82,7 +82,9 @@ async function initialSync(
   syncMeta: ISyncLogMeta,
   allNomenclatureFiles: IFileFields[],
 ) {
-  const formattedItems = allItems.map(ConvertFrom1C.nomenclatureItem);
+  const formattedItems = await Promise.all(
+    allItems.map(ConvertFrom1C.nomenclatureItem),
+  );
   allNomenclatureFiles.forEach((file) => {
     const item = formattedItems.find((i) => i.id === file.ВладелецФайла_Key);
     if (item) {
@@ -106,7 +108,9 @@ async function incrementalSync(
   syncMeta: ISyncLogMeta,
   allNomenclatureFiles: IFileFields[],
 ) {
-  const formattedItems = allItems.map(ConvertFrom1C.nomenclatureItem);
+  const formattedItems = await Promise.all(
+    allItems.map(ConvertFrom1C.nomenclatureItem),
+  );
   allNomenclatureFiles.forEach((file) => {
     const item = formattedItems.find((i) => i.id === file.ВладелецФайла_Key);
     if (item) {

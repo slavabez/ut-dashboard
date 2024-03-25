@@ -4,7 +4,7 @@ import { syncManufacturers } from "@/actions/sync/manufacturers";
 import { syncMeasurementUnits } from "@/actions/sync/measurement-units";
 import { syncNomenclature } from "@/actions/sync/nomenclature";
 import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
-import { syncPrices } from "@/actions/sync/prices";
+import { syncPrice } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
 import { getLatestSyncs, getSyncCount } from "@/data/sync";
 import { SyncLogSelect } from "@/drizzle/schema";
@@ -113,12 +113,13 @@ export const syncAll = async (): Promise<IActionResponse<SyncLogSelect[]>> => {
     } else {
       throw new Error("Error while syncing measurement units");
     }
-    const priceSync = await syncPrices();
-    if (priceSync.status === "success") {
-      syncResults.push(priceSync.data);
-    } else {
-      throw new Error("Error while syncing prices");
-    }
+    // TODO: Do the sync for all prices in the DB
+    // const priceSync = await syncPrices();
+    // if (priceSync.status === "success") {
+    //   syncResults.push(priceSync.data);
+    // } else {
+    //   throw new Error("Error while syncing prices");
+    // }
     const stockSync = await syncStock();
     if (stockSync.status === "success") {
       syncResults.push(stockSync.data);

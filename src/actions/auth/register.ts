@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { getUsersParsed } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
+import { getUsersParsed } from "@/lib/users";
 import { normalizePhoneNumber } from "@/lib/utils";
 import { RegisterSchema } from "@/schemas";
 

@@ -2,10 +2,18 @@
 
 import React, { useState, useTransition } from "react";
 
-import { addNewPriceToDb } from "@/actions/site-settings";
+import { addNewPriceToDb, deletePriceFromDb } from "@/actions/site-settings";
+import { syncPrice } from "@/actions/sync/prices";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -14,10 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { PriceInsert, PriceSelect } from "@/drizzle/schema";
+import { PriceInsert } from "@/drizzle/schema";
+import { formatRelativeDate } from "@/lib/utils";
 
 interface IPriceAddFormProps {
-  pricesInDb: PriceSelect[];
+  pricesInDb: any[];
   pricesFrom1C: any[];
 }
 
@@ -28,7 +37,7 @@ const PriceAddForm = (props: IPriceAddFormProps) => {
   const [error, setError] = useState<string | undefined>();
 
   const pricesToShow = pricesFrom1C.filter((pt) => {
-    return !pricesInDb.some((price) => price.id === pt.Ref_Key);
+    return !pricesInDb.some((price) => price.priceId === pt.Ref_Key);
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,15 +66,68 @@ const PriceAddForm = (props: IPriceAddFormProps) => {
     });
   };
 
+  const handleSync = (priceId: string) => {
+    startTransition(() => {
+      syncPrice({ priceId }).then((res) => {
+        if (res.status === "success") {
+          setSuccess("Цена успешно синхронизирована");
+          setError(undefined);
+          console.log(res.data);
+        } else {
+          setError("Ошибка синхронизации цены: " + res.error);
+          setSuccess(undefined);
+        }
+      });
+    });
+  };
+
   return (
     <div className="p-4 flex flex-col gap-2">
       <h1 className="text-xl font-bold">Добавление цен из 1С</h1>
       <h2 className="font-bold">Уже добавленные цены</h2>
-      <ul className="list-disc ml-8">
+      <ul className="flex flex-col gap-2">
         {pricesInDb.map((price) => (
-          <li key={price.id}>
-            {price.name} - {price.currency}
-          </li>
+          <Card key={price.priceId}>
+            <CardHeader>
+              <CardTitle>{price.name}</CardTitle>
+              <CardDescription>
+                {price.code} - {price.currency}
+              </CardDescription>
+              <CardDescription suppressHydrationWarning>
+                Последняя синхронизация:{" "}
+                {price?.latestSyncCreatedAt
+                  ? formatRelativeDate(price.latestSyncCreatedAt)
+                  : "никогда"}
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="flex justify-between">
+              <Button
+                onClick={() => {
+                  handleSync(price.priceId);
+                }}
+              >
+                Синхронизовать
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  startTransition(() => {
+                    deletePriceFromDb(price.priceId).then((res) => {
+                      if (res.status === "success") {
+                        setSuccess("Цена успешно удалена");
+                        setError(undefined);
+                      } else {
+                        setError("Ошибка удаления цены: " + res.error);
+                        setSuccess(undefined);
+                      }
+                    });
+                  });
+                }}
+              >
+                Удалить
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </ul>
       <Separator />
@@ -91,6 +153,7 @@ const PriceAddForm = (props: IPriceAddFormProps) => {
         </Button>
       </form>
       <FormSuccess message={success} />
+      <FormError message={error} />
       <FormError message={error} />
     </div>
   );

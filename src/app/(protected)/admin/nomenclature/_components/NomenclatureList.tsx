@@ -28,7 +28,7 @@ const NomenclatureListItem = ({
           <p className="text-sm text-gray-500">{item.description}</p>
         </div>
         <div className="inline-flex items-center text-base font-semibold text-orange-500">
-          {item.price ?? "н/у"}
+          {"н/у"}
         </div>
         <pre>{JSON.stringify(item, null, 2)}</pre>
       </div>

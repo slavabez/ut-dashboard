@@ -1,10 +1,10 @@
+import { getGlobalSettings } from "@/actions/site-settings";
 import {
   ManufacturerInsert,
   MeasurementUnitInsert,
   NomenclatureInsert,
   NomenclatureTypeInsert,
 } from "@/drizzle/schema";
-import { env } from "@/env.mjs";
 import {
   IPriceFields,
   IStockFields,
@@ -15,8 +15,6 @@ import {
   NomenclatureType1CFields,
 } from "@/lib/odata";
 import { normalizePhoneNumber, parseBoolean } from "@/lib/utils";
-
-const minWeightPropertyKey = env.MINIMUM_WEIGHT_PARAM_UUID;
 
 export interface IParsedUser {
   id: string;
@@ -44,9 +42,14 @@ const assignProperId = (id: string | number) => {
 };
 
 export class ConvertFrom1C {
-  static nomenclatureItem(input: Nomenclature1CFields): NomenclatureInsert {
+  static async nomenclatureItem(
+    input: Nomenclature1CFields,
+  ): Promise<NomenclatureInsert> {
+    const guids = await getGlobalSettings();
     const minWeightProperty = input.ДополнительныеРеквизиты.find(
-      (req) => req.Свойство_Key === minWeightPropertyKey,
+      (req) =>
+        req.Свойство_Key ===
+        guids.guidsForSync.nomenclature.minimumNonDivisibleWeight,
     );
     let minimumWeight = 0;
     if (minWeightProperty) {
@@ -94,9 +97,10 @@ export class ConvertFrom1C {
 
   static price(input: IPriceFields) {
     return {
-      price: input.Цена,
+      price: input.Цена * 100,
       period: new Date(input.Period),
       nomenclatureId: input.Номенклатура_Key,
+      measurementUnit: assignProperId(input.Упаковка_Key),
     };
   }
 
@@ -124,7 +128,8 @@ export class ConvertFrom1C {
     };
   }
 
-  static user(input: IUserFields): IParsedUser {
+  static async user(input: IUserFields): Promise<IParsedUser> {
+    const guids = await getGlobalSettings();
     const phone = input.ФизическоеЛицо?.КонтактнаяИнформация.find(
       (c) => c.Тип === "Телефон",
     )?.Представление;
@@ -133,20 +138,20 @@ export class ConvertFrom1C {
     )?.Представление;
     const showOnSite =
       input.ДополнительныеРеквизиты.find(
-        (req) => req.Свойство_Key === env.SHOW_USER_ON_WEBSITE_PARAM_UUID,
+        (req) => req.Свойство_Key === guids.guidsForSync.user.showOnSite,
       )?.Значение ?? false;
     const sitePassword = input.ДополнительныеРеквизиты.find(
-      (req) => req.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+      (req) => req.Свойство_Key === guids.guidsForSync.user.sitePassword,
     )?.Значение;
     const siteRoleValue = input.ДополнительныеРеквизиты.find(
-      (req) => req.Свойство_Key === env.SITE_ROLE_PARAM_UUID,
+      (req) => req.Свойство_Key === guids.guidsForSync.user.siteRole,
     )?.Значение;
     let siteRole;
     switch (siteRoleValue) {
-      case env.SITE_ROLE_USER_UUID:
-        siteRole = "user";
+      case guids.guidsForSync.user.siteRoleEmployeeValue:
+        siteRole = "employee";
         break;
-      case env.SITE_ROLE_ADMIN_UUID:
+      case guids.guidsForSync.user.siteRoleAdminValue:
         siteRole = "admin";
         break;
       default:

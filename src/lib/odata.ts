@@ -1,3 +1,4 @@
+import { getGlobalSettings } from "@/actions/site-settings";
 import { env } from "@/env.mjs";
 
 export type ODataResponseArray =
@@ -366,7 +367,8 @@ export class From1C {
   }
 
   static async getAllStock(): Promise<IStockFields[]> {
-    const warehouseId = env.MAIN_WAREHOUSE_UUID;
+    const guids = await getGlobalSettings();
+    const warehouseId = guids.guidsForSync.warehouse;
     return getSpecificODataResponseArray({
       path: "AccumulationRegister_СвободныеОстатки/Balance(Dimensions='Номенклатура,Склад')",
       filter: `Склад_Key eq guid'${warehouseId}'`,
@@ -376,28 +378,30 @@ export class From1C {
   }
 
   static async getStockForNomenclature(nId: string): Promise<IStockFields[]> {
-    const warehouseId = env.MAIN_WAREHOUSE_UUID;
+    const guids = await getGlobalSettings();
+    const warehouseId = guids.guidsForSync.warehouse;
     return getSpecificODataResponseArray({
       path: "AccumulationRegister_СвободныеОстатки/Balance",
       filter: `Номенклатура_Key eq guid'${nId}' and Склад_Key eq guid'${warehouseId}'`,
     }) as Promise<IStockFields[]>;
   }
 
-  static async getAllPrices(): Promise<IPriceFields[]> {
-    const priceTypeId = env.MAIN_PRICE_TYPE_UUID;
+  static async getAllPrices(priceId: string): Promise<IPriceFields[]> {
     return getSpecificODataResponseArray({
       path: "InformationRegister_ЦеныНоменклатуры_RecordType/SliceLast",
       select: "Recorder,Period,Цена,Упаковка_Key,Номенклатура_Key",
-      filter: `ВидЦены_Key eq guid'${priceTypeId}'`,
+      filter: `ВидЦены_Key eq guid'${priceId}'`,
     }) as Promise<IPriceFields[]>;
   }
 
-  static async getPriceForNomenclature(nId: string): Promise<IPriceFields[]> {
-    const priceTypeId = env.MAIN_PRICE_TYPE_UUID;
+  static async getPriceForNomenclature(
+    nId: string,
+    priceId: string,
+  ): Promise<IPriceFields[]> {
     return getSpecificODataResponseArray({
       path: "InformationRegister_ЦеныНоменклатуры_RecordType/SliceLast",
       select: "Цена,Period,Упаковка_Key",
-      filter: `Номенклатура_Key eq guid'${nId}' and ВидЦены_Key eq guid'${priceTypeId}'`,
+      filter: `Номенклатура_Key eq guid'${nId}' and ВидЦены_Key eq guid'${priceId}'`,
     }) as Promise<IPriceFields[]>;
   }
 
@@ -578,6 +582,7 @@ export class From1C {
     newPassword: string;
   }) {
     try {
+      const guids = await getGlobalSettings();
       // First, get the fill additional fields for the user, PATCH requires the full object
       const fullFields = (await getSpecificODataResponseObject({
         path: `Catalog_Пользователи(guid'${userId}')`,
@@ -585,7 +590,7 @@ export class From1C {
       })) as unknown as IUserAdditionalFields;
       // Find the field with the site password
       const sitePasswordField = fullFields.ДополнительныеРеквизиты.find(
-        (f) => f.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+        (f) => f.Свойство_Key === guids.guidsForSync.user.sitePassword,
       );
       // If the field exists, mutate it, otherwise, create it
       if (sitePasswordField) {
@@ -599,7 +604,7 @@ export class From1C {
         );
         fullFields.ДополнительныеРеквизиты.push({
           LineNumber: (maxLineNumber + 1).toString(),
-          Свойство_Key: env.SITE_PASSWORD_PARAM_UUID ?? "",
+          Свойство_Key: guids.guidsForSync.user.sitePassword ?? "",
           Значение: newPassword,
           Значение_Type: "Edm.String",
           ТекстоваяСтрока: "",
@@ -621,7 +626,7 @@ export class From1C {
       const patchedUser = (await patchResponse.json()) as IUserFields;
       const sitePasswordFieldPatched =
         patchedUser?.ДополнительныеРеквизиты?.find(
-          (f) => f.Свойство_Key === env.SITE_PASSWORD_PARAM_UUID,
+          (f) => f.Свойство_Key === guids.guidsForSync.user.sitePassword,
         );
       if (sitePasswordFieldPatched?.Значение === newPassword) {
         return {

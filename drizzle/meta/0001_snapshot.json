@@ -1,6 +1,6 @@
 {
-  "id": "609d0942-e5f8-47d2-a418-708f5460aaca",
-  "prevId": "7ff4c23e-81e7-4561-8b1e-7a9b0fd49e63",
+  "id": "a0435cbb-0c00-4236-8442-f3b32cafca9f",
+  "prevId": "a50b047b-1bf9-4a7b-8b06-6a09f33211c1",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -454,24 +454,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "price": {
-          "name": "price",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "price_date": {
-          "name": "price_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "price_updated_at": {
-          "name": "price_updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
         "stock": {
           "name": "stock",
           "type": "real",
@@ -639,6 +621,186 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "price": {
+      "name": "price",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "price_to_nomenclature": {
+      "name": "price_to_nomenclature",
+      "schema": "",
+      "columns": {
+        "price_id": {
+          "name": "price_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nomenclature_id": {
+          "name": "nomenclature_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "measurement_unit_id": {
+          "name": "measurement_unit_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "price_to_nomenclature_price_id_price_id_fk": {
+          "name": "price_to_nomenclature_price_id_price_id_fk",
+          "tableFrom": "price_to_nomenclature",
+          "tableTo": "price",
+          "columnsFrom": [
+            "price_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "price_to_nomenclature_nomenclature_id_nomenclature_id_fk": {
+          "name": "price_to_nomenclature_nomenclature_id_nomenclature_id_fk",
+          "tableFrom": "price_to_nomenclature",
+          "tableTo": "nomenclature",
+          "columnsFrom": [
+            "nomenclature_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "price_to_nomenclature_price_id_nomenclature_id_pk": {
+          "name": "price_to_nomenclature_price_id_nomenclature_id_pk",
+          "columns": [
+            "price_id",
+            "nomenclature_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "site_settings": {
+      "name": "site_settings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "settings": {
+          "name": "settings",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "sync_log": {
       "name": "sync_log",
       "schema": "",
@@ -674,6 +836,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "price_id": {
+          "name": "price_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -690,7 +858,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "sync_log_price_id_price_id_fk": {
+          "name": "sync_log_price_id_price_id_fk",
+          "tableFrom": "sync_log",
+          "tableTo": "price",
+          "columnsFrom": [
+            "price_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },

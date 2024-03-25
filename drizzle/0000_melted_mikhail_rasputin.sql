@@ -35,8 +35,7 @@ CREATE TABLE IF NOT EXISTS "manufacturer" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"data_version" text,
-	"deletion_mark" boolean DEFAULT false NOT NULL,
-	CONSTRAINT "manufacturer_name_unique" UNIQUE("name")
+	"deletion_mark" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "measurement_unit" (
@@ -45,12 +44,11 @@ CREATE TABLE IF NOT EXISTS "measurement_unit" (
 	"weight" real,
 	"numerator" real,
 	"denominator" real,
-	"nomenclature_id" uuid NOT NULL,
+	"nomenclature_id" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"data_version" text,
-	"deletion_mark" boolean DEFAULT false NOT NULL,
-	CONSTRAINT "measurement_unit_name_unique" UNIQUE("name")
+	"deletion_mark" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "nomenclature_type" (
@@ -101,8 +99,35 @@ CREATE TABLE IF NOT EXISTS "partner" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"data_version" text,
-	"deletion_mark" boolean DEFAULT false NOT NULL,
-	CONSTRAINT "partner_name_unique" UNIQUE("name")
+	"deletion_mark" boolean DEFAULT false NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "price" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"description" text,
+	"code" text,
+	"currency" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "price_to_nomenclature" (
+	"price_id" uuid NOT NULL,
+	"nomenclature_id" uuid NOT NULL,
+	"price" integer,
+	"currency" text,
+	"measurement_unit_id" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "price_to_nomenclature_price_id_nomenclature_id_pk" PRIMARY KEY("price_id","nomenclature_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "site_settings" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"settings" jsonb,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "sync_log" (
@@ -111,6 +136,7 @@ CREATE TABLE IF NOT EXISTS "sync_log" (
 	"status" text NOT NULL,
 	"metadata" json,
 	"data_hash" text,
+	"price_id" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -124,6 +150,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"image" text,
 	"password" text,
 	"role" "user_role" DEFAULT 'client' NOT NULL,
+	"meta" json,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "user_phone_unique" UNIQUE("phone"),
@@ -137,7 +164,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "measurement_unit" ADD CONSTRAINT "measurement_unit_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "measurement_unit" ADD CONSTRAINT "measurement_unit_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -161,7 +188,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "nomenclature" ADD CONSTRAINT "nomenclature_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "nomenclature"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "sync_log" ADD CONSTRAINT "sync_log_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

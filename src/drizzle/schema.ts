@@ -8,6 +8,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  pgView,
   primaryKey,
   real,
   serial,
@@ -204,9 +205,6 @@ export const nomenclatures = pgTable("nomenclature", {
   code: text("code"),
   isWeightGoods: boolean("is_weight_goods").default(false).notNull(),
   minimumWeight: real("minimum_weight"),
-  price: integer("price"),
-  priceDate: timestamp("price_date"),
-  priceUpdatedAt: timestamp("price_updated_at"),
   stock: real("stock"),
   stockDate: timestamp("stock_date"),
   stockUpdatedAt: timestamp("stock_updated_at"),
@@ -255,6 +253,7 @@ export const syncLogs = pgTable("sync_log", {
   status: text("status").notNull(),
   metadata: json("metadata"),
   dataHash: text("data_hash"),
+  priceId: uuid("price_id").references(() => prices.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -278,12 +277,15 @@ export const pricesToNomenclature = pgTable(
   {
     priceId: uuid("price_id")
       .notNull()
-      .references(() => prices.id),
+      .references(() => prices.id, {
+        onDelete: "cascade",
+      }),
     nomenclatureId: uuid("nomenclature_id")
       .notNull()
-      .references(() => nomenclatures.id),
+      .references(() => nomenclatures.id, {
+        onDelete: "cascade",
+      }),
     price: integer("price"),
-    currency: text("currency"),
     measureUnitId: uuid("measurement_unit_id"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -304,7 +306,7 @@ export const pricesToNomenclatureRelations = relations(
       fields: [pricesToNomenclature.priceId],
       references: [prices.id],
     }),
-    user: one(nomenclatures, {
+    nomenclature: one(nomenclatures, {
       fields: [pricesToNomenclature.nomenclatureId],
       references: [nomenclatures.id],
     }),

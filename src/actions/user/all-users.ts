@@ -175,7 +175,7 @@ export async function fetchMetaFrom1C(
     };
   }
   const from1c = await From1C.getUserByGuid(userIdFrom1C);
-  const parsed = ConvertFrom1C.user(from1c);
+  const parsed = await ConvertFrom1C.user(from1c);
 
   if (!parsed.phone) {
     return {
