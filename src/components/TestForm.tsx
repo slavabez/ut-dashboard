@@ -2,7 +2,6 @@
 
 import React, { useState, useTransition } from "react";
 
-import { syncAll } from "@/actions/sync/common";
 import { testAction } from "@/actions/test";
 import { Button } from "@/components/ui/button";
 

@@ -30,7 +30,7 @@ const NomenclatureListItem = ({
         <div className="inline-flex items-center text-base font-semibold text-orange-500">
           {"н/у"}
         </div>
-        <pre>{JSON.stringify(item, null, 2)}</pre>
+        {/*<pre>{JSON.stringify(item, null, 2)}</pre>*/}
       </div>
     </li>
   );

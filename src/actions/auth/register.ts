@@ -58,7 +58,7 @@ export const register = async (
         name: user.name,
         password: hashedPassword,
         email: user.email,
-        role: "employee",
+        role: user.siteRole as any,
         meta: user,
       })
       .returning();

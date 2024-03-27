@@ -184,3 +184,41 @@ async function saveSyncLog({
     data: syncResultFromDB[0],
   };
 }
+
+export async function syncAllPrices(): Promise<
+  IActionResponse<SyncLogSelect[]>
+> {
+  try {
+    const syncResults: SyncLogSelect[] = [];
+    const allPricesInDb = await db.query.prices.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+    for (const price of allPricesInDb) {
+      if (price.id) {
+        const priceSync = await syncPrice({
+          priceId: price.id,
+        });
+        if (priceSync.status === "success") {
+          syncResults.push(priceSync.data);
+        } else {
+          throw new Error(`Error while syncing the ${price.name} price`);
+        }
+      }
+    }
+    revalidatePath("/admin/sync/prices");
+
+    return {
+      status: "success",
+      data: syncResults,
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      status: "error",
+      error: "An error occurred while doing the full sync",
+    };
+  }
+}

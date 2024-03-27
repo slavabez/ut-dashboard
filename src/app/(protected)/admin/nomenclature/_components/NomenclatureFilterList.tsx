@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
 import FormComboBoxSelect from "@/app/(protected)/admin/nomenclature/_components/FormComboBoxSelect";
 import { NomenclatureWithChildren } from "@/lib/common-types";

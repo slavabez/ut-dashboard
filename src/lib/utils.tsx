@@ -177,8 +177,9 @@ export function formatDate(date: Date): string {
   return dateFormatter.format(date);
 }
 
-export function formatRelativeDate(date: Date): string {
+export function timeAgo(date: Date): string {
   const now = new Date();
+
   const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
   const minutes = Math.round(seconds / 60);
   const hours = Math.round(minutes / 60);
@@ -201,13 +202,4 @@ export function formatRelativeDate(date: Date): string {
   } else {
     return rtf.format(-years, "year");
   }
-}
-
-export function formatHoursAgo(date: Date): string {
-  const now = new Date();
-  const diff = date.getTime() - now.getTime();
-  return relativeDateFormatter.format(
-    Math.round(diff / (60 * 60 * 1000)),
-    "hours",
-  );
 }

@@ -7,7 +7,7 @@ import { syncManufacturers } from "@/actions/sync/manufacturers";
 import { syncMeasurementUnits } from "@/actions/sync/measurement-units";
 import { syncNomenclature } from "@/actions/sync/nomenclature";
 import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
-import { syncPrice } from "@/actions/sync/prices";
+import { syncAllPrices } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
@@ -55,6 +55,11 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
       formTitle = "Синхронизация остатков";
       action = syncStock;
       buttonText += "остатки";
+      break;
+    case "prices":
+      formTitle = "Синхронизация всех цен";
+      action = syncAllPrices;
+      buttonText += "все цены";
       break;
     case "all":
     default:

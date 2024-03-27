@@ -15,10 +15,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { SyncLogSelect } from "@/drizzle/schema";
 
 interface SyncLogEntriesProps {
-  items: SyncLogSelect[];
+  items: any[];
   skeleton?: boolean;
 }
 

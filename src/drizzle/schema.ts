@@ -8,7 +8,6 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  pgView,
   primaryKey,
   real,
   serial,
@@ -253,7 +252,9 @@ export const syncLogs = pgTable("sync_log", {
   status: text("status").notNull(),
   metadata: json("metadata"),
   dataHash: text("data_hash"),
-  priceId: uuid("price_id").references(() => prices.id),
+  priceId: uuid("price_id").references(() => prices.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

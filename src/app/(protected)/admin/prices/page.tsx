@@ -1,7 +1,7 @@
 import React from "react";
 
 import { getPricesWithLatestSyncTime } from "@/actions/site-settings";
-import PriceAddForm from "@/app/(protected)/admin/prices/_components/price-add-form";
+import PriceAdminSection from "@/app/(protected)/admin/prices/_components/price-admin-section";
 import { From1C } from "@/lib/odata";
 
 const AdminPricesPage = async () => {
@@ -13,7 +13,7 @@ const AdminPricesPage = async () => {
   }
 
   return (
-    <PriceAddForm
+    <PriceAdminSection
       pricesInDb={allPricesInDb.data}
       pricesFrom1C={allPricesFrom1C}
     />

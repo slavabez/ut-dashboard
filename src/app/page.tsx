@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import TestForm from "@/components/TestForm";
-
 export default function Home() {
   return (
     <div>
@@ -22,7 +20,6 @@ export default function Home() {
           </li>
         </ul>
       </nav>
-      <TestForm />
     </div>
   );
 }

@@ -33,7 +33,10 @@ export const UserUpdateSchema = z.object({
     .string()
     .min(2, "Минимум 2 символа")
     .max(255, "Максимум 255 символов"),
-  email: z.string().email("Некорректный email"),
+  email: z.union([
+    z.string().email("Некорректный email").optional(),
+    z.literal(""),
+  ]),
   phone: PHONE_SCHEMA,
   role: z.enum([userRoles[0], ...userRoles.slice(1)]),
 });

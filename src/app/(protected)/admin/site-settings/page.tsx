@@ -6,7 +6,7 @@ import {
   getLatestSiteSettings,
 } from "@/actions/site-settings";
 import SiteSettingsForm from "@/app/(protected)/admin/site-settings/_components/site-settings-form";
-import { formatRelativeDate } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 
 const SiteSettingsPage = async () => {
   const latestSettings = await getLatestSiteSettings();
@@ -23,8 +23,7 @@ const SiteSettingsPage = async () => {
     <div>
       <h1 className="p-4 text-xl font-bold">Глобальные Настройки сайта</h1>
       <p className=" px-4 text-muted-foreground text-sm">
-        Последнее обновление:{" "}
-        {formatRelativeDate(latestSettings.data?.createdAt)}
+        Последнее обновление: {timeAgo(latestSettings.data?.createdAt)}
       </p>
       <SiteSettingsForm
         initialData={latestSettings.data?.settings as ISiteSettings}

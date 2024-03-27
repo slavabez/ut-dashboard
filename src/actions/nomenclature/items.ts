@@ -1,14 +1,10 @@
 "use server";
 
-import { and, asc, eq, gt, gte, inArray, lte } from "drizzle-orm";
+import { and, asc, eq, gt, inArray, isNotNull } from "drizzle-orm";
 
 import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
-import {
-  manufacturers,
-  measurementUnits,
-  nomenclatures,
-} from "@/drizzle/schema";
+import { manufacturers, nomenclatures } from "@/drizzle/schema";
 import { NomenclatureWithChildren } from "@/lib/common-types";
 import { separateListIntoLevels, sortLevelsIntoTree } from "@/lib/utils";
 
@@ -63,6 +59,7 @@ export async function getNomenclatureItems(filter: IItemFilter) {
       where.typeId,
       where.isFolder,
       where.inStock,
+      isNotNull(nomenclatures.coverImage),
     ),
     limit: filter.limit ?? 10,
     with: {

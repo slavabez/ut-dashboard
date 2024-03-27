@@ -1,7 +1,7 @@
 import { count, desc, eq } from "drizzle-orm";
 
 import { db } from "@/drizzle/db";
-import { syncLogs } from "@/drizzle/schema";
+import { prices, syncLogs } from "@/drizzle/schema";
 
 export const getLatestSyncs = async (params: {
   limit: number;
@@ -10,8 +10,18 @@ export const getLatestSyncs = async (params: {
 }) => {
   const { limit, offset, type } = params;
   const condition = db
-    .select()
+    .select({
+      id: syncLogs.id,
+      type: syncLogs.type,
+      status: syncLogs.status,
+      metadata: syncLogs.metadata,
+      createdAt: syncLogs.createdAt,
+      updatedAt: syncLogs.updatedAt,
+      priceId: syncLogs.priceId,
+      priceName: prices.name,
+    })
     .from(syncLogs)
+    .leftJoin(prices, eq(syncLogs.priceId, prices.id))
     .orderBy(desc(syncLogs.createdAt))
     .limit(limit)
     .offset(offset);

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { IUserMeta, UserSelectNonSensitive } from "@/lib/common-types";
-import { formatRelativeDate } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 
 const UserListItem = ({ user }: { user: UserSelectNonSensitive }) => {
   const user1CMeta = user.meta as IUserMeta;
@@ -21,9 +21,7 @@ const UserListItem = ({ user }: { user: UserSelectNonSensitive }) => {
       <Card>
         <CardHeader>
           <CardTitle>{user.name}</CardTitle>
-          <CardDescription>
-            Создан: {formatRelativeDate(user.createdAt)}
-          </CardDescription>
+          <CardDescription>Создан: {timeAgo(user.createdAt)}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <dl>

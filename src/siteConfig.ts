@@ -152,6 +152,30 @@ export const allNavItems: Map<string, INavItem> = new Map([
       href: "/admin/sync/stock",
     },
   ],
+  [
+    "/admin/nomenclature",
+    {
+      id: "admin/nomenclature",
+      name: "Номенклатура",
+      href: "/admin/nomenclature",
+    },
+  ],
+  [
+    "/admin/prices",
+    {
+      id: "admin/prices",
+      name: "Настройки цен",
+      href: "/admin/prices",
+    },
+  ],
+  [
+    "/admin/site-settings",
+    {
+      id: "admin/site-settings",
+      name: "Настройки сайта",
+      href: "/admin/site-settings",
+    },
+  ],
 ]);
 
 export const getBreadcrumbsForPath = (path: string): IBreadcrumbItem[] => {
@@ -185,7 +209,12 @@ export const subNavItems = new Map<string, INavItem[]>([
   ],
   [
     "/admin",
-    [allNavItems.get("/admin/sync")!, allNavItems.get("/admin/users")!],
+    [
+      allNavItems.get("/admin/sync")!,
+      allNavItems.get("/admin/users")!,
+      allNavItems.get("/admin/nomenclature")!,
+      allNavItems.get("/admin/prices")!,
+    ],
   ],
   [
     "/admin/sync",

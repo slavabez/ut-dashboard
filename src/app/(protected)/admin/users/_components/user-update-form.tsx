@@ -51,7 +51,7 @@ const UserUpdateForm = ({ userData }: UserUpdateFormProps) => {
       id: userData.id,
     },
     resolver: zodResolver(UserUpdateSchema),
-    mode: "onChange",
+    mode: "all",
   });
 
   function onSubmit(values: z.infer<typeof UserUpdateSchema>) {
@@ -180,7 +180,7 @@ const UserUpdateForm = ({ userData }: UserUpdateFormProps) => {
             <Button
               type="submit"
               variant="default"
-              disabled={!form.formState.isValid}
+              disabled={!form.formState.isValid || isUpdatePending}
               className="w-full justify-center items-center gap-2"
               onClick={form.handleSubmit(onSubmit)}
             >

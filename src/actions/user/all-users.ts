@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { infer, z } from "zod";
+import { z } from "zod";
 
 import { getUserById } from "@/data/user";
 import { db } from "@/drizzle/db";

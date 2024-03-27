@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { SyncLogSelect } from "@/drizzle/schema";
 import { ISyncLogMeta } from "@/lib/sync";
-import { formatDate, formatRelativeDate, translateSyncType } from "@/lib/utils";
+import { formatDate, timeAgo, translateSyncType } from "@/lib/utils";
 
 const renderBadge = (item: SyncLogSelect) => {
   let variant: "success" | "error" | "warning" = "success";
@@ -27,7 +27,7 @@ const renderBadge = (item: SyncLogSelect) => {
   } else if (item.status === "ignored") {
     variant = "warning";
   }
-  const timeAgoText = formatRelativeDate(item.createdAt);
+  const timeAgoText = timeAgo(item.createdAt);
   const prettyDate = formatDate(item.createdAt);
 
   return (
@@ -46,7 +46,7 @@ const renderBadge = (item: SyncLogSelect) => {
   );
 };
 
-const SyncLogItem = ({ item }: { item: SyncLogSelect }) => {
+const SyncLogItem = ({ item }: { item: any }) => {
   const {
     entitiesMarkedDeleted,
     entitiesIgnored,
@@ -59,6 +59,7 @@ const SyncLogItem = ({ item }: { item: SyncLogSelect }) => {
       <CardHeader>
         <span className="text-md font-semibold flex justify-between">
           {translateSyncType(item.type as SyncFormType)}
+          {item.priceName ? ` (${item.priceName})` : ""}
           {renderBadge(item)}
         </span>
       </CardHeader>

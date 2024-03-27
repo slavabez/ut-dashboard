@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { syncManufacturers } from "@/actions/sync/manufacturers";
 import { syncMeasurementUnits } from "@/actions/sync/measurement-units";
 import { syncNomenclature } from "@/actions/sync/nomenclature";
@@ -7,6 +9,7 @@ import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
 import { syncPrice } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
 import { getLatestSyncs, getSyncCount } from "@/data/sync";
+import { db } from "@/drizzle/db";
 import { SyncLogSelect } from "@/drizzle/schema";
 import { currentRole } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
@@ -19,7 +22,7 @@ export const getLatestSyncLogs = async ({
   limit: number;
   offset: number;
   type?: string;
-}): Promise<IActionResponse<SyncLogSelect[]>> => {
+}): Promise<IActionResponse<any[]>> => {
   try {
     const role = await currentRole();
 
@@ -113,19 +116,34 @@ export const syncAll = async (): Promise<IActionResponse<SyncLogSelect[]>> => {
     } else {
       throw new Error("Error while syncing measurement units");
     }
-    // TODO: Do the sync for all prices in the DB
-    // const priceSync = await syncPrices();
-    // if (priceSync.status === "success") {
-    //   syncResults.push(priceSync.data);
-    // } else {
-    //   throw new Error("Error while syncing prices");
-    // }
+
+    const allPricesInDb = await db.query.prices.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+    for (const price of allPricesInDb) {
+      if (price.id) {
+        const priceSync = await syncPrice({
+          priceId: price.id,
+        });
+        if (priceSync.status === "success") {
+          syncResults.push(priceSync.data);
+        } else {
+          throw new Error(`Error while syncing the ${price.name} price`);
+        }
+      }
+    }
+
     const stockSync = await syncStock();
     if (stockSync.status === "success") {
       syncResults.push(stockSync.data);
     } else {
       throw new Error("Error while syncing stock");
     }
+
+    revalidatePath("/admin/sync");
 
     return {
       status: "success",

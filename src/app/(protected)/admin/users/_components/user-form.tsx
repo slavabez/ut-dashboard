@@ -5,7 +5,7 @@ import React from "react";
 import UserMetaUpdateForm from "@/app/(protected)/admin/users/_components/user-meta-update-section";
 import UserUpdateForm from "@/app/(protected)/admin/users/_components/user-update-form";
 import { IUserMeta, UserSelectNonSensitive } from "@/lib/common-types";
-import { formatRelativeDate } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 
 interface UserUpdateFormProps {
   userData: UserSelectNonSensitive;
@@ -18,8 +18,8 @@ const UserForm = ({ userData }: UserUpdateFormProps) => {
       <UserUpdateForm userData={userData} />
       <UserMetaUpdateForm initialUserMeta={userMeta} />
       <div className="gap-4 flex flex-col">
-        <p>Создан: {formatRelativeDate(userData.createdAt)}</p>
-        <p>Обновлен: {formatRelativeDate(userData.updatedAt)}</p>
+        <p suppressHydrationWarning>Создан: {timeAgo(userData.createdAt)}</p>
+        <p suppressHydrationWarning>Обновлен: {timeAgo(userData.updatedAt)}</p>
       </div>
     </div>
   );

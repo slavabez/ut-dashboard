@@ -20,8 +20,8 @@ export const login = async (
 
   const existingUser = await getUserByPhone(phone);
 
-  if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "С таким номером телефона нет пользователей" };
+  if (!existingUser || !existingUser.phone || !existingUser.password) {
+    return { error: "Нет пользователей с таким номером телефона" };
   }
 
   try {

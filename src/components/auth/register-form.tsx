@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -80,6 +81,14 @@ const RegisterForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
+          {success && (
+            <Link
+              className="text-center text-blue-500 block"
+              href="/auth/login"
+            >
+              Войти
+            </Link>
+          )}
           <Button type="submit" className="w-full" disabled={isPending}>
             Зарегистрироваться
           </Button>

@@ -2,6 +2,7 @@
 
 import { count, desc, eq } from "drizzle-orm";
 import hash from "hash-it";
+import { revalidatePath } from "next/cache";
 
 import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatures, syncLogs } from "@/drizzle/schema";
@@ -32,7 +33,10 @@ export async function syncNomenclature(
     const allNomenclature = await From1C.getAllNomenclatureItems();
     const allNomenclatureFiles = await From1C.getAllNomenclatureFiles();
     // Hash the data to compare with the latest sync log
-    const hashOf1CData = hash(allNomenclature).toString();
+    const hashOf1CData = hash({
+      allNomenclature,
+      allNomenclatureFiles,
+    }).toString();
 
     const [latestNomSync, totalNomInDb] = await Promise.all([
       db
@@ -117,6 +121,8 @@ async function incrementalSync(
       item.coverImage = file.ПутьКФайлу.replace(/\\/g, "/");
     }
   });
+  // Separate by levels, because children cannot be inserted before the parent exists
+  // Parentless (root level) items are inserted first
   const separated = separateArraysByLevel(formattedItems);
   const allItemsInDb = await db.select().from(nomenclatures);
 
@@ -169,6 +175,8 @@ async function saveSyncLog(
       error: "Failed to log sync result",
     };
   }
+
+  revalidatePath("/admin/sync/nomenclature");
 
   return {
     status: "success",

@@ -2,6 +2,7 @@
 
 import { count, desc, eq } from "drizzle-orm";
 import hash from "hash-it";
+import { revalidatePath } from "next/cache";
 
 import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatureTypes, syncLogs } from "@/drizzle/schema";
@@ -143,6 +144,8 @@ async function saveSyncLog(
       error: "Failed to log sync result",
     };
   }
+
+  revalidatePath("/admin/sync/nomenclature-types");
 
   return {
     status: "success",
