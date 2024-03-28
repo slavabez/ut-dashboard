@@ -22,7 +22,7 @@ const ProfilePage = async () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold text-center my-4 mb-8">
+      <h1 className="text-2xl font-semibold text-center mt-2 mb-8">
         👤 Профиль
       </h1>
 

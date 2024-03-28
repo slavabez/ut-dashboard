@@ -6,6 +6,8 @@ import {
   NomenclatureTypeInsert,
 } from "@/drizzle/schema";
 import {
+  IOrderContentFields,
+  IOrderFields,
   IPriceFields,
   IStockFields,
   IUnitFields,
@@ -29,6 +31,36 @@ export interface IParsedUser {
   email: string | null;
   sitePassword: string | null;
   siteRole: string | null;
+}
+
+export interface IOrderItem {
+  line: number;
+  nomenclatureId: string;
+  quantity: number;
+  priceId: string;
+  price: number;
+  sum: number;
+  vat: number;
+  totalSum: number;
+  autoDiscount: number;
+  manualDiscount: number;
+  cancelled: boolean;
+  nomenclatureName: string;
+}
+
+export interface IOrder {
+  id: string;
+  number: string;
+  date: Date;
+  sum: number;
+  status: string;
+  paymentType: string;
+  deliveryDate: string;
+  deliveryAddress: string;
+  deliveryType: string;
+  deletionMark: boolean;
+  partner: string;
+  items: IOrderItem[];
 }
 
 const assignProperId = (id: string | number) => {
@@ -172,6 +204,40 @@ export class ConvertFrom1C {
       email: email ?? null,
       sitePassword: sitePassword?.toString() ?? null,
       siteRole,
+    };
+  }
+
+  static order(input: IOrderFields): IOrder {
+    return {
+      id: input.Ref_Key,
+      number: input.Number,
+      date: new Date(input.Date),
+      sum: input.СуммаДокумента,
+      status: input.Статус,
+      paymentType: input.ФормаОплаты,
+      deliveryDate: input.ДатаОтгрузки,
+      deliveryAddress: input.АдресДоставки,
+      deliveryType: input.СпособДоставки,
+      deletionMark: input.DeletionMark,
+      partner: input.Партнер.Description,
+      items: [],
+    };
+  }
+
+  static orderItem(input: IOrderContentFields): IOrderItem {
+    return {
+      line: input.LineNumber,
+      nomenclatureId: input.Номенклатура_Key,
+      quantity: input.Количество,
+      priceId: input.Цена_Key,
+      price: input.Цена,
+      sum: input.Сумма,
+      vat: input.СуммаНДС,
+      totalSum: input.СуммаСНДС,
+      autoDiscount: input.СуммаАвтоматическойСкидки,
+      manualDiscount: input.СуммаРучнойСкидки,
+      cancelled: input.Отменено,
+      nomenclatureName: input.Номенклатура.Description,
     };
   }
 }

@@ -1,14 +1,16 @@
 import { NomenclatureSelect, UserSelect } from "@/drizzle/schema";
 
+export type IActionError = {
+  error: string;
+  status: "error";
+};
+
 export type IActionResponse<T> =
   | {
       data: T;
       status: "success";
     }
-  | {
-      error: string;
-      status: "error";
-    };
+  | IActionError;
 
 export type IUserMeta = {
   id: string;

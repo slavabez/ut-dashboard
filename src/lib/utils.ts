@@ -17,6 +17,11 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "medium",
 });
 
+const dateFormatterShort = new Intl.DateTimeFormat("ru-RU", {
+  timeStyle: "short",
+  dateStyle: "short",
+});
+
 const relativeDateFormatter = new Intl.RelativeTimeFormat("ru-RU", {
   numeric: "auto",
 });
@@ -153,28 +158,12 @@ export function translateSyncType(type: SyncFormType): string {
   }
 }
 
-export function getIconForSyncType(type: SyncFormType) {
-  switch (type) {
-    case "manufacturers":
-      return <MdOutlineFactory />;
-    case "measurement-units":
-      return <CiBoxes />;
-    case "nomenclature":
-      return <BiBasket />;
-    case "nomenclature-types":
-      return <BiBasket />;
-    case "prices":
-      return <IoIosPricetags />;
-    case "stock":
-      return <MdOutlineWarehouse />;
-    case "all":
-    default:
-      return <MdOutlineShoppingBasket />;
-  }
-}
-
 export function formatDate(date: Date): string {
   return dateFormatter.format(date);
+}
+
+export function formatDateShort(date: Date): string {
+  return dateFormatterShort.format(date);
 }
 
 export function timeAgo(date: Date): string {
@@ -201,5 +190,36 @@ export function timeAgo(date: Date): string {
     return rtf.format(-months, "month");
   } else {
     return rtf.format(-years, "year");
+  }
+}
+
+export function getDateFor1C(inputDate?: Date): string {
+  const date = inputDate ? new Date(inputDate) : new Date();
+  const year = date.getFullYear();
+  const month = ("0" + (date.getMonth() + 1)).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  return `${year}-${month}-${day}`;
+}
+
+export function format1CDocumentNumber(number: string): string {
+  const parts = number.split("-");
+  return `${parts[0].replace(/^0+/, "")}-${parseInt(parts[1])}`;
+}
+
+export function formatPrice(price: number): string {
+  return price.toLocaleString("ru-KZ", {
+    style: "currency",
+    currency: "KZT",
+  });
+}
+
+export function translateDeliveryType(type: string): string {
+  switch (type) {
+    case "Самовывоз":
+      return "Самовывоз";
+    case "ДоКлиента":
+      return "Доставка до клиента";
+    default:
+      return type;
   }
 }

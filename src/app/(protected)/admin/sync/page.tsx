@@ -10,7 +10,7 @@ const SyncMainPage = async ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const { page } = searchParams;
+  const page = searchParams?.page;
   const currentPage = page ? parseInt(page as string) : 1;
   const totalSyncs = await getTotalSyncLogs();
   if (totalSyncs.status === "error") {

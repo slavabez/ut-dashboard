@@ -104,6 +104,7 @@ export interface Manufacturer1CFields {
 export interface IOrderFields {
   Ref_Key: string;
   Number: string;
+  Date: string;
   СуммаДокумента: number;
   Статус: string;
   ФормаОплаты: string;
@@ -119,7 +120,9 @@ export interface IOrderFields {
 export interface IOrderContentFields {
   LineNumber: number;
   Количество: number;
+  Номенклатура_Key: string;
   Цена: number;
+  Цена_Key: string;
   Сумма: number;
   СуммаНДС: number;
   СуммаСНДС: number;
@@ -431,6 +434,16 @@ export class From1C {
     }) as Promise<Manufacturer1CFields[]>;
   }
 
+  static async getOrderById(orderId: string): Promise<IOrderFields[]> {
+    return getSpecificODataResponseArray({
+      path: "Document_ЗаказКлиента",
+      select:
+        "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
+      filter: `Ref_Key eq guid'${orderId}'`,
+      expand: "Партнер",
+    }) as Promise<IOrderFields[]>;
+  }
+
   static async getOrdersForUserByDate({
     userId,
     startDate,
@@ -474,7 +487,7 @@ export class From1C {
       path: `Document_ЗаказКлиента_Товары`,
       filter: `Ref_Key eq guid'${orderId}'`,
       expand: `Номенклатура`,
-      select: `LineNumber,Количество,Цена,Сумма,СуммаНДС,СуммаСНДС,СуммаРучнойСкидки,СуммаАвтоматическойСкидки,Отменено,Номенклатура/Description`,
+      select: `LineNumber,Номенклатура_Key,Количество,ВидЦены_Key,Цена,Сумма,СуммаНДС,СуммаСНДС,СуммаРучнойСкидки,СуммаАвтоматическойСкидки,Отменено,Номенклатура/Description`,
     }) as Promise<any[]>;
   }
 
