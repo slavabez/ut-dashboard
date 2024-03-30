@@ -60,6 +60,7 @@ export interface IOrder {
   deliveryType: string;
   deletionMark: boolean;
   partner: string;
+  comment: string;
   items: IOrderItem[];
 }
 
@@ -220,6 +221,7 @@ export class ConvertFrom1C {
       deliveryType: input.СпособДоставки,
       deletionMark: input.DeletionMark,
       partner: input.Партнер.Description,
+      comment: input.Комментарий,
       items: [],
     };
   }

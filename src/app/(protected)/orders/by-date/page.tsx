@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import React from "react";
 
 import { getOrdersByDate } from "@/actions/orders";
@@ -19,7 +20,7 @@ const OrdersByOrderDate = async ({
     return (
       <div className="p-4">
         <h1 className="text-xl font-semibold text-center my-2">
-          🗓 Заказы по дате создания
+          <CalendarDays className="mr-2" /> Заказы по дате создания
         </h1>
         <OrderDatePicker
           searchParamName="date"
@@ -36,8 +37,8 @@ const OrdersByOrderDate = async ({
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold text-center my-2">
-        🗓 Заказы по дате создания
+      <h1 className="text-xl font-semibold text-center my-2 flex">
+        <CalendarDays className="mr-2" /> Заказы по дате создания
       </h1>
       <OrderDatePicker
         searchParamName="date"

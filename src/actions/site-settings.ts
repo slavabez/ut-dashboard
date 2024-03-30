@@ -1,7 +1,7 @@
 "use server";
 
 import { desc, eq, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 import { db } from "@/drizzle/db";
 import {
@@ -58,21 +58,38 @@ export interface ISiteSettingsExact {
   };
 }
 
+async function getLatestSettingsFromDb(): Promise<SettingsSelect> {
+  const settings = await db
+    .select()
+    .from(siteSettings)
+    .orderBy(desc(siteSettings.createdAt))
+    .limit(1);
+  console.log("Fetched the latest global site settings");
+
+  if (settings.length === 0) {
+    throw new Error("No settings found");
+  }
+
+  return settings[0];
+}
+
+const getCachedSettings = unstable_cache(
+  getLatestSettingsFromDb,
+  ["site-settings"],
+  {
+    tags: ["site-settings"],
+  },
+);
+
 export async function getLatestSiteSettings(): Promise<
   IActionResponse<SettingsSelect>
 > {
   try {
-    const latestSettings = await db
-      .select()
-      .from(siteSettings)
-      .orderBy(desc(siteSettings.createdAt))
-      .limit(1);
-
-    console.log("Fetched the latest global site settings");
+    const latestSettings = await getCachedSettings();
 
     return {
       status: "success",
-      data: latestSettings[0],
+      data: latestSettings,
     };
   } catch (e: any) {
     return {

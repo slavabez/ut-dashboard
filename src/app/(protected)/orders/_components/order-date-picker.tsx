@@ -19,7 +19,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn, getDateFor1C } from "@/lib/utils";
+import { useSearchParamState } from "@/hooks/use-search-param-state";
+import { cn, formatDateShort, getDateFor1C, isValidDate } from "@/lib/utils";
 
 interface IOrderDatePickerProps {
   searchParamName: string;
@@ -29,18 +30,15 @@ interface IOrderDatePickerProps {
 
 const OrderDatePicker = (props: IOrderDatePickerProps) => {
   const { title, searchParamName, description } = props;
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const initialDate = searchParams.get(searchParamName);
+  const [selectedDate, setSelectedDate] = useSearchParamState<Date>({
+    searchParamName,
+    postSetCallback: () => setIsOpen(false),
+    serialize: getDateFor1C,
+    deserialize: (value) => new Date(`${value}T00:00:00`),
+  });
 
-  const handleSetDate = (date: Date | undefined) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    const newDate = getDateFor1C(date);
-    newSearchParams.set(searchParamName, newDate);
-    setIsOpen(false);
-    router.push(`?${newSearchParams.toString()}`);
-  };
+  console.log(selectedDate);
 
   return (
     <div className="flex flex-col gap-2">
@@ -51,20 +49,26 @@ const OrderDatePicker = (props: IOrderDatePickerProps) => {
             variant="outline"
             className={cn(
               "w-full pl-3 text-left font-normal",
-              !initialDate && "text-muted-foreground",
+              !selectedDate && "text-muted-foreground",
             )}
           >
-            {initialDate ? initialDate : <span>Выберите дату</span>}
+            {isValidDate(selectedDate) ? (
+              formatDateShort(selectedDate)
+            ) : (
+              <span>Выберите дату</span>
+            )}
             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={
-              initialDate ? new Date(`${initialDate}T00:00:00`) : new Date()
-            }
-            onSelect={handleSetDate}
+            selected={selectedDate}
+            onSelect={(date) => {
+              if (date) {
+                setSelectedDate(date);
+              }
+            }}
             initialFocus
             locale={ru}
           />

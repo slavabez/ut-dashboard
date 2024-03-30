@@ -18,6 +18,12 @@ export default function Home() {
           <li>
             <Link href="/admin">Админка</Link>
           </li>
+          <li>
+            <Link href="/orders">Заказы</Link>
+          </li>
+          <li>
+            <Link href="/reports">Отчёты</Link>
+          </li>
         </ul>
       </nav>
     </div>

@@ -49,7 +49,7 @@ const OrderListItem = ({ item, index }: { item: IOrder; index: number }) => {
     <Card>
       <CardHeader className="flex flex-row justify-between items-center space-y-0">
         <div className="flex items-center gap-1">
-          {renderStatusBadge(status, index)}
+          <Badge variant="outline">{index}</Badge>
           {format1CDocumentNumber(number)}
         </div>
         <OrderStatusBadge order={item} />

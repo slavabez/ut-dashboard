@@ -49,6 +49,50 @@ export async function getOrdersByDate(
   };
 }
 
+export async function getOrdersByDeliveryDate(
+  day: string,
+): Promise<IActionResponse<IOrder[]>> {
+  const user = await currentUser();
+
+  if (!user) {
+    return {
+      status: "error",
+      error: "Вы не вошли",
+    };
+  }
+  if (user.role === "client") {
+    return {
+      status: "error",
+      error: "У вас недостаточно прав для этого действия",
+    };
+  }
+  if (!user.id) {
+    return {
+      status: "error",
+      error: "Не удалось получить информацию о пользователе",
+    };
+  }
+
+  // Verify the day parameter is in the correct format "YYYY-MM-DD"
+  if (!day.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return {
+      status: "error",
+      error: "Неверный формат даты",
+    };
+  }
+
+  const orders = await From1C.getOrdersForUserByDeliveryDate({
+    userId: user.id,
+    startDate: day,
+    endDate: day,
+  });
+
+  return {
+    status: "success",
+    data: orders.map(ConvertFrom1C.order),
+  };
+}
+
 export const getOrderById = async (
   orderId: string,
 ): Promise<IActionResponse<IOrder>> => {

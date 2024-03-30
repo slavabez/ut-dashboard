@@ -45,10 +45,8 @@ const Breadcrumbs = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   {innerItems.map((i) => (
-                    <DropdownMenuItem key={i.id}>
-                      <Link href={i.href} passHref legacyBehavior>
-                        <a>{i.name}</a>
-                      </Link>
+                    <DropdownMenuItem key={i.id} asChild>
+                      <Link href={i.href}>{i.name}</Link>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>

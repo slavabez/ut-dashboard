@@ -22,8 +22,8 @@ const dateFormatterShort = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "short",
 });
 
-const relativeDateFormatter = new Intl.RelativeTimeFormat("ru-RU", {
-  numeric: "auto",
+const dateFormatterDateOnly = new Intl.DateTimeFormat("ru-RU", {
+  dateStyle: "medium",
 });
 
 export function cn(...inputs: ClassValue[]) {
@@ -158,12 +158,22 @@ export function translateSyncType(type: SyncFormType): string {
   }
 }
 
+export function isValidDate(date: Date): boolean {
+  return !isNaN(date.getTime());
+}
+
 export function formatDate(date: Date): string {
+  if (!isValidDate(date)) {
+    return "";
+  }
   return dateFormatter.format(date);
 }
 
 export function formatDateShort(date: Date): string {
-  return dateFormatterShort.format(date);
+  if (!isValidDate(date)) {
+    return "";
+  }
+  return dateFormatterDateOnly.format(date);
 }
 
 export function timeAgo(date: Date): string {

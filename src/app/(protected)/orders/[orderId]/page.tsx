@@ -49,7 +49,7 @@ const OrderDetailsPage = async ({
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Дата заказа</dt>
-          <dd>{formatDateShort(order.date)}</dd>
+          <dd suppressHydrationWarning>{formatDateShort(order.date)}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Адрес доставки</dt>
@@ -62,7 +62,7 @@ const OrderDetailsPage = async ({
         {order.deliveryType !== "Самовывоз" && (
           <dl className="flex justify-between">
             <dt className="text-gray-500">Дата доставки</dt>
-            <dd>
+            <dd suppressHydrationWarning>
               {formatDateShort(new Date(order.deliveryDate)).split(",")[0]}
             </dd>
           </dl>
@@ -77,7 +77,10 @@ const OrderDetailsPage = async ({
           <dt className="text-gray-500">Тип оплаты</dt>
           <dd>{order.paymentType}</dd>
         </dl>
-
+        <dl className="flex justify-between">
+          <dt className="text-gray-500">Комментарий</dt>
+          <dd className="text-right">{order.comment}</dd>
+        </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Сумма</dt>
           <dd className="font-bold">{formatPrice(order.sum)}</dd>
@@ -87,7 +90,7 @@ const OrderDetailsPage = async ({
       <Table>
         <TableCaption>Товары</TableCaption>
         <TableHeader>
-          <TableRow>
+          <TableRow className="font-bold">
             <TableCell>Товар</TableCell>
             <TableCell>Кол-во</TableCell>
             <TableCell>Сумма (Скидка)</TableCell>
@@ -96,7 +99,8 @@ const OrderDetailsPage = async ({
         <TableBody>
           {order.items.map((item) => {
             const totalDiscount = item.autoDiscount + item.manualDiscount;
-            const totalDiscountPercent = (totalDiscount / item.sum) * 100;
+            const totalDiscountPercent =
+              (totalDiscount / (item.totalSum + totalDiscount)) * 100;
 
             return (
               <TableRow

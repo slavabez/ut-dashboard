@@ -111,6 +111,7 @@ export interface IOrderFields {
   ДатаОтгрузки: string;
   АдресДоставки: string;
   СпособДоставки: string;
+  Комментарий: string;
   Партнер: {
     Description: string;
   };
@@ -137,41 +138,49 @@ export interface IOrderContentFields {
 export interface ISalesByPartnersFields {
   КоличествоTurnover: number;
   СуммаВыручкиTurnover: number;
-  СуммаВыручкиБезНДСTurnover: number;
   СуммаАвтоматическойСкидкиTurnover: number;
+  СуммаРучнойСкидкиTurnover: number;
   АналитикаУчетаПоПартнерам: {
-    Партнер_Key: string;
+    Партнер: {
+      Description: string;
+    };
     Контрагент: string;
-    Description: string;
   };
 }
 
 export interface ISalesByNomenclatureFields {
   КоличествоTurnover: number;
   СуммаВыручкиTurnover: number;
-  СуммаВыручкиБезНДСTurnover: number;
+  СуммаРучнойСкидкиTurnover: number;
   СуммаАвтоматическойСкидкиTurnover: number;
   АналитикаУчетаНоменклатуры: {
-    Номенклатура_Key: string;
-    Склад: string;
-    Description: string;
+    Номенклатура: {
+      Description: string;
+      Производитель: {
+        Description: string;
+      };
+    };
   };
 }
 
 export interface ISalesByPartnersAndNomenclatureFields {
   КоличествоTurnover: number;
   СуммаВыручкиTurnover: number;
-  СуммаВыручкиБезНДСTurnover: number;
+  СуммаРучнойСкидкиTurnover: number;
   СуммаАвтоматическойСкидкиTurnover: number;
   АналитикаУчетаНоменклатуры: {
-    Номенклатура_Key: string;
-    Склад: string;
-    Description: string;
+    Номенклатура: {
+      Description: string;
+      Производитель: {
+        Description: string;
+      };
+    };
   };
   АналитикаУчетаПоПартнерам: {
-    Партнер_Key: string;
+    Партнер: {
+      Description: string;
+    };
     Контрагент: string;
-    Description: string;
   };
 }
 
@@ -438,7 +447,7 @@ export class From1C {
     return getSpecificODataResponseArray({
       path: "Document_ЗаказКлиента",
       select:
-        "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
+        "Ref_Key,Number,Date,СуммаДокумента,Комментарий,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
       filter: `Ref_Key eq guid'${orderId}'`,
       expand: "Партнер",
     }) as Promise<IOrderFields[]>;
@@ -456,7 +465,7 @@ export class From1C {
     return getSpecificODataResponseArray({
       path: "Document_ЗаказКлиента",
       select:
-        "Ref_Key,Number,Date,СуммаДокумента,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
+        "Ref_Key,Number,Date,СуммаДокумента,Комментарий,Статус,ФормаОплаты,ДатаОтгрузки,АдресДоставки,СпособДоставки,Партнер/Description,DeletionMark",
       filter: `Менеджер_Key eq guid'${userId}' and Date ge datetime'${startDate}T00:00:00' and Date le datetime'${endDate}T23:59:59'`,
       expand: "Партнер",
     }) as Promise<IOrderFields[]>;
@@ -509,9 +518,9 @@ export class From1C {
     return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам')`,
       select:
-        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаРучнойСкидкиTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Партнер/Description",
       filter: `Менеджер_Key eq guid'${managerId}'`,
-      expand: "АналитикаУчетаПоПартнерам",
+      expand: "АналитикаУчетаПоПартнерам/Партнер",
       orderBy: "СуммаВыручкиTurnover desc",
     }) as Promise<ISalesByPartnersFields[]>;
   }
@@ -534,9 +543,9 @@ export class From1C {
     return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаНоменклатуры')`,
       select:
-        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description",
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаРучнойСкидкиTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура/Description,АналитикаУчетаНоменклатуры/Номенклатура/Производитель/Description",
       filter: `Менеджер_Key eq guid'${managerId}'`,
-      expand: "АналитикаУчетаНоменклатуры",
+      expand: "АналитикаУчетаНоменклатуры/Номенклатура/Производитель",
       orderBy: "СуммаВыручкиTurnover desc",
     }) as Promise<ISalesByNomenclatureFields[]>;
   }
@@ -559,9 +568,10 @@ export class From1C {
     return getSpecificODataResponseArray({
       path: `AccumulationRegister_ВыручкаИСебестоимостьПродаж/Turnovers(EndPeriod=datetime'${endDate}',StartPeriod=datetime'${startDate}',Dimensions='Менеджер,АналитикаУчетаПоПартнерам,АналитикаУчетаНоменклатуры'')`,
       select:
-        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаВыручкиБезНДСTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура_Key,АналитикаУчетаНоменклатуры/Склад,АналитикаУчетаНоменклатуры/Description,АналитикаУчетаПоПартнерам/Партнер_Key,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Description",
+        "КоличествоTurnover,СуммаВыручкиTurnover,СуммаРучнойСкидкиTurnover,СуммаАвтоматическойСкидкиTurnover,АналитикаУчетаНоменклатуры/Номенклатура/Description,АналитикаУчетаНоменклатуры/Номенклатура/Производитель/Description,АналитикаУчетаПоПартнерам/Контрагент,АналитикаУчетаПоПартнерам/Партнер/Description",
       filter: `Менеджер_Key eq guid'${managerId}'`,
-      expand: "АналитикаУчетаНоменклатуры,АналитикаУчетаПоПартнерам",
+      expand:
+        "АналитикаУчетаПоПартнерам/Партнер,АналитикаУчетаНоменклатуры/Номенклатура/Производитель",
       orderBy: "СуммаВыручкиTurnover desc",
     }) as Promise<ISalesByPartnersAndNomenclatureFields[]>;
   }
