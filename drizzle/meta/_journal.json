@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711248935832,
-      "tag": "0000_melted_mikhail_rasputin",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1711249593640,
-      "tag": "0001_great_hex",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1711374349809,
-      "tag": "0002_stiff_daimon_hellstrom",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1711533412827,
-      "tag": "0003_unknown_shinobi_shaw",
+      "when": 1711979401932,
+      "tag": "0000_young_supreme_intelligence",
       "breakpoints": true
     }
   ]

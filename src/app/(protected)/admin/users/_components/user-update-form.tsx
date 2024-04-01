@@ -71,7 +71,7 @@ const UserUpdateForm = ({ userData }: UserUpdateFormProps) => {
     <Form {...form}>
       <Card>
         <form
-          className="p-4 flex flex-col gap-4 max-w-[600px] mx-auto"
+          className="mx-auto flex max-w-[600px] flex-col gap-4 p-4"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <CardHeader>
@@ -181,7 +181,7 @@ const UserUpdateForm = ({ userData }: UserUpdateFormProps) => {
               type="submit"
               variant="default"
               disabled={!form.formState.isValid || isUpdatePending}
-              className="w-full justify-center items-center gap-2"
+              className="w-full items-center justify-center gap-2"
               onClick={form.handleSubmit(onSubmit)}
             >
               Сохранить {isUpdatePending ? "..." : ""}

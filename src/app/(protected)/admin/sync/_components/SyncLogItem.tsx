@@ -57,7 +57,7 @@ const SyncLogItem = ({ item }: { item: any }) => {
   return (
     <Card>
       <CardHeader>
-        <span className="text-md font-semibold flex justify-between">
+        <span className="text-md flex justify-between font-semibold">
           {translateSyncType(item.type as SyncFormType)}
           {item.priceName ? ` (${item.priceName})` : ""}
           {renderBadge(item)}
@@ -65,23 +65,23 @@ const SyncLogItem = ({ item }: { item: any }) => {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between">
-          <div className="flex text-orange-500 justify-center items-center gap-1 font-semibold">
+          <div className="flex items-center justify-center gap-1 font-semibold text-orange-500">
             <OneCIcon width={20} height={20} />
             {entitiesFrom1C}
           </div>
-          <div className="flex text-emerald-500 justify-center items-center gap-1 font-semibold">
+          <div className="flex items-center justify-center gap-1 font-semibold text-emerald-500">
             <PlusCircledIcon width={20} height={20} />
             {entitiesCreated}
           </div>
-          <div className="flex text-blue-500 justify-center items-center gap-1 font-semibold">
+          <div className="flex items-center justify-center gap-1 font-semibold text-blue-500">
             <UpdateIcon width={20} height={20} />
             {entitiesUpdated}
           </div>
-          <div className="flex text-destructive justify-center items-center gap-1 font-semibold">
+          <div className="flex items-center justify-center gap-1 font-semibold text-destructive">
             <CrossCircledIcon width={20} height={20} />
             {entitiesMarkedDeleted}
           </div>
-          <div className="flex text-slate-500 justify-center items-center gap-1 font-semibold">
+          <div className="flex items-center justify-center gap-1 font-semibold text-slate-500">
             <ResetIcon width={20} height={20} />
             {entitiesIgnored}
           </div>

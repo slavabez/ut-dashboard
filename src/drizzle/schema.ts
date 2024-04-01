@@ -1,4 +1,3 @@
-import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -13,7 +12,6 @@ import {
   serial,
   text,
   timestamp,
-  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -65,51 +63,12 @@ export const users = pgTable("user", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const accounts = pgTable(
-  "account",
-  {
-    userId: uuid("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccount["type"]>().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
-  },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  }),
-);
-
 export const siteSettings = pgTable("site_settings", {
   id: serial("id").primaryKey(),
   settings: jsonb("settings"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-
-export const authToken = pgTable(
-  "auth_token",
-  {
-    id: uuid("id").notNull().defaultRandom().primaryKey(),
-    email: text("email"),
-    phone: text("phone"),
-    token: text("token").notNull(),
-    expires: timestamp("expires").notNull(),
-  },
-  (token) => ({
-    unqEmail: unique().on(token.email, token.token),
-    unqPhone: unique().on(token.phone, token.token),
-  }),
-);
 
 export const measurementUnits = pgTable("measurement_unit", {
   id: uuid("id").primaryKey().defaultRandom(),

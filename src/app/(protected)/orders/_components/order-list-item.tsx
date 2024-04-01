@@ -11,11 +11,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { IOrder } from "@/lib/1c-adapter";
-import {
-  format1CDocumentNumber,
-  formatDateShort,
-  formatPrice,
-} from "@/lib/utils";
+import { format1CDocumentNumber, formatPrice } from "@/lib/utils";
 
 const renderStatusBadge = (status: string, index: number) => {
   switch (status) {
@@ -47,7 +43,7 @@ const OrderListItem = ({ item, index }: { item: IOrder; index: number }) => {
   } = item;
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between items-center space-y-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div className="flex items-center gap-1">
           <Badge variant="outline">{index}</Badge>
           {format1CDocumentNumber(number)}

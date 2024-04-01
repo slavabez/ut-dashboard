@@ -23,6 +23,7 @@ export const getActiveUser = async (): Promise<IActionResponse<UserSelect>> => {
       phone: true,
       role: true,
       meta: true,
+      name: true,
     },
   });
   if (!dbUser) {

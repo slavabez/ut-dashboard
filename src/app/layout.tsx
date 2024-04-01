@@ -26,10 +26,10 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="ru">
         <body
-          className={`${inter.className} w-screen max-w-full min-h-screen flex flex-col`}
+          className={`${inter.className} flex min-h-screen w-screen max-w-full flex-col`}
         >
-          <header className="w-full bg-orange-500 text-white flex flex-col p-4">
-            <div className="max-w-[800px] mx-auto flex justify-between w-full items-center">
+          <header className="flex w-full flex-col bg-orange-500 p-4 text-white">
+            <div className="mx-auto flex w-full max-w-[800px] items-center justify-between">
               <Link className="text-2xl" href="/">
                 Сказка
               </Link>
@@ -37,11 +37,11 @@ export default async function RootLayout({
             </div>
           </header>
           <Breadcrumbs />
-          <main className="max-w-[800px] w-full mx-auto h-full justify-center items-center flex-grow">
+          <main className="mx-auto h-full w-full max-w-[800px] flex-grow items-center justify-center">
             {children}
           </main>
-          <footer className="bg-orange-500 text-white p-2">
-            <div className="max-w-[800px] mx-auto text-center">
+          <footer className="bg-orange-500 p-2 text-white">
+            <div className="mx-auto max-w-[800px] text-center">
               Сказка, панель управления
             </div>
           </footer>

@@ -39,7 +39,7 @@ const UserMetaUpdateForm = ({ initialUserMeta }: UserUpdateFormProps) => {
       <AccordionItem value={"1"}>
         <AccordionTrigger>Данные из 1С</AccordionTrigger>
         <AccordionContent>
-          <div className="gap-4 flex flex-col">
+          <div className="flex flex-col gap-4">
             <dl>
               <dt className="text-gray-500">Пользователь</dt>
               <dd>{userMeta?.name}</dd>

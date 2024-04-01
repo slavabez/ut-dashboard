@@ -55,9 +55,9 @@ const SalesByClients = async ({
   );
 
   return (
-    <div className="p-4 flex flex-col gap-2 justify-center">
-      <h1 className="text-xl font-semibold my-2 flex justify-center">
-        <Package className="mr-2" /> Продажи по товарам
+    <div className="flex flex-col justify-center gap-2 p-4">
+      <h1 className="my-2 flex justify-center text-xl font-semibold">
+        <Package className="mr-2" /> Продажи по клиентам
       </h1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
 
@@ -69,29 +69,37 @@ const SalesByClients = async ({
       <p>Общая скидка: {formatPrice(totals.discount)}</p>
       <Separator />
 
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-orange-500 text-white font-bold">
-            <TableCell>Клиент</TableCell>
-            <TableCell>Сумма</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {reportData.map((item, index) => {
-            return (
-              <TableRow
-                key={item.partner}
-                className={index % 2 === 0 ? "bg-orange-50" : ""}
-              >
-                <TableCell>{item.partner}</TableCell>
-                <TableCell>
-                  <span className="font-bold">{formatPrice(item.sum)}</span>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      {reportData.length === 0 && (
+        <p className="text-center text-muted-foreground">
+          Нет данных за выбранный период
+        </p>
+      )}
+
+      {reportData.length > 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-orange-500 font-bold text-white">
+              <TableCell>Клиент</TableCell>
+              <TableCell>Сумма</TableCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {reportData.map((item, index) => {
+              return (
+                <TableRow
+                  key={item.partner}
+                  className={index % 2 === 0 ? "bg-orange-50" : ""}
+                >
+                  <TableCell>{item.partner}</TableCell>
+                  <TableCell>
+                    <span className="font-bold">{formatPrice(item.sum)}</span>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };

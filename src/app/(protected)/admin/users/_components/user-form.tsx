@@ -14,10 +14,10 @@ interface UserUpdateFormProps {
 const UserForm = ({ userData }: UserUpdateFormProps) => {
   const userMeta = userData.meta as IUserMeta;
   return (
-    <div className="p-4 flex flex-col gap-4 max-w-[600px] mx-auto">
+    <div className="mx-auto flex max-w-[600px] flex-col gap-4 p-4">
       <UserUpdateForm userData={userData} />
       <UserMetaUpdateForm initialUserMeta={userMeta} />
-      <div className="gap-4 flex flex-col">
+      <div className="flex flex-col gap-4">
         <p suppressHydrationWarning>Создан: {timeAgo(userData.createdAt)}</p>
         <p suppressHydrationWarning>Обновлен: {timeAgo(userData.updatedAt)}</p>
       </div>

@@ -1,13 +1,4 @@
 import { type ClassValue, clsx } from "clsx";
-import React from "react";
-import { BiBasket } from "react-icons/bi";
-import { CiBoxes } from "react-icons/ci";
-import { IoIosPricetags } from "react-icons/io";
-import {
-  MdOutlineFactory,
-  MdOutlineShoppingBasket,
-  MdOutlineWarehouse,
-} from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 import { SyncFormType } from "@/app/(protected)/admin/sync/_components/SyncForm";
@@ -176,7 +167,13 @@ export function formatDateShort(date: Date): string {
   return dateFormatterDateOnly.format(date);
 }
 
-export function timeAgo(date: Date): string {
+export function timeAgo(date: Date | string): string {
+  if (!date) {
+    return "никогда";
+  }
+  if (typeof date === "string") {
+    date = new Date(date);
+  }
   const now = new Date();
 
   const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
@@ -231,5 +228,18 @@ export function translateDeliveryType(type: string): string {
       return "Доставка до клиента";
     default:
       return type;
+  }
+}
+
+export function translateRole(role: string): string {
+  switch (role) {
+    case "admin":
+      return "Администратор";
+    case "employee":
+      return "Сотрудник";
+    case "user":
+      return "Пользователь";
+    default:
+      return role;
   }
 }

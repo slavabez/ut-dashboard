@@ -14,7 +14,7 @@ import { IUserMeta, UserSelectNonSensitive } from "@/lib/common-types";
 import { timeAgo } from "@/lib/utils";
 
 const UserListItem = ({ user }: { user: UserSelectNonSensitive }) => {
-  const user1CMeta = user.meta as IUserMeta;
+  const user1CMeta = user.meta as IUserMeta | undefined;
 
   return (
     <li key={user.id}>
@@ -26,7 +26,7 @@ const UserListItem = ({ user }: { user: UserSelectNonSensitive }) => {
         <CardContent className="flex flex-col gap-2">
           <dl>
             <dt className="text-gray-500">Имя физ. лица</dt>
-            <dd>{user1CMeta.realName}</dd>
+            <dd>{user1CMeta?.realName}</dd>
           </dl>
           <dl>
             <dt className="text-gray-500">Роль</dt>

@@ -22,7 +22,7 @@ const NomenclaturePage = async ({
   });
   return (
     <div className="p-4">
-      <h1 className="text-2xl text-center pb-4">Номенклатура</h1>
+      <h1 className="pb-4 text-center text-2xl">Номенклатура</h1>
       <Suspense fallback={<div>Loading...</div>}>
         <NomenclatureFilterList items={allHierarchy} />
       </Suspense>

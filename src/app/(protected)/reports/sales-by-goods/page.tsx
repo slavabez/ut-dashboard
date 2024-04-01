@@ -6,16 +6,6 @@ import PieChart from "@/app/(protected)/reports/_components/pie-chart";
 import ReportInnerTable from "@/app/(protected)/reports/_components/report-inner-table";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { formatPrice } from "@/lib/utils";
 
 const SalesByGoodsPage = async ({
@@ -61,8 +51,8 @@ const SalesByGoodsPage = async ({
   const chartDataValues = reportData.map((item) => item.totals.sum);
 
   return (
-    <div className="p-4 flex flex-col gap-2 justify-center">
-      <h1 className="text-xl font-semibold my-2 flex justify-center">
+    <div className="flex flex-col justify-center gap-2 p-4">
+      <h1 className="my-2 flex justify-center text-xl font-semibold">
         <Package className="mr-2" /> Продажи по товарам
       </h1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
@@ -75,29 +65,39 @@ const SalesByGoodsPage = async ({
       <p>Общая скидка: {formatPrice(totals.discount)}</p>
       <Separator />
 
-      <PieChart
-        data={{
-          labels: chartDataLabels,
-          datasets: [
-            {
-              data: chartDataValues,
-            },
-          ],
-        }}
-      />
+      {reportData.length === 0 && (
+        <p className="text-center text-muted-foreground">
+          Нет данных за выбранный период
+        </p>
+      )}
 
-      <div>
-        {reportData.map((item) => {
-          return (
-            <ReportInnerTable
-              key={item.manufacturer}
-              title={item.manufacturer}
-              items={item.items}
-              totals={item.totals}
-            />
-          );
-        })}
-      </div>
+      {reportData.length > 0 && (
+        <>
+          <PieChart
+            data={{
+              labels: chartDataLabels,
+              datasets: [
+                {
+                  data: chartDataValues,
+                },
+              ],
+            }}
+          />
+
+          <div>
+            {reportData.map((item) => {
+              return (
+                <ReportInnerTable
+                  key={item.manufacturer}
+                  title={item.manufacturer}
+                  items={item.items}
+                  totals={item.totals}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };

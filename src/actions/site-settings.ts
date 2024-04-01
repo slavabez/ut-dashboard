@@ -1,8 +1,10 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { desc, eq, sql } from "drizzle-orm";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
+import { auth } from "@/auth";
 import { db } from "@/drizzle/db";
 import {
   PriceInsert,
@@ -11,6 +13,7 @@ import {
   prices,
   siteSettings,
   syncLogs,
+  users,
 } from "@/drizzle/schema";
 import { currentRole } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
@@ -69,7 +72,6 @@ async function getLatestSettingsFromDb(): Promise<SettingsSelect> {
   if (settings.length === 0) {
     throw new Error("No settings found");
   }
-
   return settings[0];
 }
 
@@ -173,6 +175,8 @@ export async function saveSiteSettings(
     })
     .returning();
 
+  revalidateTag("site-settings");
+
   return {
     status: "success",
     data: newSettings[0],
@@ -180,7 +184,15 @@ export async function saveSiteSettings(
 }
 
 export async function getGuidsFrom1C(): Promise<IActionResponse<any>> {
-  // TODO: add a role check?
+  const role = await currentRole();
+
+  if (role !== "admin") {
+    return {
+      status: "error",
+      error: "У вас недостаточно прав для этого действия",
+    };
+  }
+
   try {
     const warehouses = await From1C.getAllWarehouses();
     const priceTypes = await From1C.getAllPriceTypes();
@@ -303,5 +315,65 @@ export async function deletePriceFromDb(
   return {
     status: "success",
     data: "Цена успешно удалена",
+  };
+}
+
+export async function invalidateSiteSettingsCache() {
+  revalidateTag("site-settings");
+}
+
+/**
+ * Check if the site has been initialized.
+ * Checks if there are any site settings in the database.
+ * If none, check if there are any admin level users
+ *
+ */
+export async function checkInit(): Promise<IActionResponse<string>> {
+  const adminCount = await db
+    .select()
+    .from(users)
+    .where(eq(users.role, "admin"))
+    .limit(1);
+  if (adminCount.length === 0) {
+    // Create a default admin user
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+    const newUserRes = await db
+      .insert(users)
+      .values({
+        phone: "+79999999999",
+        name: "Первоначальный администратор",
+        password: hashedPassword,
+        role: "admin",
+      })
+      .returning();
+    if (newUserRes.length === 0) {
+      return {
+        status: "error",
+        error: "Ошибка при создании профиля",
+      };
+    }
+    console.log(
+      `Created a default admin user with password: ${randomPassword} and phone: +79999999999`,
+    );
+    return {
+      status: "success",
+      data: `Ваш профиль был создан, ${newUserRes[0].name}. Вы можете войти на сайт с помощью номера телефона +79999999999 и пароля. Ваш пароль: ${randomPassword}`,
+    };
+  }
+
+  const authObj = await auth();
+
+  if (authObj?.user?.role !== "admin") {
+    return {
+      status: "error",
+      error:
+        "Вы не администратор. Войдите под администратором для настройки сайта",
+    };
+  }
+
+  return {
+    status: "success",
+    data: "Первоначальная настройка сайта",
   };
 }

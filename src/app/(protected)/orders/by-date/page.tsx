@@ -19,7 +19,7 @@ const OrdersByOrderDate = async ({
   if (orders.status === "error") {
     return (
       <div className="p-4">
-        <h1 className="text-xl font-semibold text-center my-2">
+        <h1 className="my-2 text-center text-xl font-semibold">
           <CalendarDays className="mr-2" /> Заказы по дате создания
         </h1>
         <OrderDatePicker
@@ -37,7 +37,7 @@ const OrdersByOrderDate = async ({
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold text-center my-2 flex">
+      <h1 className="my-2 flex text-center text-xl font-semibold">
         <CalendarDays className="mr-2" /> Заказы по дате создания
       </h1>
       <OrderDatePicker
@@ -45,7 +45,7 @@ const OrdersByOrderDate = async ({
         title="Дата заказов"
         description="Здесь будут показаны заказы, созданные в выбранный вами день."
       />
-      <div className="text-center text-muted-foreground mb-4">
+      <div className="mb-4 text-center text-muted-foreground">
         Заказов: {totalCount} на сумму {formatPrice(totalSum)}
       </div>
       <OrderList orders={orders.data} />

@@ -30,7 +30,7 @@ const PieChart = (props: IPieChartProps) => {
   ].reverse();
   data.datasets[0].borderWidth = 1;
   return (
-    <div className="w-full max-w-[500px] m-auto py-4">
+    <div className="m-auto w-full max-w-[500px] py-4">
       <Pie data={data} />
     </div>
   );

@@ -71,8 +71,8 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
 
   if (skeleton) {
     return (
-      <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
-        <h2 className="text-xl text-center">{formTitle}</h2>
+      <div className="my-2 flex flex-col items-center justify-center gap-4 p-2">
+        <h2 className="text-center text-xl">{formTitle}</h2>
         <Button disabled={true} type="button">
           {buttonText}
         </Button>
@@ -127,8 +127,8 @@ const SyncForm = ({ syncType, skeleton }: SyncFormProps) => {
   };
 
   return (
-    <div className="my-2 p-2 flex flex-col gap-4 justify-center items-center">
-      <h2 className="text-xl text-center">{formTitle}</h2>
+    <div className="my-2 flex flex-col items-center justify-center gap-4 p-2">
+      <h2 className="text-center text-xl">{formTitle}</h2>
       <Button
         onClick={handleClick}
         disabled={isPending}

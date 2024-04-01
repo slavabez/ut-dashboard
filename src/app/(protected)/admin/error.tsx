@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center text-center space-y-4 m-4">
+    <div className="m-4 flex flex-col items-center justify-center space-y-4 text-center">
       <h2 className="text-2xl">Упс! Ошибочка</h2>
       <p>{error.message}</p>
       <Button onClick={() => reset()}>Попробовать еще раз</Button>

@@ -9,7 +9,6 @@ import {
   TableCaption,
   TableCell,
   TableFooter,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -29,7 +28,7 @@ const OrderDetailsPage = async ({
   if (orderResponse.status === "error") {
     return (
       <div className="p-4">
-        <h1 className="text-xl font-semibold text-center my-2">📦 Заказ</h1>
+        <h1 className="my-2 text-center text-xl font-semibold">📦 Заказ</h1>
         <div className="text-center text-red-500">{orderResponse.error}</div>
       </div>
     );
@@ -39,7 +38,7 @@ const OrderDetailsPage = async ({
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-center my-2">
+      <h1 className="my-2 text-center text-xl font-semibold">
         📦 Заказ №{format1CDocumentNumber(order.number)}
       </h1>
       <div className="flex flex-col gap-4 px-4">
@@ -106,7 +105,7 @@ const OrderDetailsPage = async ({
               <TableRow
                 key={item.line}
                 className={
-                  item.cancelled ? "line-through text-muted-foreground" : ""
+                  item.cancelled ? "text-muted-foreground line-through" : ""
                 }
               >
                 <TableCell>{item.nomenclatureName}</TableCell>

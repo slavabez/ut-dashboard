@@ -1,7 +1,7 @@
 /**
  * @description Publicly accessible routes
  */
-export const publicRoutes = ["/"];
+export const publicRoutes = ["/", "/admin/site-settings"];
 
 /**
  * @description Authenticated routes.

@@ -67,7 +67,7 @@ const FormComboBoxSelect = (props: IFormComboBoxSelectProps) => {
           >
             <Badge
               variant="outline"
-              className="w-10 flex items-center justify-center"
+              className="flex w-10 items-center justify-center"
             >
               {element.count}
             </Badge>
@@ -97,7 +97,7 @@ const FormComboBoxSelect = (props: IFormComboBoxSelectProps) => {
         >
           <Badge
             variant={value === element.id ? "default" : "outline"}
-            className="w-10 flex items-center justify-center"
+            className="flex w-10 items-center justify-center"
           >
             {element.count}
           </Badge>
@@ -120,7 +120,7 @@ const FormComboBoxSelect = (props: IFormComboBoxSelectProps) => {
           <ChevronsUpDown />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] mx-2 p-0">
+      <PopoverContent className="mx-2 w-[300px] p-0">
         <Command>
           <CommandInput placeholder={label} />
           <CommandEmpty>Нет данных</CommandEmpty>

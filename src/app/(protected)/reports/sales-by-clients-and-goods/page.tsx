@@ -78,6 +78,8 @@ const processData = (
   return processed;
 };
 
+// TODO: Refactor into smaller components
+
 const SalesByClientsAndGoods = async ({
   searchParams,
 }: {
@@ -100,7 +102,7 @@ const SalesByClientsAndGoods = async ({
     if (response.status === "error") {
       return (
         <div className="p-4">
-          <h1 className="text-xl font-semibold text-center my-2">
+          <h1 className="my-2 text-center text-xl font-semibold">
             <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
             <Package className="ml-2" />
           </h1>
@@ -115,8 +117,8 @@ const SalesByClientsAndGoods = async ({
   }
 
   return (
-    <div className="p-4 flex flex-col gap-2 justify-center">
-      <h1 className="text-xl font-semibold my-2 flex justify-center text-center items-center">
+    <div className="flex flex-col justify-center gap-2 p-4">
+      <h1 className="my-2 flex items-center justify-center text-center text-xl font-semibold">
         <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
         <Package className="ml-2" />
       </h1>
@@ -142,10 +144,16 @@ const SalesByClientsAndGoods = async ({
       </p>
       <Separator />
 
+      {reportData.length === 0 && (
+        <p className="text-center text-muted-foreground">
+          Нет данных за выбранный период
+        </p>
+      )}
+
       <div>
         {reportData.map(({ partner, manufacturers, aggregates }) => (
           <Collapsible key={partner}>
-            <CollapsibleTrigger className="bg-orange-100 w-full p-4 flex justify-between items-center gap-2">
+            <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 bg-orange-100 p-4">
               <div>{partner}</div>
               <div className="flex gap-2 font-bold">
                 {formatPrice(aggregates.sum)}
@@ -155,7 +163,7 @@ const SalesByClientsAndGoods = async ({
             <CollapsibleContent>
               {manufacturers.map(({ manufacturer, items, aggregates }) => (
                 <Collapsible key={manufacturer}>
-                  <CollapsibleTrigger className="bg-orange-50 w-full p-4 flex justify-between items-center gap-2">
+                  <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 bg-orange-50 p-4">
                     <div>{manufacturer}</div>
                     <div className="flex gap-2 font-bold">
                       {formatPrice(aggregates.sum)}

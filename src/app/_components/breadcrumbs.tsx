@@ -25,7 +25,7 @@ const Breadcrumbs = () => {
 
   return (
     <Breadcrumb className="bg-orange-100">
-      <BreadcrumbList className="px-4 py-2 gap-2 max-w-[800px] mx-auto">
+      <BreadcrumbList className="mx-auto max-w-[800px] gap-2 px-4 py-2">
         {allBreadcrumbs.map((item, index) => {
           const innerItems = getSubNavItems(item.href ?? "");
           if (!innerItems || innerItems.length === 0) {

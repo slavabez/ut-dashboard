@@ -176,6 +176,62 @@ export const allNavItems: Map<string, INavItem> = new Map([
       href: "/admin/site-settings",
     },
   ],
+  [
+    "/orders",
+    {
+      id: "orders",
+      name: "Сверка заказов",
+      href: "/orders",
+    },
+  ],
+  [
+    "/orders/by-date",
+    {
+      id: "/orders/by-date",
+      name: "Заказы по дате создания",
+      href: "/orders/by-date",
+    },
+  ],
+  [
+    "/orders/by-delivery-date",
+    {
+      id: "/orders/by-delivery-date",
+      name: "Заказы по дате доставки",
+      href: "/orders/by-delivery-date",
+    },
+  ],
+  [
+    "/reports",
+    {
+      id: "orders",
+      name: "Отчёты по продажам",
+      href: "/orders",
+    },
+  ],
+  [
+    "/reports/sales-by-goods",
+    {
+      id: "/reports/sales-by-goods",
+      name: "Продажи по товарам",
+      href: "/reports/sales-by-goods",
+    },
+  ],
+  [
+    "/reports/sales-by-clients",
+    {
+      id: "/reports/sales-by-clients",
+      name: "Продажи по клиентам",
+      href: "/reports/sales-by-clients",
+    },
+  ],
+  [
+    "/reports/sales-by-clients-and-goods",
+    {
+      id: "/reports/sales-by-clients-and-goods",
+      name: "Продажи по клиентам и товарам",
+      href: "/reports/sales-by-clients-and-goods",
+    },
+  ],
 ]);
 
 export const getBreadcrumbsForPath = (path: string): IBreadcrumbItem[] => {
@@ -201,10 +257,9 @@ export const subNavItems = new Map<string, INavItem[]>([
   [
     "/",
     [
-      allNavItems.get("/auth/register")!,
-      allNavItems.get("/auth/login")!,
       allNavItems.get("/profile")!,
-      allNavItems.get("/admin")!,
+      allNavItems.get("/orders")!,
+      allNavItems.get("/reports")!,
     ],
   ],
   [
@@ -225,6 +280,21 @@ export const subNavItems = new Map<string, INavItem[]>([
       allNavItems.get("/admin/sync/nomenclature-types")!,
       allNavItems.get("/admin/sync/prices")!,
       allNavItems.get("/admin/sync/stock")!,
+    ],
+  ],
+  [
+    "/orders",
+    [
+      allNavItems.get("/orders/by-date")!,
+      allNavItems.get("/orders/by-delivery-date")!,
+    ],
+  ],
+  [
+    "/reports",
+    [
+      allNavItems.get("/reports/sales-by-goods")!,
+      allNavItems.get("/reports/sales-by-clients")!,
+      allNavItems.get("/reports/sales-by-clients-and-goods")!,
     ],
   ],
 ]);

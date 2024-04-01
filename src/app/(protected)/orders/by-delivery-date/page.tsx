@@ -1,7 +1,7 @@
-import { CalendarDays, Truck } from "lucide-react";
+import { Truck } from "lucide-react";
 import React from "react";
 
-import { getOrdersByDate, getOrdersByDeliveryDate } from "@/actions/orders";
+import { getOrdersByDeliveryDate } from "@/actions/orders";
 import OrderDatePicker from "@/app/(protected)/orders/_components/order-date-picker";
 import OrderList from "@/app/(protected)/orders/_components/order-list";
 import { formatPrice, getDateFor1C } from "@/lib/utils";
@@ -19,7 +19,7 @@ const OrdersByDeliveryDate = async ({
   if (orders.status === "error") {
     return (
       <div className="p-4">
-        <h1 className="text-xl font-semibold text-center my-2">
+        <h1 className="my-2 text-center text-xl font-semibold">
           <Truck className="mr-2" /> Заказы по дате доставки
         </h1>
         <OrderDatePicker
@@ -37,7 +37,7 @@ const OrdersByDeliveryDate = async ({
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold text-center my-2 flex">
+      <h1 className="my-2 flex text-center text-xl font-semibold">
         <Truck className="mr-2" /> Заказы по дате доставки
       </h1>
       <OrderDatePicker
@@ -45,7 +45,7 @@ const OrdersByDeliveryDate = async ({
         title="Дата доставки"
         description="Здесь будут показаны заказы, помеченные на доставку в выбранный вами день."
       />
-      <div className="text-center text-muted-foreground mb-4">
+      <div className="mb-4 text-center text-muted-foreground">
         Заказов: {totalCount} на сумму {formatPrice(totalSum)}
       </div>
       <OrderList orders={orders.data} />

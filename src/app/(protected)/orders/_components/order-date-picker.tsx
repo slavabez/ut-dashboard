@@ -2,18 +2,10 @@
 
 import { ru } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
@@ -75,7 +67,7 @@ const OrderDatePicker = (props: IOrderDatePickerProps) => {
         </PopoverContent>
       </Popover>
       {description && (
-        <p className="text-muted-foreground text-sm mb-4">{description}</p>
+        <p className="mb-4 text-sm text-muted-foreground">{description}</p>
       )}
     </div>
   );

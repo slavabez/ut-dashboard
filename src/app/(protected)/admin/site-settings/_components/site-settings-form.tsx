@@ -26,7 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 interface ISiteSettingsFormProps {
-  initialData: ISiteSettings;
+  initialData?: ISiteSettings;
   guidsFrom1C: any;
 }
 
@@ -60,11 +60,12 @@ const SiteSettingsForm = (props: ISiteSettingsFormProps) => {
     <div>
       <Form {...form}>
         <form
-          className="p-4 flex flex-col gap-4 mx-auto"
+          className="mx-auto flex flex-col gap-4"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormSuccess message={success} />
           <FormError message={error} />
+          <Separator />
           <h2 className="text-lg font-bold">Для пользователей</h2>
           <FormField
             name="guidsForSync.user.showOnSite"

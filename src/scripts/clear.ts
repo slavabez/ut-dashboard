@@ -8,7 +8,11 @@ import {
   nomenclatureTypes,
   nomenclatures,
   partners,
+  prices,
+  pricesToNomenclature,
+  siteSettings,
   syncLogs,
+  users,
 } from "@/drizzle/schema";
 
 config({
@@ -30,6 +34,10 @@ if (!process.env.PG_URL) {
 
   await db.delete(syncLogs);
   console.log("Dropped syncLogs");
+  await db.delete(pricesToNomenclature);
+  console.log("Dropped pricesToNomenclature");
+  await db.delete(prices);
+  console.log("Dropped prices");
   await db.delete(measurementUnits);
   console.log("Dropped measurementUnits");
   await db.delete(partners);
@@ -40,6 +48,10 @@ if (!process.env.PG_URL) {
   console.log("Dropped nomenclatureTypes");
   await db.delete(manufacturers);
   console.log("Dropped manufacturers");
+  await db.delete(siteSettings);
+  console.log("Dropped accounts");
+  await db.delete(users);
+  console.log("Dropped users");
 
   await client.end();
 })();

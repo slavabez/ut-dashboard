@@ -31,7 +31,7 @@ const ReportInnerTable = (props: IReportTableProps) => {
   const { items, title, totals } = props;
   return (
     <Collapsible>
-      <CollapsibleTrigger className="bg-orange-50 font-bold w-full p-4 flex justify-between">
+      <CollapsibleTrigger className="flex w-full justify-between bg-orange-50 p-4 font-bold">
         <div className="font-normal">{title}</div>
         <div className="flex gap-2">
           {formatPrice(totals.sum)}

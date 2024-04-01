@@ -9,7 +9,7 @@ const AuthErrorPage = () => {
       backButtonHref="/auth/login"
       backButtonLabel="Вернуться к входу"
     >
-      <div className="w-full flex justify-center items-center">
+      <div className="flex w-full items-center justify-center">
         <ExclamationTriangleIcon className="text-destructive" />
       </div>
     </CardWrapper>

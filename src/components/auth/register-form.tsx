@@ -83,7 +83,7 @@ const RegisterForm = () => {
           <FormSuccess message={success} />
           {success && (
             <Link
-              className="text-center text-blue-500 block"
+              className="block text-center text-blue-500"
               href="/auth/login"
             >
               Войти

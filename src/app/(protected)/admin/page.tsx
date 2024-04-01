@@ -4,9 +4,9 @@ import React from "react";
 const AdminPage = () => {
   return (
     <div>
-      <h1 className="text-2xl p-4 text-center font-bold">Админка</h1>
+      <h1 className="p-4 text-center text-2xl font-bold">Админка</h1>
       <nav>
-        <ul className="flex flex-col items-center space-y-2 text-orange-500 text-lg">
+        <ul className="flex flex-col items-center space-y-2 text-lg text-orange-500">
           <li>
             <Link href="/admin/sync">Синхронизация</Link>
           </li>

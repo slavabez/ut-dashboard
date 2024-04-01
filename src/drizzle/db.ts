@@ -5,7 +5,9 @@ import * as schema from "@/drizzle/schema";
 import { env } from "@/env.mjs";
 
 const client = postgres(env.PG_URL, {
-  max: 5,
+  max: 20,
 });
+
+// Reuse the client
 
 export const db = drizzle(client, { schema });

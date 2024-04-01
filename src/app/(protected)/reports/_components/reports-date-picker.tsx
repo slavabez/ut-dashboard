@@ -1,9 +1,7 @@
 "use client";
 
-import { addDays, format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -93,7 +91,7 @@ export function ReportsDateRangePicker({
         </PopoverContent>
       </Popover>
       {description && (
-        <p className="text-muted-foreground text-sm mb-4">{description}</p>
+        <p className="mb-4 text-sm text-muted-foreground">{description}</p>
       )}
     </div>
   );

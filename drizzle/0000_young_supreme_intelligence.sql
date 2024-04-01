@@ -4,31 +4,6 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "account" (
-	"userId" uuid NOT NULL,
-	"type" text NOT NULL,
-	"provider" text NOT NULL,
-	"providerAccountId" text NOT NULL,
-	"refresh_token" text,
-	"access_token" text,
-	"expires_at" integer,
-	"token_type" text,
-	"scope" text,
-	"id_token" text,
-	"session_state" text,
-	CONSTRAINT "account_provider_providerAccountId_pk" PRIMARY KEY("provider","providerAccountId")
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "auth_token" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"email" text,
-	"phone" text,
-	"token" text NOT NULL,
-	"expires" timestamp NOT NULL,
-	CONSTRAINT "auth_token_email_token_unique" UNIQUE("email","token"),
-	CONSTRAINT "auth_token_phone_token_unique" UNIQUE("phone","token")
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "manufacturer" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -75,9 +50,6 @@ CREATE TABLE IF NOT EXISTS "nomenclature" (
 	"code" text,
 	"is_weight_goods" boolean DEFAULT false NOT NULL,
 	"minimum_weight" real,
-	"price" integer,
-	"price_date" timestamp,
-	"price_updated_at" timestamp,
 	"stock" real,
 	"stock_date" timestamp,
 	"stock_updated_at" timestamp,
@@ -116,7 +88,6 @@ CREATE TABLE IF NOT EXISTS "price_to_nomenclature" (
 	"price_id" uuid NOT NULL,
 	"nomenclature_id" uuid NOT NULL,
 	"price" integer,
-	"currency" text,
 	"measurement_unit_id" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -158,12 +129,6 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "measurement_unit" ADD CONSTRAINT "measurement_unit_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -188,19 +153,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "sync_log" ADD CONSTRAINT "sync_log_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "sync_log" ADD CONSTRAINT "sync_log_price_id_price_id_fk" FOREIGN KEY ("price_id") REFERENCES "price"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

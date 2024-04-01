@@ -5,7 +5,7 @@ import UserList from "@/app/(protected)/admin/users/_components/user-list";
 const UsersAdminPage = () => {
   return (
     <div className="max-w-full">
-      <h1 className="text-xl font-semibold text-center p-2">Пользователи</h1>
+      <h1 className="p-2 text-center text-xl font-semibold">Пользователи</h1>
       <UserList />
     </div>
   );
