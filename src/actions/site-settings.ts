@@ -10,6 +10,7 @@ import {
   PriceInsert,
   PriceSelect,
   SettingsSelect,
+  UserSelect,
   prices,
   siteSettings,
   syncLogs,
@@ -335,7 +336,25 @@ export async function checkInit(): Promise<IActionResponse<string>> {
     .where(eq(users.role, "admin"))
     .limit(1);
   if (adminCount.length === 0) {
-    // Create a default admin user
+    return {
+      status: "success",
+      data: "Сайт не настроен",
+    };
+  }
+  return {
+    status: "error",
+    error: "Сайт уже настроен",
+  };
+}
+
+export async function initialiseSite(): Promise<IActionResponse<any>> {
+  const adminCount = await db
+    .select()
+    .from(users)
+    .where(eq(users.role, "admin"))
+    .limit(1);
+
+  if (adminCount.length === 0) {
     const randomPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
     const newUserRes = await db
@@ -358,22 +377,14 @@ export async function checkInit(): Promise<IActionResponse<string>> {
     );
     return {
       status: "success",
-      data: `Ваш профиль был создан, ${newUserRes[0].name}. Вы можете войти на сайт с помощью номера телефона +79999999999 и пароля. Ваш пароль: ${randomPassword}`,
-    };
-  }
-
-  const authObj = await auth();
-
-  if (authObj?.user?.role !== "admin") {
-    return {
-      status: "error",
-      error:
-        "Вы не администратор. Войдите под администратором для настройки сайта",
+      data: {
+        user: newUserRes[0],
+      },
     };
   }
 
   return {
-    status: "success",
-    data: "Первоначальная настройка сайта",
+    status: "error",
+    error: "Сайт уже настроен",
   };
 }

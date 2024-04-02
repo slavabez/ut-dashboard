@@ -5,6 +5,7 @@ import {
   checkInit,
   getGuidsFrom1C,
   getLatestSiteSettings,
+  initialiseSite,
   invalidateSiteSettingsCache,
 } from "@/actions/site-settings";
 import SiteSettingsForm from "@/app/(protected)/admin/site-settings/_components/site-settings-form";
@@ -18,20 +19,15 @@ const SiteSettingsPage = async () => {
   if (latestSettings.status === "error") {
     if (latestSettings.error === "No settings found") {
       const initialCheck = await checkInit();
-      if (initialCheck.status === "error") {
+      if (initialCheck.status === "success") {
         return (
-          <div className="p-4">
-            <Alert variant="destructive">{initialCheck.error}</Alert>
+          <div className="flex flex-col gap-4 p-4">
+            <Alert variant="primary">{initialCheck.data}</Alert>
+            <form action={initialiseSite}>
+              <Button type="submit">Инициализировать сайт</Button>
+            </form>
           </div>
         );
-      } else {
-        if (initialCheck.data.includes("Ваш профиль был создан")) {
-          return (
-            <div className="p-4">
-              <Alert variant="primary">{initialCheck.data}</Alert>
-            </div>
-          );
-        }
       }
     } else {
       return <Alert variant="destructive">{latestSettings.error}</Alert>;

@@ -237,6 +237,10 @@ export async function getSpecificODataResponseArray({
   const authHeader = env.ODATA_API_AUTH_HEADER;
   const baseUrl = env.ODATA_API_URL;
 
+  if (!authHeader || !baseUrl) {
+    throw new Error("ODATA_API_AUTH_HEADER and ODATA_API_URL are not set");
+  }
+
   // Cannot use URLParams because it encodes and breaks the OData query
   let params = `$format=json`;
   if (filter) {
