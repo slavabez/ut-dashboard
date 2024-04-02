@@ -1,7 +1,33 @@
 import Link from "next/link";
 import React from "react";
 
-const AdminPage = () => {
+import { getActiveUser } from "@/actions/user/active-user";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+const AdminPage = async () => {
+  const userResponse = await getActiveUser();
+
+  if (userResponse.status === "error") {
+    return (
+      <div className="p-4">
+        <Alert>
+          <AlertTitle>Ошибка</AlertTitle>
+          <AlertDescription>{userResponse.error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+  if (userResponse.data.role !== "admin") {
+    return (
+      <div className="p-4">
+        <Alert>
+          <AlertTitle>Ошибка</AlertTitle>
+          <AlertDescription>У вас нет доступа к этой странице</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="p-4 text-center text-2xl font-bold">Админка</h1>

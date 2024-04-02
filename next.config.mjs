@@ -30,7 +30,7 @@ export default withSentryConfig(
     silent: true,
     org: "sentry",
     project: "skazka-admin-2024",
-    url: "http://slavanet.blogdns.com:9000/",
+    url: "http://slavanet.blogdns.com:9000",
   },
   {
     // For all available options, see:
