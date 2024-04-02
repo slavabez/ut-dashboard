@@ -1,14 +1,16 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { signOut } from "@/auth";
 import { getUserById } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { UserSelect, userRoleValues, users } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
-import { currentRole } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import {
   IActionResponse,
   IUserMeta,
@@ -232,4 +234,104 @@ export async function fetchMetaFrom1C(
     status: "success",
     data: result[0],
   };
+}
+
+export async function setUserPassword(
+  userId: string,
+  password: string,
+): Promise<IActionResponse<UserSelectNonSensitive>> {
+  const role = await currentRole();
+  const loggedInUser = await currentUser();
+
+  if (role !== "admin") {
+    return {
+      status: "error",
+      error: "У вас недостаточно прав для этого действия",
+    };
+  }
+
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return {
+      status: "error",
+      error: "Пользователь не найден",
+    };
+  }
+
+  // Admins can't change other admins passwords
+  if (user.role === "admin" && loggedInUser?.id !== user.id) {
+    return {
+      status: "error",
+      error: "Нельзя изменить пароль администратора",
+    };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const result = await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, userId))
+      .returning();
+    if (result.length === 0) {
+      return {
+        status: "error",
+        error: "Пользователь не найден",
+      };
+    }
+    revalidatePath(`/admin/users/${result[0].id}`);
+    return {
+      status: "success",
+      data: result[0],
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      status: "error",
+      error: "Ошибка при установке пароля пользователя",
+    };
+  }
+}
+
+export async function deleteUser(
+  userId: string,
+): Promise<IActionResponse<string>> {
+  const role = await currentRole();
+  const currUser = await currentUser();
+
+  if (role !== "admin") {
+    return {
+      status: "error",
+      error: "У вас недостаточно прав для этого действия",
+    };
+  }
+
+  try {
+    const result = await db
+      .delete(users)
+      .where(eq(users.id, userId))
+      .returning();
+    if (result.length === 0) {
+      return {
+        status: "error",
+        error: "Пользователь не найден",
+      };
+    }
+    revalidatePath(`/admin/users`);
+    if (userId === currUser?.id) {
+      await signOut();
+    }
+    return {
+      status: "success",
+      data: userId,
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      status: "error",
+      error: "Ошибка при удалении пользователя",
+    };
+  }
 }

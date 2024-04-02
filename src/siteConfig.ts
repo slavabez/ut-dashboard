@@ -203,9 +203,9 @@ export const allNavItems: Map<string, INavItem> = new Map([
   [
     "/reports",
     {
-      id: "orders",
+      id: "/reports",
       name: "Отчёты по продажам",
-      href: "/orders",
+      href: "/reports",
     },
   ],
   [

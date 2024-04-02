@@ -2,10 +2,12 @@
 
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
+import { IActionResponse, UserSelectNonSensitive } from "@/lib/common-types";
 import { getUsersParsed } from "@/lib/users";
 import { normalizePhoneNumber } from "@/lib/utils";
 import { RegisterSchema } from "@/schemas";
@@ -67,6 +69,8 @@ export const register = async (
         error: "Ошибка при создании профиля",
       };
     }
+    revalidatePath(`/admin/users`);
+
     return {
       success: `Ваш профиль был создан, ${newUserRes[0].name}. Вы можете войти на сайт с помощью номера телефона и пароля`,
     };
@@ -76,3 +80,66 @@ export const register = async (
     };
   }
 };
+
+export async function addUserFrom1C(
+  phone: string,
+): Promise<IActionResponse<UserSelectNonSensitive>> {
+  const normalizedPhone = normalizePhoneNumber(phone);
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.phone, normalizedPhone),
+  });
+  if (existingUser) {
+    return {
+      status: "error",
+      error: "Пользователь с таким номером телефона уже существует",
+    };
+  }
+
+  const all1CUsers = await getUsersParsed();
+  const user = all1CUsers.find((user) => user.phone === phone);
+  if (user) {
+    // Found the relevant user in 1c, create the user in our db
+    if (!user.sitePassword) {
+      return {
+        status: "error",
+        error: "У пользователя не установлен доп. реквизит пароль в 1С",
+      };
+    }
+    if (!user.siteRole) {
+      return {
+        status: "error",
+        error: "У пользователя не установлен доп. реквизит роль на сайте",
+      };
+    }
+    const hashedPassword = await bcrypt.hash(user.sitePassword, 10);
+    const newUserRes = await db
+      .insert(users)
+      .values({
+        id: user.id,
+        phone: user.phone,
+        name: user.name,
+        password: hashedPassword,
+        email: user.email,
+        role: user.siteRole as any,
+        meta: user,
+      })
+      .returning();
+    if (newUserRes.length === 0) {
+      return {
+        status: "error",
+        error: "Ошибка при создании профиля",
+      };
+    }
+    revalidatePath(`/admin/users/${newUserRes[0].id}`);
+    revalidatePath(`/admin/users`);
+    return {
+      status: "success",
+      data: newUserRes[0],
+    };
+  } else {
+    return {
+      status: "error",
+      error: "Пользователь не найден в базе 1С",
+    };
+  }
+}

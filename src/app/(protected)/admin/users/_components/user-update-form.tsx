@@ -70,10 +70,7 @@ const UserUpdateForm = ({ userData }: UserUpdateFormProps) => {
   return (
     <Form {...form}>
       <Card>
-        <form
-          className="mx-auto flex max-w-[600px] flex-col gap-4 p-4"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
             <CardTitle>Пользователь {form.getValues("name")}</CardTitle>
           </CardHeader>

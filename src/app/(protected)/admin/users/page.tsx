@@ -1,11 +1,13 @@
 import React from "react";
 
+import AddUserForm from "@/app/(protected)/admin/users/_components/add-user";
 import UserList from "@/app/(protected)/admin/users/_components/user-list";
 
 const UsersAdminPage = () => {
   return (
-    <div className="max-w-full">
-      <h1 className="p-2 text-center text-xl font-semibold">Пользователи</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-center text-2xl font-semibold">Пользователи</h1>
+      <AddUserForm />
       <UserList />
     </div>
   );
