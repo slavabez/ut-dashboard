@@ -2,7 +2,9 @@ import Link from "next/link";
 import React from "react";
 
 import { getActiveUser } from "@/actions/user/active-user";
+import LinkOpener from "@/app/(protected)/_components/link-opener";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 const AdminPage = async () => {
   const userResponse = await getActiveUser();
@@ -29,24 +31,24 @@ const AdminPage = async () => {
   }
 
   return (
-    <div>
-      <h1 className="p-4 text-center text-2xl font-bold">Админка</h1>
-      <nav>
-        <ul className="flex flex-col items-center space-y-2 text-lg text-orange-500">
-          <li>
-            <Link href="/admin/sync">Синхронизация</Link>
-          </li>
-          <li>
-            <Link href="/admin/prices">Цены из 1С</Link>
-          </li>
-          <li>
-            <Link href="/admin/users">Пользователи</Link>
-          </li>
-          <li>
-            <Link href="/admin/site-settings">Глобальные настройки сайта</Link>
-          </li>
-        </ul>
-      </nav>
+    <div className="flex flex-col items-stretch gap-2 p-4">
+      <h1 className="mb-2 text-center text-2xl font-bold">Админка</h1>
+      <Button asChild>
+        <Link href="/admin/sync">Синхронизация</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/admin/prices">Цены из 1С</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/admin/users">Пользователи</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/admin/nomenclature">Номенклатура</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/admin/site-settings">Глобальные настройки сайта</Link>
+      </Button>
+      <LinkOpener />
     </div>
   );
 };

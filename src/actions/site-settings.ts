@@ -23,6 +23,7 @@ import { From1C } from "@/lib/odata";
 export interface ISiteSettings {
   guidsForSync?: {
     warehouse?: string;
+    showManufacturerOrder?: string;
     user?: {
       showOnSite?: string;
       sitePassword?: string;
@@ -44,6 +45,7 @@ export interface ISiteSettings {
 export interface ISiteSettingsExact {
   guidsForSync: {
     warehouse: string;
+    showManufacturerOrder: string;
     user: {
       showOnSite: string;
       sitePassword: string;
@@ -184,6 +186,22 @@ export async function saveSiteSettings(
   };
 }
 
+async function getGuidsRaw() {
+  const warehouses = await From1C.getAllWarehouses();
+  const priceTypes = await From1C.getAllPriceTypes();
+  const additionalProperties = await From1C.getAllAdditionalProperties();
+  const mainUnits = await From1C.getMainUnits();
+  const propertyValues = await From1C.getAllPropertyValues();
+
+  return {
+    warehouses,
+    priceTypes,
+    additionalProperties,
+    mainUnits,
+    propertyValues,
+  };
+}
+
 export async function getGuidsFrom1C(): Promise<IActionResponse<any>> {
   const role = await currentRole();
 
@@ -195,21 +213,11 @@ export async function getGuidsFrom1C(): Promise<IActionResponse<any>> {
   }
 
   try {
-    const warehouses = await From1C.getAllWarehouses();
-    const priceTypes = await From1C.getAllPriceTypes();
-    const additionalProperties = await From1C.getAllAdditionalProperties();
-    const mainUnits = await From1C.getMainUnits();
-    const propertyValues = await From1C.getAllPropertyValues();
+    const guids = await getGuidsRaw();
 
     return {
       status: "success",
-      data: {
-        warehouses,
-        priceTypes,
-        additionalProperties,
-        mainUnits,
-        propertyValues,
-      },
+      data: guids,
     };
   } catch (e) {
     return {
@@ -383,8 +391,143 @@ export async function initialiseSite(): Promise<IActionResponse<any>> {
     };
   }
 
+  const initSettings = await assignInitialSiteSettings();
+
+  if (initSettings.status === "success") {
+    return {
+      status: "success",
+      data: "Сайт успешно настроен",
+    };
+  }
+
   return {
     status: "error",
-    error: "Сайт уже настроен",
+    error: initSettings.error,
+  };
+}
+
+export async function assignInitialSiteSettings(): Promise<
+  IActionResponse<string>
+> {
+  const settings = await db
+    .select()
+    .from(siteSettings)
+    .orderBy(desc(siteSettings.createdAt))
+    .limit(1);
+
+  if (settings.length > 0) {
+    return {
+      status: "error",
+      error: "Настройки уже установлены",
+    };
+  }
+
+  const initialSettings = {
+    guidsForSync: {
+      warehouse: "",
+      showManufacturerOrder: "",
+      user: {
+        showOnSite: "",
+        sitePassword: "",
+        siteRole: "",
+        siteRoleAdminValue: "",
+        siteRoleEmployeeValue: "",
+      },
+      nomenclature: {
+        minimumNonDivisibleWeight: "",
+        showOnSite: "",
+      },
+      units: {
+        kilogram: "",
+        piece: "",
+      },
+    },
+  };
+
+  const {
+    additionalProperties,
+    mainUnits,
+    propertyValues,
+    warehouses,
+    priceTypes,
+  } = await getGuidsRaw();
+
+  const mainWarehouse = warehouses.find((w) =>
+    w.Description.startsWith("Основной склад (Кокшетау)"),
+  );
+  if (mainWarehouse)
+    initialSettings.guidsForSync.warehouse = mainWarehouse.Ref_Key;
+
+  const showManufacturerOrder = additionalProperties.find((p) =>
+    p.Имя.startsWith("ПоказыватьТорговым"),
+  );
+  if (showManufacturerOrder)
+    initialSettings.guidsForSync.showManufacturerOrder =
+      showManufacturerOrder.Ref_Key;
+
+  const showOnSite = additionalProperties.find((p) =>
+    p.Имя.startsWith("ПоказыватьТоварНаСайте"),
+  );
+  if (showOnSite)
+    initialSettings.guidsForSync.nomenclature.showOnSite = showOnSite.Ref_Key;
+
+  const minimumNonDivisibleWeight = additionalProperties.find((p) =>
+    p.Имя.startsWith("ОбязательнаяКратность"),
+  );
+  if (minimumNonDivisibleWeight)
+    initialSettings.guidsForSync.nomenclature.minimumNonDivisibleWeight =
+      minimumNonDivisibleWeight.Ref_Key;
+
+  const kilogram = mainUnits.find((u) => u.Description === "кг");
+  if (kilogram) initialSettings.guidsForSync.units.kilogram = kilogram.Ref_Key;
+
+  const piece = mainUnits.find((u) => u.Description === "шт");
+  if (piece) initialSettings.guidsForSync.units.piece = piece.Ref_Key;
+
+  const showUserOnSite = additionalProperties.find((p) =>
+    p.Имя.startsWith("ПоказыватьНаСайтеСверкиЗаказов"),
+  );
+  if (showUserOnSite)
+    initialSettings.guidsForSync.user.showOnSite = showUserOnSite.Ref_Key;
+
+  const sitePassword = additionalProperties.find((p) =>
+    p.Имя.startsWith("ПарольДляВходаНаСайт"),
+  );
+  if (sitePassword)
+    initialSettings.guidsForSync.user.sitePassword = sitePassword.Ref_Key;
+
+  const siteRole = additionalProperties.find((p) =>
+    p.Имя.startsWith("РольНаСайте"),
+  );
+  if (siteRole) initialSettings.guidsForSync.user.siteRole = siteRole.Ref_Key;
+
+  const siteRoleAdminValue = propertyValues.find((p) =>
+    p.Description.startsWith("Администратор"),
+  );
+
+  if (siteRoleAdminValue)
+    initialSettings.guidsForSync.user.siteRoleAdminValue =
+      siteRoleAdminValue.Ref_Key;
+
+  const siteRoleEmployeeValue = propertyValues.find((p) =>
+    p.Description.startsWith("Пользователь"),
+  );
+
+  if (siteRoleEmployeeValue)
+    initialSettings.guidsForSync.user.siteRoleEmployeeValue =
+      siteRoleEmployeeValue.Ref_Key;
+
+  const newSettings = await db
+    .insert(siteSettings)
+    .values({
+      settings: initialSettings,
+    })
+    .returning();
+
+  revalidateTag("site-settings");
+
+  return {
+    status: "success",
+    data: "Настройки успешно установлены",
   };
 }

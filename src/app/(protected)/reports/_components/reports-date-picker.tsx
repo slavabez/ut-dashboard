@@ -87,6 +87,10 @@ export function ReportsDateRangePicker({
                 setDate(value);
               }
             }}
+            onDayTouchMove={(day, activeModifiers, e) => {
+              e.preventDefault();
+              console.log(day, activeModifiers, e);
+            }}
           />
         </PopoverContent>
       </Popover>

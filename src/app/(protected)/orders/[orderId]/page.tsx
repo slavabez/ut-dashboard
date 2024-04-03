@@ -1,6 +1,8 @@
+import { Package } from "lucide-react";
 import React from "react";
 
 import { getOrderById } from "@/actions/orders";
+import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
 import OrderStatusBadge from "@/app/(protected)/orders/_components/order-status-badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -38,8 +40,9 @@ const OrderDetailsPage = async ({
 
   return (
     <div>
-      <h1 className="my-2 text-center text-xl font-semibold">
-        📦 Заказ №{format1CDocumentNumber(order.number)}
+      <h1 className="my-4 flex justify-center gap-2 text-center text-xl font-semibold">
+        <Package /> Заказ №{format1CDocumentNumber(order.number)}
+        <Order1cLink orderId={order.id} />
       </h1>
       <div className="flex flex-col gap-4 px-4">
         <dl className="flex justify-between">
@@ -87,7 +90,6 @@ const OrderDetailsPage = async ({
       </div>
       <Separator className="my-4" />
       <Table>
-        <TableCaption>Товары</TableCaption>
         <TableHeader>
           <TableRow className="font-bold">
             <TableCell>Товар</TableCell>
