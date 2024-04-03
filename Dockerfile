@@ -25,8 +25,8 @@ COPY . .
 ARG PG_URL=${PG_URL}
 ENV PG_URL=${PG_URL}
 
-ARG AUTH_SECRET=${AUTH_SECRET}
-ENV AUTH_SECRET=${AUTH_SECRET}
+ARG SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
