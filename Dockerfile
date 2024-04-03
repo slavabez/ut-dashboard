@@ -28,6 +28,9 @@ ENV PG_URL=${PG_URL}
 ARG SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
+ARG AUTH_TOKEN=${AUTH_TOKEN}
+ENV AUTH_TOKEN=${AUTH_TOKEN}
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
