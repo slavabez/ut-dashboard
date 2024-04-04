@@ -237,8 +237,10 @@ export function translateRole(role: string): string {
       return "Администратор";
     case "employee":
       return "Сотрудник";
-    case "user":
-      return "Пользователь";
+    case "client":
+      return "Клиент";
+    case "manager":
+      return "Менеджер";
     default:
       return role;
   }
