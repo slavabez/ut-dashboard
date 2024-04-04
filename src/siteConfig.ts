@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
 
 export type SiteConfig = {
   name: string;

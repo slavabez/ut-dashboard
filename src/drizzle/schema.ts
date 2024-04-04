@@ -15,9 +15,14 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export type userRoleValues = "client" | "employee" | "admin";
+export type userRoleValues = "client" | "employee" | "manager" | "admin";
 
-export const userRole = pgEnum("user_role", ["client", "employee", "admin"]);
+export const userRole = pgEnum("user_role", [
+  "client",
+  "employee",
+  "manager",
+  "admin",
+]);
 
 export const UserRoleMap = new Map<
   string,
@@ -38,6 +43,13 @@ export const UserRoleMap = new Map<
     {
       label: "Сотрудник",
       value: "employee",
+    },
+  ],
+  [
+    "supervisor",
+    {
+      label: "Супервайзер",
+      value: "manager",
     },
   ],
   [

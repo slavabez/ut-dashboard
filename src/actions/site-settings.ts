@@ -1,16 +1,13 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { desc, eq, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
-import { auth } from "@/auth";
 import { db } from "@/drizzle/db";
 import {
   PriceInsert,
   PriceSelect,
   SettingsSelect,
-  UserSelect,
   prices,
   siteSettings,
   syncLogs,
@@ -356,41 +353,6 @@ export async function checkInit(): Promise<IActionResponse<string>> {
 }
 
 export async function initialiseSite(): Promise<IActionResponse<any>> {
-  const adminCount = await db
-    .select()
-    .from(users)
-    .where(eq(users.role, "admin"))
-    .limit(1);
-
-  if (adminCount.length === 0) {
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
-    const newUserRes = await db
-      .insert(users)
-      .values({
-        phone: "+79999999999",
-        name: "Первоначальный администратор",
-        password: hashedPassword,
-        role: "admin",
-      })
-      .returning();
-    if (newUserRes.length === 0) {
-      return {
-        status: "error",
-        error: "Ошибка при создании профиля",
-      };
-    }
-    console.log(
-      `Created a default admin user with password: ${randomPassword} and phone: +79999999999`,
-    );
-    return {
-      status: "success",
-      data: {
-        user: newUserRes[0],
-      },
-    };
-  }
-
   const initSettings = await assignInitialSiteSettings();
 
   if (initSettings.status === "success") {

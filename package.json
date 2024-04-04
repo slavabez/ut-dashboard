@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3063",
     "build": "next build",
+    "copy-static": "cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static",
     "start": "next start",
     "start:standalone": "node .next/standalone/server.js",
     "lint": "next lint",
@@ -13,7 +14,9 @@
     "migration:push": "drizzle-kit push:pg",
     "db:drop": "tsx src/scripts/clear.ts",
     "migration:drop": "drizzle-kit drop",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "prettier": {
     "importOrder": [
@@ -76,6 +79,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

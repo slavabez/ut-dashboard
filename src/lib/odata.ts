@@ -1,5 +1,5 @@
 import { getGlobalSettings } from "@/actions/site-settings";
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
 
 export type ODataResponseArray =
   | {
