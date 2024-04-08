@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { getGlobalSettings } from "@/actions/site-settings";
 import { env } from "@/env.js";
 
@@ -217,6 +219,43 @@ export interface IUserAdditionalFields {
   }[];
 }
 
+interface IODataRequestProperties {
+  path: string;
+  filter?: string;
+  select?: string;
+  expand?: string;
+  orderBy?: string;
+  top?: number;
+  skip?: number;
+}
+
+const getODataResponseCached: (
+  fullUrl: string,
+  authHeader: string,
+) => Promise<unknown> = unstable_cache(
+  (fullUrl: string, authHeader: string) => fetchOData(fullUrl, authHeader),
+  ["fetch-1c-odata"],
+  {
+    revalidate: 60,
+    tags: ["fetch-1c-odata"],
+  },
+);
+
+export async function fetchOData(fullUrl: string, authHeader: string) {
+  const response = await fetch(fullUrl, {
+    headers: {
+      Authorization: authHeader ?? "",
+    },
+  });
+  const odataResponse: ODataResponseArray =
+    (await response.json()) as ODataResponseArray;
+  // Check if the response is an error
+  if ("odata.error" in odataResponse) {
+    throw new Error(odataResponse["odata.error"].message.value);
+  }
+  return odataResponse.value;
+}
+
 export async function getSpecificODataResponseArray({
   path,
   filter,
@@ -225,15 +264,7 @@ export async function getSpecificODataResponseArray({
   orderBy,
   top,
   skip,
-}: {
-  path: string;
-  filter?: string;
-  select?: string;
-  expand?: string;
-  orderBy?: string;
-  top?: number;
-  skip?: number;
-}) {
+}: IODataRequestProperties) {
   const authHeader = env.ODATA_API_AUTH_HEADER;
   const baseUrl = env.ODATA_API_URL;
 
@@ -266,20 +297,7 @@ export async function getSpecificODataResponseArray({
     if (process.env.NODE_ENV === "development") {
       console.info(`Fetching OData array response from "${fullUrl}"`);
     }
-    // Use fetch to get the response from the OData API
-    const response = await fetch(fullUrl, {
-      headers: {
-        Authorization: authHeader ?? "",
-      },
-    });
-    // Get the JSON response from the OData API
-    const odataResponse: ODataResponseArray =
-      (await response.json()) as ODataResponseArray;
-    // Check if the response is an error
-    if ("odata.error" in odataResponse) {
-      throw new Error(odataResponse["odata.error"].message.value);
-    }
-    return odataResponse.value;
+    return await getODataResponseCached(fullUrl, authHeader);
   } catch (e) {
     console.error("Error while getting OData response", e);
     throw e;
@@ -777,6 +795,50 @@ export class From1C {
         Ref_Key: string;
         DataVersion: string;
         Description: string;
+      }[]
+    >;
+  }
+
+  static async getAdditionalOrderProperties(orderId: string): Promise<
+    {
+      Объект: string;
+      Свойство_Key: string;
+      Значение: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "InformationRegister_ДополнительныеСведения",
+      filter: `Объект eq cast(guid'${orderId}', 'Document_ЗаказКлиента')`,
+      select: "Объект,Свойство_Key,Значение",
+    }) as Promise<
+      {
+        Объект: string;
+        Свойство_Key: string;
+        Значение: string;
+      }[]
+    >;
+  }
+
+  static async getAdditionalMultipleOrderProperties(
+    orderIds: string[],
+  ): Promise<
+    {
+      Объект: string;
+      Свойство_Key: string;
+      Значение: string;
+    }[]
+  > {
+    return getSpecificODataResponseArray({
+      path: "InformationRegister_ДополнительныеСведения",
+      filter: orderIds
+        .map((oi) => `Объект eq cast(guid'${oi}', 'Document_ЗаказКлиента')`)
+        .join(" or "),
+      select: "Объект,Свойство_Key,Значение",
+    }) as Promise<
+      {
+        Объект: string;
+        Свойство_Key: string;
+        Значение: string;
       }[]
     >;
   }

@@ -8,7 +8,7 @@ export function useSearchParamState<T>({
   defaultValue,
 }: {
   searchParamName: string;
-  postSetCallback: () => void;
+  postSetCallback?: () => void;
   serialize?: (value: T) => string;
   deserialize?: (value: string) => T;
   defaultValue?: T;
@@ -27,7 +27,9 @@ export function useSearchParamState<T>({
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set(searchParamName, serialize(value));
     router.push(`?${newSearchParams.toString()}`);
-    postSetCallback();
+    if (typeof postSetCallback === "function") {
+      postSetCallback();
+    }
   };
 
   return [value, setValue] as const;

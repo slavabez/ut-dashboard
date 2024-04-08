@@ -4,6 +4,7 @@ import React from "react";
 import { getOrdersByDate } from "@/actions/orders";
 import OrderDatePicker from "@/app/(protected)/orders/_components/order-date-picker";
 import OrderList from "@/app/(protected)/orders/_components/order-list";
+import { From1C } from "@/lib/odata";
 import { formatPrice, getDateFor1C } from "@/lib/utils";
 
 const OrdersByOrderDate = async ({
