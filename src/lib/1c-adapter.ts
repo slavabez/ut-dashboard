@@ -62,6 +62,14 @@ export interface IOrder {
   partner: string;
   comment: string;
   items: IOrderItem[];
+  additionalProperties?: IOrderAdditionalProperties;
+}
+
+export interface IOrderAdditionalProperties {
+  lon?: number;
+  lat?: number;
+  started?: Date;
+  finished?: Date;
 }
 
 const assignProperId = (id: string | number) => {
@@ -242,4 +250,45 @@ export class ConvertFrom1C {
       nomenclatureName: input.Номенклатура.Description,
     };
   }
+
+  static async injectAdditionalPropertiesIntoOrders(
+    orders: IOrder[],
+    data: {
+      Объект: string;
+      Свойство_Key: string;
+      Значение: string;
+    }[],
+  ) {
+    const guids = await getGlobalSettings();
+
+    data.forEach((di) => {
+      if (!di.Значение) return;
+      const order = orders.find((o) => o.id === di?.Объект);
+      if (!order) return;
+      if (!order.additionalProperties) order.additionalProperties = {};
+      switch (di.Свойство_Key) {
+        case guids.guidsForSync.orders.latitude:
+          order.additionalProperties.lat = convertCoordinate(di.Значение);
+          break;
+        case guids.guidsForSync.orders.longitude:
+          order.additionalProperties.lon = convertCoordinate(di.Значение);
+          break;
+        case guids.guidsForSync.orders.timeStarted:
+          order.additionalProperties.started = new Date(di.Значение);
+          break;
+        case guids.guidsForSync.orders.timeStopped:
+          order.additionalProperties.finished = new Date(di.Значение);
+          break;
+        default:
+      }
+    });
+
+    return orders;
+  }
+}
+
+function convertCoordinate(input: string): number {
+  if (input.length < 3) return 0;
+  const coordinate = input.replace(".", "").slice(0, 2) + "." + input.slice(2);
+  return Number.parseFloat(coordinate);
 }

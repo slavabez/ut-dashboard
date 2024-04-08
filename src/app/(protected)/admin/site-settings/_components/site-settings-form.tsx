@@ -419,6 +419,140 @@ const SiteSettingsForm = (props: ISiteSettingsFormProps) => {
               );
             }}
           />
+          <h2 className="text-lg font-bold">Для заказов (Агент плюс)</h2>
+
+          <FormField
+            name="guidsForSync.orders.latitude"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>АП Широта</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите доп. реквизит" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {guidsFrom1C?.additionalProperties?.map(
+                        (property: any) => (
+                          <SelectItem
+                            key={property.Ref_Key}
+                            value={property.Ref_Key}
+                          >
+                            {property.Имя ?? property.Description}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            name="guidsForSync.orders.longitude"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>АП Долгота</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите доп. реквизит" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {guidsFrom1C?.additionalProperties?.map(
+                        (property: any) => (
+                          <SelectItem
+                            key={property.Ref_Key}
+                            value={property.Ref_Key}
+                          >
+                            {property.Имя ?? property.Description}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            name="guidsForSync.orders.timeStarted"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>АП время начала заказа</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите доп. реквизит" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {guidsFrom1C?.additionalProperties?.map(
+                        (property: any) => (
+                          <SelectItem
+                            key={property.Ref_Key}
+                            value={property.Ref_Key}
+                          >
+                            {property.Имя ?? property.Description}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            name="guidsForSync.orders.timeStopped"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>АП время окончания заказа</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите доп. реквизит" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {guidsFrom1C?.additionalProperties?.map(
+                        (property: any) => (
+                          <SelectItem
+                            key={property.Ref_Key}
+                            value={property.Ref_Key}
+                          >
+                            {property.Имя ?? property.Description}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <Button variant="default">Сохранить {isPending ? "..." : ""}</Button>
         </form>
       </Form>

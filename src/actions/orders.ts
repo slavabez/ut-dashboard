@@ -1,7 +1,7 @@
 "use server";
 
 import { ConvertFrom1C, IOrder } from "@/lib/1c-adapter";
-import { currentUser } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
 import { From1C } from "@/lib/odata";
 
@@ -134,3 +134,45 @@ export const getOrderById = async (
     data: order,
   };
 };
+
+export async function getOrdersForUserForDate(
+  userId: string,
+  day: string,
+): Promise<IActionResponse<IOrder[]>> {
+  const role = await currentRole();
+
+  if (!role || !["manager", "admin"].includes(role)) {
+    return {
+      status: "error",
+      error: "Заказ не найден",
+    };
+  }
+
+  if (!day.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return {
+      status: "error",
+      error: "Неверный формат даты",
+    };
+  }
+
+  const ordersRaw = await From1C.getOrdersForUserByDate({
+    userId,
+    startDate: day,
+    endDate: day,
+  });
+  const orders = ordersRaw.map(ConvertFrom1C.order);
+
+  const additionalProperties =
+    await From1C.getAdditionalMultipleOrderProperties(orders.map((o) => o.id));
+
+  const injectedOrders =
+    await ConvertFrom1C.injectAdditionalPropertiesIntoOrders(
+      orders,
+      additionalProperties,
+    );
+
+  return {
+    status: "success",
+    data: injectedOrders,
+  };
+}

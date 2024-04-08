@@ -36,6 +36,12 @@ export interface ISiteSettings {
       kilogram?: string;
       piece?: string;
     };
+    orders?: {
+      longitude?: string;
+      latitude?: string;
+      timeStarted?: string;
+      timeStopped?: string;
+    };
   };
 }
 
@@ -57,6 +63,12 @@ export interface ISiteSettingsExact {
     units: {
       kilogram: string;
       piece: string;
+    };
+    orders: {
+      longitude: string;
+      latitude: string;
+      timeStarted: string;
+      timeStopped: string;
     };
   };
 }
@@ -153,6 +165,14 @@ export async function getGlobalSettings(): Promise<ISiteSettingsExact> {
   if (!guids.units.piece) {
     throw new Error("No units.piece guid found in the settings");
   }
+  if (!guids.orders?.latitude)
+    throw new Error("No latitude guid found in the settings");
+  if (!guids.orders?.longitude)
+    throw new Error("No longitude guid found in the settings");
+  if (!guids.orders?.timeStarted)
+    throw new Error("No time started guid found in the settings");
+  if (!guids.orders?.timeStopped)
+    throw new Error("No time stopped guid found in the settings");
   return settings as ISiteSettingsExact;
 }
 
@@ -185,14 +205,12 @@ export async function saveSiteSettings(
 
 async function getGuidsRaw() {
   const warehouses = await From1C.getAllWarehouses();
-  const priceTypes = await From1C.getAllPriceTypes();
   const additionalProperties = await From1C.getAllAdditionalProperties();
   const mainUnits = await From1C.getMainUnits();
   const propertyValues = await From1C.getAllPropertyValues();
 
   return {
     warehouses,
-    priceTypes,
     additionalProperties,
     mainUnits,
     propertyValues,
@@ -368,6 +386,9 @@ export async function initialiseSite(): Promise<IActionResponse<any>> {
   };
 }
 
+/**
+ * Attempts to automatically fetch and assign the guids for the 1C settings.
+ */
 export async function assignInitialSiteSettings(): Promise<
   IActionResponse<string>
 > {
@@ -403,16 +424,17 @@ export async function assignInitialSiteSettings(): Promise<
         kilogram: "",
         piece: "",
       },
+      orders: {
+        latitude: "",
+        longitude: "",
+        timeStarted: "",
+        timeStopped: "",
+      },
     },
   };
 
-  const {
-    additionalProperties,
-    mainUnits,
-    propertyValues,
-    warehouses,
-    priceTypes,
-  } = await getGuidsRaw();
+  const { additionalProperties, mainUnits, propertyValues, warehouses } =
+    await getGuidsRaw();
 
   const mainWarehouse = warehouses.find((w) =>
     w.Description.startsWith("Основной склад (Кокшетау)"),
@@ -478,6 +500,29 @@ export async function assignInitialSiteSettings(): Promise<
   if (siteRoleEmployeeValue)
     initialSettings.guidsForSync.user.siteRoleEmployeeValue =
       siteRoleEmployeeValue.Ref_Key;
+
+  const latitude = additionalProperties.find(
+    (p) => p.Description === "АгентПлюсДокументШирота",
+  );
+  if (latitude) initialSettings.guidsForSync.orders.latitude = latitude.Ref_Key;
+
+  const longitude = additionalProperties.find(
+    (p) => p.Description === "АгентПлюсДокументДолгота",
+  );
+  if (longitude)
+    initialSettings.guidsForSync.orders.longitude = longitude.Ref_Key;
+
+  const timeStarted = additionalProperties.find(
+    (p) => p.Description === "АгентПлюсДокументВремяНачала",
+  );
+  if (timeStarted)
+    initialSettings.guidsForSync.orders.timeStarted = timeStarted.Ref_Key;
+
+  const timeStopped = additionalProperties.find(
+    (p) => p.Description === "АгентПлюсДокументВремяОкончания",
+  );
+  if (timeStopped)
+    initialSettings.guidsForSync.orders.timeStopped = timeStopped.Ref_Key;
 
   const newSettings = await db
     .insert(siteSettings)

@@ -30,8 +30,6 @@ const OrderDatePicker = (props: IOrderDatePickerProps) => {
     deserialize: (value) => new Date(`${value}T00:00:00`),
   });
 
-  console.log(selectedDate);
-
   return (
     <div className="flex flex-col gap-2">
       <span className="font-medium">{title}</span>

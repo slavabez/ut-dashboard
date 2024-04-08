@@ -1,4 +1,5 @@
 import "./globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
