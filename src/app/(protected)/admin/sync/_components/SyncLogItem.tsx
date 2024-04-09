@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { SyncLogSelect } from "@/drizzle/schema";
-import { ISyncLogMeta } from "@/lib/sync";
+import { ISyncLogMeta } from "@/lib/common-types";
 import { formatDate, timeAgo, translateSyncType } from "@/lib/utils";
 
 const renderBadge = (item: SyncLogSelect) => {

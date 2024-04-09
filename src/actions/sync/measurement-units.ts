@@ -13,9 +13,8 @@ import {
 } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C, IUnitFields } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import { IUnitFields, getAllMeasurementUnits } from "@/lib/odata/nomenclature";
 
 /**
  * Sync measurement units from 1C to the database.
@@ -35,7 +34,7 @@ export async function syncMeasurementUnits(
       };
     }
 
-    const allMeasurementsRaw = await From1C.getAllMeasurementUnits();
+    const allMeasurementsRaw = await getAllMeasurementUnits();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allMeasurementsRaw).toString();
 

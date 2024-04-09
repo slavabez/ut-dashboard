@@ -16,7 +16,7 @@ import {
 import { useSearchParamState } from "@/hooks/use-search-param-state";
 import { cn, formatDateShort, getDateFor1C } from "@/lib/utils";
 
-interface IReporsDateRangePickerProps {
+interface IReportsDateRangePickerProps {
   searchParamName: string;
   title: string;
   description?: string;
@@ -28,7 +28,7 @@ export function ReportsDateRangePicker({
   description,
   className,
   title,
-}: IReporsDateRangePickerProps) {
+}: IReportsDateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useSearchParamState<DateRange>({
     searchParamName,

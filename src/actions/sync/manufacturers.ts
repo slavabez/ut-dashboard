@@ -8,9 +8,11 @@ import { db } from "@/drizzle/db";
 import { SyncLogSelect, manufacturers, syncLogs } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C, Manufacturer1CFields } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import {
+  Manufacturer1CFields,
+  getAllManufacturers,
+} from "@/lib/odata/nomenclature";
 
 /**
  * Sync manufacturers from 1C to the database.
@@ -30,7 +32,7 @@ export async function syncManufacturers(
       };
     }
 
-    const allManufacturersRaw = await From1C.getAllManufacturers();
+    const allManufacturersRaw = await getAllManufacturers();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allManufacturersRaw).toString();
 

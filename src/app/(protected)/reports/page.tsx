@@ -1,32 +1,31 @@
 import { BadgeDollarSign, Package } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
-import { Button } from "@/components/ui/button";
+import PageWrapper from "@/components/layout-components";
+import LinkButton from "@/components/link-button";
+import { H1, P } from "@/components/typography";
 
 const ReportsPage = () => {
   return (
-    <div className="p-4">
-      <h1 className="mb-8 mt-2 text-center text-2xl font-semibold">Отчёты</h1>
+    <PageWrapper>
+      <H1>Отчёты</H1>
+      <P>
+        В данном разделе вам доступны отчеты о продажах в разных разрезах: по
+        товарам (по производителям), по клиентам, или смешанный
+      </P>
       <nav className="flex flex-col gap-4">
-        <Button asChild>
-          <Link className="" href="/reports/sales-by-goods">
-            <Package className="mr-2" /> Продажи по товарам
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link className="" href="/reports/sales-by-clients">
-            <BadgeDollarSign className="mr-2" /> Продажи по клиентам
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link className="" href="/reports/sales-by-clients-and-goods">
-            <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
-            <Package className="ml-2" />
-          </Link>
-        </Button>
+        <LinkButton href="/reports/sales-by-goods">
+          <Package className="mr-2" /> Продажи по товарам
+        </LinkButton>
+        <LinkButton href="/reports/sales-by-clients">
+          <BadgeDollarSign className="mr-2" /> Продажи по клиентам
+        </LinkButton>
+        <LinkButton href="/reports/sales-by-clients-and-goods">
+          <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
+          <Package className="ml-2" />
+        </LinkButton>
       </nav>
-    </div>
+    </PageWrapper>
   );
 };
 

@@ -16,7 +16,8 @@ import {
   IUserMeta,
   UserSelectNonSensitive,
 } from "@/lib/common-types";
-import { From1C } from "@/lib/odata";
+import { getUserByGuid } from "@/lib/odata/users";
+import { getLatestSiteSettings } from "@/lib/site-settings";
 import { UserUpdateSchema } from "@/schemas";
 
 export async function getAllUsers(): Promise<
@@ -176,8 +177,9 @@ export async function fetchMetaFrom1C(
       error: "Неверный формат id пользователя из 1C",
     };
   }
-  const from1c = await From1C.getUserByGuid(userIdFrom1C);
-  const parsed = await ConvertFrom1C.user(from1c);
+  const from1c = await getUserByGuid(userIdFrom1C);
+  const siteSettings = await getLatestSiteSettings();
+  const parsed = ConvertFrom1C.user(from1c, siteSettings);
 
   if (!parsed.phone) {
     return {

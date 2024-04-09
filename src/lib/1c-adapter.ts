@@ -1,4 +1,4 @@
-import { getGlobalSettings } from "@/actions/site-settings";
+import "@/actions/site-settings";
 import {
   ManufacturerInsert,
   MeasurementUnitInsert,
@@ -6,16 +6,19 @@ import {
   NomenclatureTypeInsert,
 } from "@/drizzle/schema";
 import {
-  IOrderContentFields,
-  IOrderFields,
-  IPriceFields,
-  IStockFields,
   IUnitFields,
-  IUserFields,
   Manufacturer1CFields,
   Nomenclature1CFields,
   NomenclatureType1CFields,
-} from "@/lib/odata";
+} from "@/lib/odata/nomenclature";
+import { IOrderContentFields, IOrderFields } from "@/lib/odata/orders";
+import { IPriceFields } from "@/lib/odata/prices";
+import { IStockFields } from "@/lib/odata/stock";
+import { IUserFields } from "@/lib/odata/users";
+import {
+  ISiteSettingsStrict,
+  getLatestSiteSettings,
+} from "@/lib/site-settings";
 import { normalizePhoneNumber, parseBoolean } from "@/lib/utils";
 
 export interface IParsedUser {
@@ -86,7 +89,7 @@ export class ConvertFrom1C {
   static async nomenclatureItem(
     input: Nomenclature1CFields,
   ): Promise<NomenclatureInsert> {
-    const guids = await getGlobalSettings();
+    const guids = await getLatestSiteSettings();
     const minWeightProperty = input.ДополнительныеРеквизиты.find(
       (req) =>
         req.Свойство_Key ===
@@ -169,8 +172,7 @@ export class ConvertFrom1C {
     };
   }
 
-  static async user(input: IUserFields): Promise<IParsedUser> {
-    const guids = await getGlobalSettings();
+  static user(input: IUserFields, guids: ISiteSettingsStrict): IParsedUser {
     const phone = input.ФизическоеЛицо?.КонтактнаяИнформация.find(
       (c) => c.Тип === "Телефон",
     )?.Представление;
@@ -259,7 +261,7 @@ export class ConvertFrom1C {
       Значение: string;
     }[],
   ) {
-    const guids = await getGlobalSettings();
+    const siteSettings = await getLatestSiteSettings();
 
     data.forEach((di) => {
       if (!di.Значение) return;
@@ -267,16 +269,16 @@ export class ConvertFrom1C {
       if (!order) return;
       if (!order.additionalProperties) order.additionalProperties = {};
       switch (di.Свойство_Key) {
-        case guids.guidsForSync.orders.latitude:
+        case siteSettings.guidsForSync.orders.latitude:
           order.additionalProperties.lat = convertCoordinate(di.Значение);
           break;
-        case guids.guidsForSync.orders.longitude:
+        case siteSettings.guidsForSync.orders.longitude:
           order.additionalProperties.lon = convertCoordinate(di.Значение);
           break;
-        case guids.guidsForSync.orders.timeStarted:
+        case siteSettings.guidsForSync.orders.timeStarted:
           order.additionalProperties.started = new Date(di.Значение);
           break;
-        case guids.guidsForSync.orders.timeStopped:
+        case siteSettings.guidsForSync.orders.timeStopped:
           order.additionalProperties.finished = new Date(di.Значение);
           break;
         default:
@@ -288,7 +290,8 @@ export class ConvertFrom1C {
 }
 
 function convertCoordinate(input: string): number {
-  if (input.length < 3) return 0;
-  const coordinate = input.replace(".", "").slice(0, 2) + "." + input.slice(2);
-  return Number.parseFloat(coordinate);
+  const numeric = Number.parseFloat(input);
+  const degrees = Math.floor(numeric / 100);
+  const minutes = numeric % 100;
+  return degrees + minutes / 60;
 }

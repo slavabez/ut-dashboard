@@ -13,9 +13,8 @@ import {
 } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import { getAllPrices } from "@/lib/odata/prices";
 
 export async function syncPrice({
   priceId,
@@ -34,7 +33,7 @@ export async function syncPrice({
       };
     }
 
-    const allPriceData = await From1C.getAllPrices(priceId);
+    const allPriceData = await getAllPrices(priceId);
     const hashOf1CData = hash(allPriceData).toString();
     const syncResultMeta: ISyncLogMeta = {
       entitiesFrom1C: allPriceData.length,

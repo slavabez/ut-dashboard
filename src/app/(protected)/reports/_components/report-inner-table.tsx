@@ -32,7 +32,7 @@ const ReportInnerTable = (props: IReportTableProps) => {
   return (
     <Collapsible>
       <CollapsibleTrigger className="flex w-full justify-between bg-orange-50 p-4 font-bold">
-        <div className="font-normal">{title}</div>
+        <div className="text-left font-normal">{title}</div>
         <div className="flex gap-2">
           {formatPrice(totals.sum)}
           <ChevronsUpDown />
@@ -43,7 +43,7 @@ const ReportInnerTable = (props: IReportTableProps) => {
           <TableBody>
             {items.map((item) => {
               return (
-                <TableRow key={item.nomenclature}>
+                <TableRow key={item.nomenclature + item.quantity + item.sum}>
                   <TableCell>{item.nomenclature}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>

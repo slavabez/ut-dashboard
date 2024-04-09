@@ -6,6 +6,8 @@ import {
   getSalesByClients,
 } from "@/actions/reports";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
+import PageWrapper from "@/components/layout-components";
+import { H1, Large, Muted } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -55,25 +57,20 @@ const SalesByClients = async ({
   );
 
   return (
-    <div className="flex flex-col justify-center gap-2 p-4">
-      <h1 className="my-2 flex justify-center text-xl font-semibold">
-        <Package className="mr-2" /> Продажи по клиентам
-      </h1>
+    <PageWrapper>
+      <H1>
+        <Package className="h-10 w-10" /> Продажи по клиентам
+      </H1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
-
       <Separator />
-      <p>
+      <Large>
         Общие продажи:{" "}
         <span className="font-bold">{formatPrice(totals.sum)}</span>
-      </p>
-      <p>Общая скидка: {formatPrice(totals.discount)}</p>
+      </Large>
+      <Large>Общая скидка: {formatPrice(totals.discount)}</Large>
       <Separator />
 
-      {reportData.length === 0 && (
-        <p className="text-center text-muted-foreground">
-          Нет данных за выбранный период
-        </p>
-      )}
+      {reportData.length === 0 && <Muted>Нет данных за выбранный период</Muted>}
 
       {reportData.length > 0 && (
         <Table>
@@ -100,7 +97,7 @@ const SalesByClients = async ({
           </TableBody>
         </Table>
       )}
-    </div>
+    </PageWrapper>
   );
 };
 

@@ -8,9 +8,13 @@ import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatures, syncLogs } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C, IFileFields, Nomenclature1CFields } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import {
+  IFileFields,
+  Nomenclature1CFields,
+  getAllNomenclatureFiles,
+  getAllNomenclatureItems,
+} from "@/lib/odata/nomenclature";
 import { separateListIntoLevels as separateArraysByLevel } from "@/lib/utils";
 
 /**
@@ -30,8 +34,8 @@ export async function syncNomenclature(
         error: "У вас недостаточно прав для этого действия",
       };
     }
-    const allNomenclature = await From1C.getAllNomenclatureItems();
-    const allNomenclatureFiles = await From1C.getAllNomenclatureFiles();
+    const allNomenclature = await getAllNomenclatureItems();
+    const allNomenclatureFiles = await getAllNomenclatureFiles();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash({
       allNomenclature,

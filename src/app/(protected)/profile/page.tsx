@@ -1,10 +1,12 @@
 import { BadgeDollarSign, CircleUserRound, LogOut } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
 import { logout } from "@/actions/auth/logout";
 import { getActiveUser } from "@/actions/user/active-user";
 import { OneCIcon } from "@/components/custom-icons";
+import PageWrapper from "@/components/layout-components";
+import LinkButton from "@/components/link-button";
+import { H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { IUserMeta } from "@/lib/common-types";
 import { translateRole } from "@/lib/utils";
@@ -15,24 +17,24 @@ const ProfilePage = async () => {
 
   if (userResponse.status === "error") {
     return (
-      <div className="p-4">
-        <h1 className="mb-8 mt-2 flex items-center justify-center gap-2 text-2xl font-semibold">
+      <PageWrapper>
+        <H1>
           <CircleUserRound />
           Профиль
-        </h1>
+        </H1>
         <div className="text-center">Вы не вошли</div>
-      </div>
+      </PageWrapper>
     );
   }
 
   user1CMeta = userResponse.data.meta as IUserMeta | undefined;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <h1 className="mb-8 mt-2 flex items-center justify-center gap-2 text-2xl font-semibold">
-        <CircleUserRound />
+    <PageWrapper>
+      <H1>
+        <CircleUserRound className="h-10 w-10" />
         Профиль
-      </h1>
+      </H1>
 
       <div className="flex flex-col gap-4">
         <dl>
@@ -52,34 +54,22 @@ const ProfilePage = async () => {
           <dd>{userResponse.data.phone}</dd>
         </dl>
       </div>
-      <div className="flex flex-col">
-        <ul className="flex flex-col gap-4">
-          <li>
-            <Button asChild className="w-full">
-              <Link href="/orders">
-                <OneCIcon className="mr-2 h-8 w-8" /> Сверка заказов с 1С
-              </Link>
-            </Button>
-          </li>
-          <li>
-            <Button asChild className="w-full">
-              <Link href="/reports">
-                <BadgeDollarSign className="mr-2 h-8 w-8" />
-                Отчёты по продажам
-              </Link>
-            </Button>
-          </li>
-          <li>
-            <form action={logout}>
-              <Button variant="destructive" className="w-full" type="submit">
-                <LogOut className="mr-2 h-8 w-8" />
-                Выйти
-              </Button>
-            </form>
-          </li>
-        </ul>
+      <div className="flex flex-col gap-2">
+        <LinkButton href="/orders">
+          <OneCIcon className="mr-2 h-8 w-8" /> Сверка заказов с 1С
+        </LinkButton>
+        <LinkButton href="/reports">
+          <BadgeDollarSign className="mr-2 h-8 w-8" />
+          Отчёты по продажам
+        </LinkButton>
+        <form action={logout}>
+          <Button variant="destructive" className="w-full" type="submit">
+            <LogOut className="mr-2 h-8 w-8" />
+            Выйти
+          </Button>
+        </form>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

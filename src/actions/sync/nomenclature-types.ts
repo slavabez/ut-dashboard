@@ -8,9 +8,11 @@ import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatureTypes, syncLogs } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C, NomenclatureType1CFields } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import {
+  NomenclatureType1CFields,
+  getAllNomenclatureTypes,
+} from "@/lib/odata/nomenclature";
 import { separateListIntoLevels as separateArraysByLevel } from "@/lib/utils";
 
 /**
@@ -31,7 +33,7 @@ export async function syncNomenclatureTypes(
       };
     }
 
-    const allTypes = await From1C.getAllNomenclatureTypes();
+    const allTypes = await getAllNomenclatureTypes();
     // Hash the data to compare with the latest sync log
     const hashOf1CData = hash(allTypes).toString();
 

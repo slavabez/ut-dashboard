@@ -8,9 +8,8 @@ import { db } from "@/drizzle/db";
 import { SyncLogSelect, nomenclatures, syncLogs } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
 import { currentRole } from "@/lib/auth";
-import { IActionResponse } from "@/lib/common-types";
-import { From1C } from "@/lib/odata";
-import { ISyncLogMeta } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta } from "@/lib/common-types";
+import { getAllStock } from "@/lib/odata/stock";
 
 export async function syncStock(
   forceIncremental = false,
@@ -25,7 +24,7 @@ export async function syncStock(
       };
     }
 
-    const allStockData = await From1C.getAllStock();
+    const allStockData = await getAllStock();
     const hashOf1CData = hash(allStockData).toString();
     const syncResultMeta: ISyncLogMeta = {
       entitiesFrom1C: allStockData.length,

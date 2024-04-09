@@ -5,6 +5,8 @@ import { getSalesByGoods } from "@/actions/reports";
 import PieChart from "@/app/(protected)/reports/_components/pie-chart";
 import ReportInnerTable from "@/app/(protected)/reports/_components/report-inner-table";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
+import PageWrapper from "@/components/layout-components";
+import { H1, Large } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 
@@ -51,18 +53,18 @@ const SalesByGoodsPage = async ({
   const chartDataValues = reportData.map((item) => item.totals.sum);
 
   return (
-    <div className="flex flex-col justify-center gap-2 p-4">
-      <h1 className="my-2 flex justify-center text-xl font-semibold">
-        <Package className="mr-2" /> Продажи по товарам
-      </h1>
+    <PageWrapper>
+      <H1>
+        <Package className="h-10 w-10" /> Продажи по товарам
+      </H1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
 
       <Separator />
-      <p>
+      <Large>
         Общие продажи:{" "}
         <span className="font-bold">{formatPrice(totals.sum)}</span>
-      </p>
-      <p>Общая скидка: {formatPrice(totals.discount)}</p>
+      </Large>
+      <Large>Общая скидка: {formatPrice(totals.discount)}</Large>
       <Separator />
 
       {reportData.length === 0 && (
@@ -98,7 +100,7 @@ const SalesByGoodsPage = async ({
           </div>
         </>
       )}
-    </div>
+    </PageWrapper>
   );
 };
 
