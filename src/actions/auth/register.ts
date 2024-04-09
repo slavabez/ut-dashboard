@@ -5,10 +5,10 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { getAndParse1CUsers } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { IActionResponse, UserSelectNonSensitive } from "@/lib/common-types";
-import { getUsersParsed } from "@/lib/users";
 import { normalizePhoneNumber } from "@/lib/utils";
 import { RegisterSchema } from "@/schemas";
 
@@ -35,7 +35,8 @@ export const register = async (
   }
 
   // Fetch the users from 1C, verify the phone number exists
-  const all1CUsers = await getUsersParsed();
+  const all1CUsers = await getAndParse1CUsers();
+
   const user = all1CUsers.find((user) => user.phone === phone);
   if (user) {
     // Found the relevant user in 1c, create the user in our db
@@ -95,7 +96,7 @@ export async function addUserFrom1C(
     };
   }
 
-  const all1CUsers = await getUsersParsed();
+  const all1CUsers = await getAndParse1CUsers();
   const user = all1CUsers.find((user) => user.phone === phone);
   if (user) {
     // Found the relevant user in 1c, create the user in our db

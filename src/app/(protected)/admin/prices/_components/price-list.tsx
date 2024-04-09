@@ -1,4 +1,3 @@
-// PriceList.jsx
 import React from "react";
 
 import SyncAndDeleteButtons from "@/app/(protected)/admin/prices/_components/sync-delete-buttons";

@@ -31,19 +31,20 @@ export const {
     async signIn({ user }) {
       return !!(await getUserById(user.id ?? ""));
     },
-    async session({ token, session }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
+    async session(props) {
+      const { token, session } = props;
+      if (token.sub && session.user) session.user.id = token.sub;
       if (token.role && session.user) {
         session.user.role = token.role as userRoleValues;
       }
-      if (token.phone) session.user.phone = token.phone as string;
-      if (token.name) session.user.name = token.name as string;
+      if (session.user) {
+        session.user.phone = token.phone as string;
+      }
 
       return session;
     },
-    async jwt({ token }) {
+    async jwt(props) {
+      const { token } = props;
       if (!token.sub) return token;
       try {
         const user = await getUserById(token.sub);

@@ -3,7 +3,13 @@
 import { ConvertFrom1C, IOrder } from "@/lib/1c-adapter";
 import { currentRole, currentUser } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
-import { From1C } from "@/lib/odata";
+import {
+  getMultipleOrderAdditionalProperties,
+  getOrderContent,
+  getOrderById as getOrderFrom1CById,
+  getOrdersForUserByDate,
+  getOrdersForUserByDeliveryDate,
+} from "@/lib/odata/orders";
 
 export async function getOrdersByDate(
   day: string,
@@ -37,7 +43,7 @@ export async function getOrdersByDate(
     };
   }
 
-  const orders = await From1C.getOrdersForUserByDate({
+  const orders = await getOrdersForUserByDate({
     userId: user.id,
     startDate: day,
     endDate: day,
@@ -81,7 +87,7 @@ export async function getOrdersByDeliveryDate(
     };
   }
 
-  const orders = await From1C.getOrdersForUserByDeliveryDate({
+  const orders = await getOrdersForUserByDeliveryDate({
     userId: user.id,
     startDate: day,
     endDate: day,
@@ -117,8 +123,8 @@ export const getOrderById = async (
     };
   }
 
-  const orderDetails = await From1C.getOrderById(orderId);
-  const orderContent = await From1C.getOrderContent(orderId);
+  const orderDetails = await getOrderFrom1CById(orderId);
+  const orderContent = await getOrderContent(orderId);
 
   if (orderDetails.length === 0) {
     return {
@@ -155,15 +161,16 @@ export async function getOrdersForUserForDate(
     };
   }
 
-  const ordersRaw = await From1C.getOrdersForUserByDate({
+  const ordersRaw = await getOrdersForUserByDate({
     userId,
     startDate: day,
     endDate: day,
   });
   const orders = ordersRaw.map(ConvertFrom1C.order);
 
-  const additionalProperties =
-    await From1C.getAdditionalMultipleOrderProperties(orders.map((o) => o.id));
+  const additionalProperties = await getMultipleOrderAdditionalProperties(
+    orders.map((o) => o.id),
+  );
 
   const injectedOrders =
     await ConvertFrom1C.injectAdditionalPropertiesIntoOrders(

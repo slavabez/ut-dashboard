@@ -1,4 +1,3 @@
-// AddPriceForm.jsx
 import React, { useTransition } from "react";
 
 import { addNewPriceToDb } from "@/actions/site-settings";

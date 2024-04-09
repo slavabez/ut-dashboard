@@ -1,7 +1,7 @@
 "use server";
 
 import { desc, eq, sql } from "drizzle-orm";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 import { db } from "@/drizzle/db";
 import {
@@ -11,203 +11,85 @@ import {
   prices,
   siteSettings,
   syncLogs,
-  users,
 } from "@/drizzle/schema";
 import { currentRole } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
-import { From1C } from "@/lib/odata";
+import {
+  getAllAdditionalProperties,
+  getAllPropertyValues,
+  getMainUnits,
+} from "@/lib/odata/metadata";
+import { getAllWarehouses } from "@/lib/odata/stock";
+import { KeyMemoryInfo, clearAllRedisCache, scanKeys } from "@/lib/redis";
+import {
+  ISiteSettingsStrict,
+  setNewSettings,
+  verifySettings,
+} from "@/lib/site-settings";
 
-export interface ISiteSettings {
-  guidsForSync?: {
-    warehouse?: string;
-    showManufacturerOrder?: string;
-    user?: {
-      showOnSite?: string;
-      sitePassword?: string;
-      siteRole?: string;
-      siteRoleAdminValue?: string;
-      siteRoleEmployeeValue?: string;
-    };
-    nomenclature?: {
-      minimumNonDivisibleWeight?: string;
-      showOnSite?: string;
-    };
-    units?: {
-      kilogram?: string;
-      piece?: string;
-    };
-    orders?: {
-      longitude?: string;
-      latitude?: string;
-      timeStarted?: string;
-      timeStopped?: string;
-    };
-  };
-}
-
-export interface ISiteSettingsExact {
-  guidsForSync: {
-    warehouse: string;
-    showManufacturerOrder: string;
-    user: {
-      showOnSite: string;
-      sitePassword: string;
-      siteRole: string;
-      siteRoleAdminValue: string;
-      siteRoleEmployeeValue: string;
-    };
-    nomenclature: {
-      minimumNonDivisibleWeight: string;
-      showOnSite: string;
-    };
-    units: {
-      kilogram: string;
-      piece: string;
-    };
-    orders: {
-      longitude: string;
-      latitude: string;
-      timeStarted: string;
-      timeStopped: string;
-    };
-  };
-}
-
-async function getLatestSettingsFromDb(): Promise<SettingsSelect> {
-  const settings = await db
-    .select()
-    .from(siteSettings)
-    .orderBy(desc(siteSettings.createdAt))
-    .limit(1);
-  console.log("Fetched the latest global site settings");
-
-  if (settings.length === 0) {
-    throw new Error("No settings found");
-  }
-  return settings[0];
-}
-
-const getCachedSettings = unstable_cache(
-  getLatestSettingsFromDb,
-  ["site-settings"],
-  {
-    tags: ["site-settings"],
-  },
-);
-
-export async function getLatestSiteSettings(): Promise<
+export async function getSiteSettingsAction(): Promise<
   IActionResponse<SettingsSelect>
 > {
+  const role = await currentRole();
+
   try {
-    const latestSettings = await getCachedSettings();
+    const settings = await db
+      .select()
+      .from(siteSettings)
+      .orderBy(desc(siteSettings.createdAt))
+      .limit(1);
+
+    if (settings.length < 1) {
+      return {
+        status: "error",
+        error: "Сайт еще не был настроен",
+      };
+    }
+
+    if (role !== "admin") {
+      return {
+        status: "error",
+        error: "У вас недостаточно прав для этого действия",
+      };
+    }
 
     return {
       status: "success",
-      data: latestSettings,
+      data: settings[0],
     };
-  } catch (e: any) {
+  } catch (e) {
+    console.error("getSiteSettings server action error", e);
     return {
       status: "error",
+      error: "Ошибка при получении настроек сайта",
+    };
+  }
+}
+
+export async function setSiteSettingsAction(
+  newSettings: ISiteSettingsStrict,
+): Promise<IActionResponse<SettingsSelect>> {
+  try {
+    const verified = verifySettings(newSettings);
+    const inserted = await setNewSettings(verified);
+    return {
+      status: "success",
+      data: inserted,
+    };
+  } catch (e) {
+    return {
+      status: "error",
+      // @ts-ignore
       error: typeof e === "string" ? e : e.message,
     };
   }
 }
 
-export async function getGlobalSettings(): Promise<ISiteSettingsExact> {
-  const res = await getLatestSiteSettings();
-  if (res.status === "error") {
-    throw new Error(res.error);
-  }
-  // Make sure all fields are present or throw an error
-  const settings = res.data.settings as ISiteSettings;
-  const guids = settings.guidsForSync;
-  if (!guids) {
-    throw new Error("No guids found in the settings");
-  }
-  if (!guids.warehouse) {
-    throw new Error("No warehouse guid found in the settings");
-  }
-  if (!guids.user) {
-    throw new Error("No user guids found in the settings");
-  }
-  if (!guids.user.showOnSite) {
-    throw new Error("No user.showOnSite guid found in the settings");
-  }
-  if (!guids.user.sitePassword) {
-    throw new Error("No user.sitePassword guid found in the settings");
-  }
-  if (!guids.user.siteRole) {
-    throw new Error("No user.siteRole guid found in the settings");
-  }
-  if (!guids.user.siteRoleAdminValue) {
-    throw new Error("No user.siteRoleAdminValue guid found in the settings");
-  }
-  if (!guids.user.siteRoleEmployeeValue) {
-    throw new Error("No user.siteRoleEmployeeValue guid found in the settings");
-  }
-  if (!guids.nomenclature) {
-    throw new Error("No nomenclature guids found in the settings");
-  }
-  if (!guids.nomenclature.minimumNonDivisibleWeight) {
-    throw new Error(
-      "No nomenclature.minimumNonDivisibleWeight guid found in the settings",
-    );
-  }
-  if (!guids.nomenclature.showOnSite) {
-    throw new Error("No nomenclature.showOnSite guid found in the settings");
-  }
-  if (!guids.units) {
-    throw new Error("No units guids found in the settings");
-  }
-  if (!guids.units.kilogram) {
-    throw new Error("No units.kilogram guid found in the settings");
-  }
-  if (!guids.units.piece) {
-    throw new Error("No units.piece guid found in the settings");
-  }
-  if (!guids.orders?.latitude)
-    throw new Error("No latitude guid found in the settings");
-  if (!guids.orders?.longitude)
-    throw new Error("No longitude guid found in the settings");
-  if (!guids.orders?.timeStarted)
-    throw new Error("No time started guid found in the settings");
-  if (!guids.orders?.timeStopped)
-    throw new Error("No time stopped guid found in the settings");
-  return settings as ISiteSettingsExact;
-}
-
-export async function saveSiteSettings(
-  settings: ISiteSettings,
-): Promise<IActionResponse<SettingsSelect>> {
-  const role = await currentRole();
-
-  if (role !== "admin") {
-    return {
-      status: "error",
-      error: "У вас недостаточно прав для этого действия",
-    };
-  }
-
-  const newSettings = await db
-    .insert(siteSettings)
-    .values({
-      settings: settings,
-    })
-    .returning();
-
-  revalidateTag("site-settings");
-
-  return {
-    status: "success",
-    data: newSettings[0],
-  };
-}
-
 async function getGuidsRaw() {
-  const warehouses = await From1C.getAllWarehouses();
-  const additionalProperties = await From1C.getAllAdditionalProperties();
-  const mainUnits = await From1C.getMainUnits();
-  const propertyValues = await From1C.getAllPropertyValues();
+  const warehouses = await getAllWarehouses();
+  const additionalProperties = await getAllAdditionalProperties();
+  const mainUnits = await getMainUnits();
+  const propertyValues = await getAllPropertyValues();
 
   return {
     warehouses,
@@ -342,34 +224,6 @@ export async function deletePriceFromDb(
   };
 }
 
-export async function invalidateSiteSettingsCache() {
-  revalidateTag("site-settings");
-}
-
-/**
- * Check if the site has been initialized.
- * Checks if there are any site settings in the database.
- * If none, check if there are any admin level users
- *
- */
-export async function checkInit(): Promise<IActionResponse<string>> {
-  const adminCount = await db
-    .select()
-    .from(users)
-    .where(eq(users.role, "admin"))
-    .limit(1);
-  if (adminCount.length === 0) {
-    return {
-      status: "success",
-      data: "Сайт не настроен",
-    };
-  }
-  return {
-    status: "error",
-    error: "Сайт уже настроен",
-  };
-}
-
 export async function initialiseSite(): Promise<IActionResponse<any>> {
   const initSettings = await assignInitialSiteSettings();
 
@@ -405,7 +259,7 @@ export async function assignInitialSiteSettings(): Promise<
     };
   }
 
-  const initialSettings = {
+  const initialSettings: ISiteSettingsStrict = {
     guidsForSync: {
       warehouse: "",
       showManufacturerOrder: "",
@@ -524,17 +378,45 @@ export async function assignInitialSiteSettings(): Promise<
   if (timeStopped)
     initialSettings.guidsForSync.orders.timeStopped = timeStopped.Ref_Key;
 
-  const newSettings = await db
-    .insert(siteSettings)
-    .values({
-      settings: initialSettings,
-    })
-    .returning();
-
-  revalidateTag("site-settings");
+  await setNewSettings(initialSettings);
 
   return {
     status: "success",
     data: "Настройки успешно установлены",
   };
+}
+
+export async function clearRedisCache(): Promise<IActionResponse<string>> {
+  try {
+    await clearAllRedisCache();
+    return {
+      status: "success",
+      data: "Redis кэш очищен",
+    };
+  } catch (e) {
+    console.error("clearRedisCache() error:", e);
+    return {
+      status: "error",
+      error: "Ошибка при очистке кэша Redis",
+    };
+  }
+}
+
+export async function getRedisCacheInfo(): Promise<
+  IActionResponse<KeyMemoryInfo[]>
+> {
+  try {
+    const redisKeys = await scanKeys("*");
+
+    return {
+      status: "success",
+      data: redisKeys,
+    };
+  } catch (e) {
+    console.error("getRedisCacheInfo() error:", e);
+    return {
+      status: "error",
+      error: "Ошибка при чтении ключей в Redis",
+    };
+  }
 }

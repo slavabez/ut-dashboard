@@ -12,8 +12,7 @@ import { syncStock } from "@/actions/sync/stock";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
 import { Button } from "@/components/ui/button";
-import { IActionResponse } from "@/lib/common-types";
-import { ISyncLogMeta, SyncType } from "@/lib/sync";
+import { IActionResponse, ISyncLogMeta, SyncType } from "@/lib/common-types";
 
 export type SyncFormType = SyncType | "all";
 

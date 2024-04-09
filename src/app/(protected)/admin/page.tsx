@@ -1,22 +1,23 @@
-import Link from "next/link";
 import React from "react";
 
 import { getActiveUser } from "@/actions/user/active-user";
 import LinkOpener from "@/app/(protected)/_components/link-opener";
+import PageWrapper from "@/components/layout-components";
+import LinkButton from "@/components/link-button";
+import { H1 } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 
 const AdminPage = async () => {
   const userResponse = await getActiveUser();
 
   if (userResponse.status === "error") {
     return (
-      <div className="p-4">
+      <PageWrapper>
         <Alert>
           <AlertTitle>Ошибка</AlertTitle>
           <AlertDescription>{userResponse.error}</AlertDescription>
         </Alert>
-      </div>
+      </PageWrapper>
     );
   }
   if (userResponse.data.role !== "admin") {
@@ -31,25 +32,20 @@ const AdminPage = async () => {
   }
 
   return (
-    <div className="flex flex-col items-stretch gap-2 p-4">
-      <h1 className="mb-2 text-center text-2xl font-bold">Админка</h1>
-      <Button asChild>
-        <Link href="/admin/sync">Синхронизация</Link>
-      </Button>
-      <Button asChild>
-        <Link href="/admin/prices">Цены из 1С</Link>
-      </Button>
-      <Button asChild>
-        <Link href="/admin/users">Пользователи</Link>
-      </Button>
-      <Button asChild>
-        <Link href="/admin/nomenclature">Номенклатура</Link>
-      </Button>
-      <Button asChild>
-        <Link href="/admin/site-settings">Глобальные настройки сайта</Link>
-      </Button>
+    <PageWrapper>
+      <H1>Админка</H1>
+      <div className="flex flex-col gap-2">
+        <LinkButton href="/admin/sync">Синхронизация</LinkButton>
+        <LinkButton href="/admin/prices">Цены из 1С</LinkButton>
+        <LinkButton href="/admin/users">Пользователи</LinkButton>
+        <LinkButton href="/admin/nomenclature">Номенклатура</LinkButton>
+        <LinkButton href="/admin/site-settings">
+          Глобальные настройки сайта
+        </LinkButton>
+      </div>
+
       <LinkOpener />
-    </div>
+    </PageWrapper>
   );
 };
 

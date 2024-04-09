@@ -1,4 +1,3 @@
-// SyncAndDeleteButtons.jsx
 import React, { useTransition } from "react";
 
 import { deletePriceFromDb } from "@/actions/site-settings";

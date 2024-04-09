@@ -62,6 +62,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.29.4",
     "hash-it": "^6.0.0",
+    "ioredis": "^5.3.2",
     "lucide-react": "^0.341.0",
     "maplibre-gl": "^4.1.2",
     "next": "^14.1.4",

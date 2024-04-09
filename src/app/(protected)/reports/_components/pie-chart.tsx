@@ -19,14 +19,14 @@ const PieChart = (props: IPieChartProps) => {
   const { data } = props;
   // Inject the tailwind orange colors into the chart
   data.datasets[0].backgroundColor = [
-    "rgb(255 237 213)",
-    "rgb(254 215 170)",
-    "rgb(253 186 116)",
-    "rgb(251 146 60)",
-    "rgb(249 115 22)",
-    "rgb(234 88 12)",
-    "rgb(194 65 12)",
-    "rgb(154 52 18)",
+    "#e11d48",
+    "#d946ef",
+    "#8b5cf6",
+    "#3b82f6",
+    "#10b981",
+    "#84cc16",
+    "#f97316",
+    "#ef4444",
   ].reverse();
   data.datasets[0].borderWidth = 1;
   return (

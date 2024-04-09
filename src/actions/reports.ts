@@ -1,7 +1,11 @@
 "use server";
 
 import { currentUser } from "@/lib/auth";
-import { From1C } from "@/lib/odata";
+import {
+  getSalesByManagerGroupedByNomenclature,
+  getSalesByManagerGroupedByPartnerAndNomenclature,
+  getSalesByManagerGroupedByPartners,
+} from "@/lib/odata/sales";
 
 export interface IFormattedNomenclatureReportItem {
   quantity: number;
@@ -91,7 +95,7 @@ export async function getSalesByGoods({
     };
   }
 
-  const sales = await From1C.getSalesByManagerGroupedByNomenclature({
+  const sales = await getSalesByManagerGroupedByNomenclature({
     managerId: user.id,
     startDate: `${startDate}T00:00:00`,
     endDate: `${endDate}T23:59:59`,
@@ -182,7 +186,7 @@ export async function getSalesByClients({
     };
   }
 
-  const sales = await From1C.getSalesByManagerGroupedByPartners({
+  const sales = await getSalesByManagerGroupedByPartners({
     managerId: user.id,
     startDate: `${startDate}T00:00:00`,
     endDate: `${endDate}T23:59:59`,
@@ -245,7 +249,7 @@ export async function getSalesByClientsAndGoods({
     };
   }
 
-  const sales = await From1C.getSalesByManagerGroupedByPartnerAndNomenclature({
+  const sales = await getSalesByManagerGroupedByPartnerAndNomenclature({
     managerId: user.id,
     startDate: `${startDate}T00:00:00`,
     endDate: `${endDate}T23:59:59`,

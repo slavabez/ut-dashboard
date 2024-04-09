@@ -57,6 +57,8 @@ const orderToPoint = (order: IOrder): any => {
   };
 };
 
+// TODO: Refactor, fetch data on the page component
+
 const EmployeeTracker = (props: IEmployeeTrackerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();

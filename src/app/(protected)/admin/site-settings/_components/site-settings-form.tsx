@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
-import { ISiteSettings, saveSiteSettings } from "@/actions/site-settings";
+import { setSiteSettingsAction } from "@/actions/site-settings";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { ISiteSettingsStrict } from "@/lib/site-settings";
 
 interface ISiteSettingsFormProps {
-  initialData?: ISiteSettings;
+  initialData?: ISiteSettingsStrict;
   guidsFrom1C: any;
 }
 
@@ -35,18 +36,18 @@ const SiteSettingsForm = (props: ISiteSettingsFormProps) => {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
-  const form = useForm<ISiteSettings>({
+  const form = useForm<ISiteSettingsStrict>({
     defaultValues: {
       ...initialData,
     },
     mode: "onChange",
   });
 
-  const onSubmit = (values: ISiteSettings) => {
+  const onSubmit = (values: ISiteSettingsStrict) => {
     startTransition(() => {
-      saveSiteSettings(values).then((response) => {
+      setSiteSettingsAction(values).then((response) => {
         if (response.status === "success") {
-          const newSettings = response.data.settings as ISiteSettings;
+          const newSettings = response.data.settings as ISiteSettingsStrict;
           form.setValue("guidsForSync", newSettings.guidsForSync);
           setSuccess("Настройки сохранены");
         } else {

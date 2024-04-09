@@ -6,6 +6,8 @@ import {
   getSalesByClientsAndGoods,
 } from "@/actions/reports";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
+import PageWrapper from "@/components/layout-components";
+import { H1, Large, Muted } from "@/components/typography";
 import {
   Collapsible,
   CollapsibleContent,
@@ -101,13 +103,14 @@ const SalesByClientsAndGoods = async ({
 
     if (response.status === "error") {
       return (
-        <div className="p-4">
-          <h1 className="my-2 text-center text-xl font-semibold">
-            <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
-            <Package className="ml-2" />
-          </h1>
+        <PageWrapper>
+          <H1>
+            <BadgeDollarSign className="h-10 w-10" /> Продажи по клиентам и
+            товарам
+            <Package className="h-10 w-10" />
+          </H1>
           <div className="text-center text-red-500">{response.error}</div>
-        </div>
+        </PageWrapper>
       );
     }
 
@@ -117,23 +120,23 @@ const SalesByClientsAndGoods = async ({
   }
 
   return (
-    <div className="flex flex-col justify-center gap-2 p-4">
-      <h1 className="my-2 flex items-center justify-center text-center text-xl font-semibold">
-        <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
-        <Package className="ml-2" />
-      </h1>
+    <PageWrapper>
+      <H1>
+        <BadgeDollarSign className="h-10 w-10" /> Продажи по клиентам и товарам
+        <Package className="h-10 w-10" />
+      </H1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
 
       <Separator />
-      <p>
+      <Large>
         Общие продажи:{" "}
         <span className="font-bold">
           {formatPrice(
             reportData.reduce((acc, { aggregates }) => acc + aggregates.sum, 0),
           )}
         </span>
-      </p>
-      <p>
+      </Large>
+      <Large>
         Общая скидка:{" "}
         {formatPrice(
           reportData.reduce(
@@ -141,20 +144,14 @@ const SalesByClientsAndGoods = async ({
             0,
           ),
         )}
-      </p>
+      </Large>
       <Separator />
-
-      {reportData.length === 0 && (
-        <p className="text-center text-muted-foreground">
-          Нет данных за выбранный период
-        </p>
-      )}
-
+      {reportData.length === 0 && <Muted>Нет данных за выбранный период</Muted>}
       <div>
         {reportData.map(({ partner, manufacturers, aggregates }) => (
           <Collapsible key={partner}>
             <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 bg-orange-100 p-4">
-              <div>{partner}</div>
+              <div className="text-left">{partner}</div>
               <div className="flex gap-2 font-bold">
                 {formatPrice(aggregates.sum)}
                 <ChevronsUpDown />
@@ -164,7 +161,7 @@ const SalesByClientsAndGoods = async ({
               {manufacturers.map(({ manufacturer, items, aggregates }) => (
                 <Collapsible key={manufacturer}>
                   <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 bg-orange-50 p-4">
-                    <div>{manufacturer}</div>
+                    <div className="text-left">{manufacturer}</div>
                     <div className="flex gap-2 font-bold">
                       {formatPrice(aggregates.sum)}
                       <ChevronsUpDown />
@@ -195,7 +192,7 @@ const SalesByClientsAndGoods = async ({
           </Collapsible>
         ))}
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 
