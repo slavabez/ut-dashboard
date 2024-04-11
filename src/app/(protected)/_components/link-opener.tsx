@@ -26,6 +26,10 @@ const LinkOpener = () => {
       const ref = link.split("ref=")[1];
       router.push(`/orders/${from1CIdToGuid(ref)}`);
     }
+    if (link.includes("Документ.РеализацияТоваровУслуг")) {
+      const ref = link.split("ref=")[1];
+      router.push(`/sale-document/${from1CIdToGuid(ref)}`);
+    }
     // TODO: handle other types of links
   };
 

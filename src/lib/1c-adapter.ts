@@ -1,3 +1,5 @@
+import { log } from "node:util";
+
 import "@/actions/site-settings";
 import {
   ManufacturerInsert,
@@ -13,6 +15,7 @@ import {
 } from "@/lib/odata/nomenclature";
 import { IOrderContentFields, IOrderFields } from "@/lib/odata/orders";
 import { IPriceFields } from "@/lib/odata/prices";
+import { ISaleContentFields, ISaleFields } from "@/lib/odata/sale";
 import { IStockFields } from "@/lib/odata/stock";
 import { IUserFields } from "@/lib/odata/users";
 import {
@@ -73,6 +76,36 @@ export interface IOrderAdditionalProperties {
   lat?: number;
   started?: Date;
   finished?: Date;
+}
+
+export interface ISaleItem {
+  line: number;
+  nomenclatureId: string;
+  quantity: number;
+  priceId: string;
+  price: number;
+  sum: number;
+  vat: number;
+  totalSum: number;
+  autoDiscount: number;
+  manualDiscount: number;
+  nomenclatureName: string;
+}
+
+export interface ISale {
+  id: string;
+  number: string;
+  date: Date;
+  posted: boolean;
+  sum: number;
+  paymentType: string;
+  deliveryAddress: string;
+  deliveryType: string;
+  partner: string;
+  comment: string;
+  debt?: number;
+  orderId?: string;
+  items: ISaleItem[];
 }
 
 const assignProperId = (id: string | number) => {
@@ -286,6 +319,42 @@ export class ConvertFrom1C {
     });
 
     return orders;
+  }
+
+  static sale(
+    input: ISaleFields,
+    items?: ISaleContentFields[],
+    saleDebt?: number,
+  ): ISale {
+    return {
+      id: input.Ref_Key,
+      number: input.Number,
+      date: new Date(input.Date),
+      sum: input.СуммаДокумента,
+      comment: input.Комментарий,
+      posted: input.Posted,
+      deliveryAddress: input.АдресДоставки,
+      deliveryType: input.СпособДоставки,
+      partner: input.Партнер.Description,
+      paymentType: input.ФормаОплаты,
+      debt: saleDebt ? saleDebt : 0,
+      orderId: input.ЗаказКлиента,
+      items: Array.isArray(items)
+        ? items.map((i: ISaleContentFields) => ({
+            line: i.LineNumber,
+            nomenclatureId: i.Номенклатура_Key,
+            quantity: i.Количество,
+            priceId: i.Цена_Key,
+            price: i.Цена,
+            sum: i.Сумма,
+            vat: i.СуммаНДС,
+            totalSum: i.СуммаСНДС,
+            autoDiscount: i.СуммаАвтоматическойСкидки,
+            manualDiscount: i.СуммаРучнойСкидки,
+            nomenclatureName: i.Номенклатура.Description,
+          }))
+        : [],
+    };
   }
 }
 

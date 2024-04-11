@@ -1,10 +1,12 @@
-import { Package } from "lucide-react";
+import { FileText } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
-import { getOrderById } from "@/actions/orders";
-import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
-import OrderStatusBadge from "@/app/(protected)/orders/_components/order-status-badge";
+import { getSaleDocumentDetails } from "@/actions/sale-document";
+import Sale1CLink from "@/app/(protected)/sale-document/_components/sale-1c-link";
 import PageWrapper from "@/components/layout-components";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -18,76 +20,84 @@ import {
   format1CDocumentNumber,
   formatDateShort,
   formatPrice,
-  translateDeliveryType,
 } from "@/lib/utils";
 
-const OrderDetailsPage = async ({
-  params,
-}: {
-  params: { orderId: string };
-}) => {
-  const orderResponse = await getOrderById(params.orderId);
-  if (orderResponse.status === "error") {
+const renderDebtAlert = (debt: number) => {
+  if (!debt || debt === 0) {
     return (
-      <div className="p-4">
+      <Alert variant="success">
+        <AlertTitle>Документ оплачен</AlertTitle>
+        <AlertDescription>
+          Задолженности по документу не найдено
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  return (
+    <Alert variant="destructive">
+      <AlertTitle>Документ не оплачен</AlertTitle>
+      <AlertDescription>
+        Задолженность по документу:{" "}
+        <span className="font-bold">{formatPrice(debt)}</span>
+      </AlertDescription>
+    </Alert>
+  );
+};
+
+const SaleDocumentDetails = async ({ params }: { params: { id: string } }) => {
+  const saleResponse = await getSaleDocumentDetails(params.id);
+  if (saleResponse.status === "error") {
+    return (
+      <PageWrapper>
         <h1 className="my-4 flex justify-center gap-2 text-center text-xl font-semibold">
-          <Package /> Заказ
+          <FileText /> Реализация не найдена
         </h1>
-        <div className="text-center text-red-500">{orderResponse.error}</div>
-      </div>
+        <div className="text-center text-red-500">{saleResponse.error}</div>
+      </PageWrapper>
     );
   }
 
-  const order = orderResponse.data;
+  const sale = saleResponse.data;
 
   return (
     <PageWrapper>
-      <h1 className=" flex justify-center gap-2 text-center text-xl font-semibold">
-        <Package /> Заказ №{format1CDocumentNumber(order.number)}
-        <Order1cLink orderId={order.id} />
+      <h1 className="my-4 flex justify-center gap-2 text-center text-xl font-semibold">
+        <FileText /> Реализация №{format1CDocumentNumber(sale.number)}
+        <Sale1CLink saleId={sale.id} />
       </h1>
+      {renderDebtAlert(sale?.debt ?? 0)}
       <div className="flex flex-col gap-4">
         <dl className="flex justify-between">
           <dt className="text-gray-500">Клиент</dt>
-          <dd className="text-right">{order.partner}</dd>
+          <dd className="text-right">{sale.partner}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Дата заказа</dt>
-          <dd suppressHydrationWarning>{formatDateShort(order.date)}</dd>
+          <dd suppressHydrationWarning>{formatDateShort(sale.date)}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Адрес доставки</dt>
-          <dd className="text-right">{order.deliveryAddress}</dd>
-        </dl>
-        <dl className="flex justify-between">
-          <dt className="text-gray-500">Тип доставки</dt>
-          <dd>{translateDeliveryType(order.deliveryType)}</dd>
-        </dl>
-        {order.deliveryType !== "Самовывоз" && (
-          <dl className="flex justify-between">
-            <dt className="text-gray-500">Дата доставки</dt>
-            <dd suppressHydrationWarning>
-              {formatDateShort(new Date(order.deliveryDate)).split(",")[0]}
-            </dd>
-          </dl>
-        )}
-        <dl className="flex justify-between">
-          <dt className="text-gray-500">Статус</dt>
-          <dd>
-            <OrderStatusBadge order={order} />
-          </dd>
+          <dd className="text-right">{sale.deliveryAddress}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Тип оплаты</dt>
-          <dd>{order.paymentType}</dd>
+          <dd>{sale.paymentType}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Комментарий</dt>
-          <dd className="text-right">{order.comment}</dd>
+          <dd className="text-right">{sale.comment}</dd>
         </dl>
         <dl className="flex justify-between">
           <dt className="text-gray-500">Сумма</dt>
-          <dd className="font-bold">{formatPrice(order.sum)}</dd>
+          <dd className="font-bold">{formatPrice(sale.sum)}</dd>
+        </dl>
+        <dl className="flex justify-between">
+          <dt className="text-gray-500">Заказ</dt>
+          <dd className="font-bold">
+            <Button asChild variant="secondary">
+              <Link href={`/orders/${sale.orderId}`}>Ссылка на заказ</Link>
+            </Button>
+          </dd>
         </dl>
       </div>
       <Separator className="my-4" />
@@ -100,18 +110,13 @@ const OrderDetailsPage = async ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {order.items.map((item) => {
+          {sale.items.map((item) => {
             const totalDiscount = item.autoDiscount + item.manualDiscount;
             const totalDiscountPercent =
               (totalDiscount / (item.totalSum + totalDiscount)) * 100;
 
             return (
-              <TableRow
-                key={item.line}
-                className={
-                  item.cancelled ? "text-muted-foreground line-through" : ""
-                }
-              >
+              <TableRow key={item.line}>
                 <TableCell>{item.nomenclatureName}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell>
@@ -128,9 +133,7 @@ const OrderDetailsPage = async ({
             <TableCell colSpan={2} className="text-right font-bold">
               Итого
             </TableCell>
-            <TableCell className="font-bold">
-              {formatPrice(order.sum)}
-            </TableCell>
+            <TableCell className="font-bold">{formatPrice(sale.sum)}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
@@ -138,4 +141,4 @@ const OrderDetailsPage = async ({
   );
 };
 
-export default OrderDetailsPage;
+export default SaleDocumentDetails;
