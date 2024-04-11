@@ -1,4 +1,9 @@
-import { BadgeDollarSign, ChevronsUpDown, Package } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BarChartHorizontal,
+  ChevronsUpDown,
+  Package,
+} from "lucide-react";
 import React from "react";
 
 import {
@@ -105,9 +110,8 @@ const SalesByClientsAndGoods = async ({
       return (
         <PageWrapper>
           <H1>
-            <BadgeDollarSign className="h-10 w-10" /> Продажи по клиентам и
+            <BarChartHorizontal className="h-10 w-10" /> Продажи по клиентам и
             товарам
-            <Package className="h-10 w-10" />
           </H1>
           <div className="text-center text-red-500">{response.error}</div>
         </PageWrapper>
@@ -122,8 +126,8 @@ const SalesByClientsAndGoods = async ({
   return (
     <PageWrapper>
       <H1>
-        <BadgeDollarSign className="h-10 w-10" /> Продажи по клиентам и товарам
-        <Package className="h-10 w-10" />
+        <BarChartHorizontal className="h-10 w-10" /> Продажи по клиентам и
+        товарам
       </H1>
       <ReportsDateRangePicker searchParamName="range" title="Период" />
 

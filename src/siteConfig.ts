@@ -232,6 +232,14 @@ export const allNavItems: Map<string, INavItem> = new Map([
       href: "/reports/sales-by-clients-and-goods",
     },
   ],
+  [
+    "/reports/debt",
+    {
+      id: "/reports/debt",
+      name: "Задолженность клиентов",
+      href: "/reports/debt",
+    },
+  ],
 ]);
 
 export const getBreadcrumbsForPath = (path: string): IBreadcrumbItem[] => {
@@ -295,6 +303,7 @@ export const subNavItems = new Map<string, INavItem[]>([
       allNavItems.get("/reports/sales-by-goods")!,
       allNavItems.get("/reports/sales-by-clients")!,
       allNavItems.get("/reports/sales-by-clients-and-goods")!,
+      allNavItems.get("/reports/debt")!,
     ],
   ],
 ]);
