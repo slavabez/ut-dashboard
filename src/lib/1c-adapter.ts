@@ -1,5 +1,3 @@
-import { log } from "node:util";
-
 import "@/actions/site-settings";
 import {
   ManufacturerInsert,

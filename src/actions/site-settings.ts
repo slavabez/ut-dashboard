@@ -12,7 +12,7 @@ import {
   siteSettings,
   syncLogs,
 } from "@/drizzle/schema";
-import { currentRole } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
 import {
   getAllAdditionalProperties,
@@ -138,6 +138,15 @@ export async function getPricesWithLatestSyncTime(): Promise<
     }[]
   >
 > {
+  const role = await currentRole();
+
+  if (role !== "admin") {
+    return {
+      status: "error",
+      error: "У нас недостаточно прав для данного действия",
+    };
+  }
+
   const pricesWithLatestSync = await db.execute(sql`
       WITH LatestSyncLogs AS (
           SELECT

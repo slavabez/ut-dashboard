@@ -1,8 +1,8 @@
-import { BadgeDollarSign, BarChartHorizontal, Package } from "lucide-react";
+import { BarChartHorizontal, Package } from "lucide-react";
 import React from "react";
 
 import PageWrapper from "@/components/layout-components";
-import { H1, Large } from "@/components/typography";
+import { H1 } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
