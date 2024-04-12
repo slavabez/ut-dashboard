@@ -1,9 +1,4 @@
-import {
-  BadgeDollarSign,
-  BarChartHorizontal,
-  ChevronsUpDown,
-  Package,
-} from "lucide-react";
+import { BarChartHorizontal, ChevronsUpDown } from "lucide-react";
 import React from "react";
 
 import {

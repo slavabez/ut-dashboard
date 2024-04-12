@@ -8,7 +8,7 @@ import Link from "next/link";
 import UserAvatarMenu from "@/app/(protected)/_components/user-avatar-menu";
 import Breadcrumbs from "@/app/_components/breadcrumbs";
 import { auth } from "@/auth";
-import { siteConfig } from "@/siteConfig";
+import { siteConfig } from "@/site-config";
 
 const inter = Inter({ subsets: ["latin"] });
 

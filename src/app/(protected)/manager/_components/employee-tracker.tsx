@@ -3,8 +3,7 @@
 import { ru } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useState, useTransition } from "react";
-import { CircleLayer, Marker } from "react-map-gl/maplibre";
-import Map, { Layer, Source } from "react-map-gl/maplibre";
+import Map, { Layer, Marker, Source } from "react-map-gl/maplibre";
 
 import { getOrdersForUserForDate } from "@/actions/orders";
 import FormError from "@/components/form-error";

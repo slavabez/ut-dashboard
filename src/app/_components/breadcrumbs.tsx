@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getBreadcrumbsForPath, getSubNavItems } from "@/siteConfig";
+import { getBreadcrumbsForPath, getSubNavItems } from "@/site-config";
 
 const Breadcrumbs = () => {
   const path = usePathname();

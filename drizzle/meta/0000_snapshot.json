@@ -1,5 +1,5 @@
 {
-  "id": "784d302f-dd0f-46b3-ae89-0fc7a300a0da",
+  "id": "edb2313c-72c3-478d-9aef-fc2159a538ae",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -816,6 +816,7 @@
       "values": {
         "client": "client",
         "employee": "employee",
+        "manager": "manager",
         "admin": "admin"
       }
     }

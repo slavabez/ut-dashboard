@@ -31,25 +31,25 @@ export async function getDebtForUser(): Promise<
     }[]
   >
 > {
+  const user = await currentUser();
+
+  if (!user) {
+    return { status: "error", error: "Вы не вошли" };
+  }
+  if (user.role === "client") {
+    return {
+      status: "error",
+      error: "У вас недостаточно прав для этого действия",
+    };
+  }
+  if (!user.id) {
+    return {
+      status: "error",
+      error: "Не удалось получить информацию о пользователе",
+    };
+  }
+
   try {
-    const user = await currentUser();
-
-    if (!user) {
-      return { status: "error", error: "Вы не вошли" };
-    }
-    if (user.role === "client") {
-      return {
-        status: "error",
-        error: "У вас недостаточно прав для этого действия",
-      };
-    }
-    if (!user.id) {
-      return {
-        status: "error",
-        error: "Не удалось получить информацию о пользователе",
-      };
-    }
-
     const [allDebt, allUserDocs] = await Promise.all([
       getAllDebtSellingDocuments(),
       getAllSellingDocumentsByAgentIdsOnly(user.id),

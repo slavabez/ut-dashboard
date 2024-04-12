@@ -1,8 +1,7 @@
-import { FileText, Package } from "lucide-react";
+import { FileText } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
 import Sale1CLink from "@/app/(protected)/sale-document/_components/sale-1c-link";
 import PageWrapper from "@/components/layout-components";
 import { Button } from "@/components/ui/button";
@@ -16,11 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  format1CDocumentNumber,
-  formatDateShort,
-  formatPrice,
-} from "@/lib/utils";
 
 const SaleSkeleton = () => {
   return (
