@@ -12,7 +12,7 @@ import {
   siteSettings,
   syncLogs,
 } from "@/drizzle/schema";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentRole } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
 import {
   getAllAdditionalProperties,
@@ -281,7 +281,7 @@ export async function assignInitialSiteSettings(): Promise<
       },
       nomenclature: {
         minimumNonDivisibleWeight: "",
-        showOnSite: "",
+        hideOnSite: "",
       },
       units: {
         kilogram: "",
@@ -313,10 +313,10 @@ export async function assignInitialSiteSettings(): Promise<
       showManufacturerOrder.Ref_Key;
 
   const showOnSite = additionalProperties.find((p) =>
-    p.Имя.startsWith("ПоказыватьТоварНаСайте"),
+    p.Имя.startsWith("СкрыватьТоварНаСайте"),
   );
   if (showOnSite)
-    initialSettings.guidsForSync.nomenclature.showOnSite = showOnSite.Ref_Key;
+    initialSettings.guidsForSync.nomenclature.hideOnSite = showOnSite.Ref_Key;
 
   const minimumNonDivisibleWeight = additionalProperties.find((p) =>
     p.Имя.startsWith("ОбязательнаяКратность"),

@@ -117,18 +117,26 @@ const assignProperId = (id: string | number) => {
 };
 
 export class ConvertFrom1C {
-  static async nomenclatureItem(
+  static nomenclatureItem(
     input: Nomenclature1CFields,
-  ): Promise<NomenclatureInsert> {
-    const guids = await getLatestSiteSettings();
+    siteSettings: ISiteSettingsStrict,
+  ): NomenclatureInsert {
+    const { guidsForSync } = siteSettings;
     const minWeightProperty = input.ДополнительныеРеквизиты.find(
       (req) =>
         req.Свойство_Key ===
-        guids.guidsForSync.nomenclature.minimumNonDivisibleWeight,
+        guidsForSync.nomenclature.minimumNonDivisibleWeight,
     );
     let minimumWeight = 0;
     if (minWeightProperty) {
       minimumWeight = parseFloat(minWeightProperty.Значение as string);
+    }
+    const hideOnSiteProperty = input.ДополнительныеРеквизиты.find(
+      (req) => req.Свойство_Key === guidsForSync.nomenclature.hideOnSite,
+    );
+    let showOnSite = true;
+    if (hideOnSiteProperty) {
+      showOnSite = !parseBoolean(hideOnSiteProperty.Значение);
     }
     return {
       id: input.Ref_Key,
@@ -143,6 +151,7 @@ export class ConvertFrom1C {
       typeId: assignProperId(input.ВидНоменклатуры_Key),
       manufacturerId: assignProperId(input.Производитель_Key ?? 0),
       isFolder: input.IsFolder,
+      showOnSite,
       minimumWeight,
     };
   }
@@ -284,16 +293,15 @@ export class ConvertFrom1C {
     };
   }
 
-  static async injectAdditionalPropertiesIntoOrders(
+  static injectAdditionalPropertiesIntoOrders(
     orders: IOrder[],
+    siteSettings: ISiteSettingsStrict,
     data: {
       Объект: string;
       Свойство_Key: string;
       Значение: string;
     }[],
   ) {
-    const siteSettings = await getLatestSiteSettings();
-
     data.forEach((di) => {
       if (!di.Значение) return;
       const order = orders.find((o) => o.id === di?.Объект);

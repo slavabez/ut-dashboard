@@ -10,6 +10,7 @@ import {
   getOrdersForUserByDate,
   getOrdersForUserByDeliveryDate,
 } from "@/lib/odata/orders";
+import { getLatestSiteSettings } from "@/lib/site-settings";
 
 export async function getOrdersByDate(
   day: string,
@@ -160,6 +161,7 @@ export async function getOrdersForUserForDate(
       error: "Неверный формат даты",
     };
   }
+  const siteSettings = await getLatestSiteSettings();
 
   const ordersRaw = await getOrdersForUserByDate({
     userId,
@@ -172,11 +174,11 @@ export async function getOrdersForUserForDate(
     orders.map((o) => o.id),
   );
 
-  const injectedOrders =
-    await ConvertFrom1C.injectAdditionalPropertiesIntoOrders(
-      orders,
-      additionalProperties,
-    );
+  const injectedOrders = ConvertFrom1C.injectAdditionalPropertiesIntoOrders(
+    orders,
+    siteSettings,
+    additionalProperties,
+  );
 
   return {
     status: "success",
