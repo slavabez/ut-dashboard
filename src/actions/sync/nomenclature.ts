@@ -15,6 +15,7 @@ import {
   getAllNomenclatureFiles,
   getAllNomenclatureItems,
 } from "@/lib/odata/nomenclature";
+import { getLatestSiteSettings } from "@/lib/site-settings";
 import { separateListIntoLevels as separateArraysByLevel } from "@/lib/utils";
 
 /**
@@ -90,8 +91,9 @@ async function initialSync(
   syncMeta: ISyncLogMeta,
   allNomenclatureFiles: IFileFields[],
 ) {
+  const siteSettings = await getLatestSiteSettings();
   const formattedItems = await Promise.all(
-    allItems.map(ConvertFrom1C.nomenclatureItem),
+    allItems.map((ni) => ConvertFrom1C.nomenclatureItem(ni, siteSettings)),
   );
   allNomenclatureFiles.forEach((file) => {
     const item = formattedItems.find((i) => i.id === file.ВладелецФайла_Key);
@@ -116,8 +118,9 @@ async function incrementalSync(
   syncMeta: ISyncLogMeta,
   allNomenclatureFiles: IFileFields[],
 ) {
+  const siteSettings = await getLatestSiteSettings();
   const formattedItems = await Promise.all(
-    allItems.map(ConvertFrom1C.nomenclatureItem),
+    allItems.map((ni) => ConvertFrom1C.nomenclatureItem(ni, siteSettings)),
   );
   allNomenclatureFiles.forEach((file) => {
     const item = formattedItems.find((i) => i.id === file.ВладелецФайла_Key);
@@ -137,7 +140,7 @@ async function incrementalSync(
         await db.insert(nomenclatures).values(nomItem);
         syncMeta.entitiesCreated++;
       } else {
-        // Check and update only if dataVersion has changed
+        // Check and update only if dataVersion has changed or new cover image has been set
         if (existing.dataVersion !== nomItem.dataVersion) {
           await db
             .update(nomenclatures)

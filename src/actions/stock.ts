@@ -5,6 +5,7 @@ import { and, desc, eq, gt, ilike, lt } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { nomenclatures, syncLogs } from "@/drizzle/schema";
 import { IActionResponse } from "@/lib/common-types";
+import { getLatestSiteSettings } from "@/lib/site-settings";
 
 export async function getLatestStockSyncTime() {
   const latestSync = await db
@@ -24,17 +25,21 @@ export async function getLatestStockSyncTime() {
 export interface IStockFilters {
   name?: string;
   manufacturerId?: string;
-  inStockOnly?: string;
 }
 
 export async function getStockWithFilters(
   params: IStockFilters,
 ): Promise<IActionResponse<any[]>> {
   try {
-    const { name, manufacturerId, inStockOnly } = params;
+    const { name, manufacturerId } = params;
     const query = db.select().from(nomenclatures);
+    const siteSettings = await getLatestSiteSettings();
 
-    const whereParts = [eq(nomenclatures.isFolder, false)];
+    const whereParts = [
+      eq(nomenclatures.isFolder, false),
+      gt(nomenclatures.stock, 0),
+      eq(nomenclatures.showOnSite, true),
+    ];
 
     if (name) {
       whereParts.push(ilike(nomenclatures.name, `%${name}%`));
@@ -44,11 +49,9 @@ export async function getStockWithFilters(
       whereParts.push(eq(nomenclatures.manufacturerId, manufacturerId));
     }
 
-    if (inStockOnly === "1") {
-      whereParts.push(gt(nomenclatures.stock, 0));
-    }
-
     query.where(and(...whereParts));
+
+    query.orderBy(desc(nomenclatures.stock));
 
     const stock = await query;
 
@@ -59,6 +62,10 @@ export async function getStockWithFilters(
         coverImage: !!ni.coverImage
           ? process.env.NEXT_PUBLIC_FILE_URL + ni.coverImage
           : null,
+        baseUnitName:
+          ni.baseUnitId === siteSettings.guidsForSync.units.kilogram
+            ? "кг"
+            : "шт",
       })),
     };
   } catch (e) {

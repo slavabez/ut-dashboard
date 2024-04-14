@@ -133,11 +133,11 @@ export async function getNomenclatureInfo(
     }
     let baseUnits = [
       {
-        name: "Штука",
+        name: "шт",
         id: siteSettings.guidsForSync.units.piece,
       },
       {
-        name: "Килограмм",
+        name: "кг",
         id: siteSettings.guidsForSync.units.kilogram,
       },
     ];

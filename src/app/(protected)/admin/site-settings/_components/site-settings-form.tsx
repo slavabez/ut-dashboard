@@ -322,7 +322,7 @@ const SiteSettingsForm = (props: ISiteSettingsFormProps) => {
             }}
           />
           <FormField
-            name="guidsForSync.nomenclature.showOnSite"
+            name="guidsForSync.nomenclature.hideOnSite"
             render={({ field }) => {
               return (
                 <FormItem>

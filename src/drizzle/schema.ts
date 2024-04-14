@@ -178,7 +178,7 @@ export const nomenclatures = pgTable("nomenclature", {
   stock: real("stock"),
   stockDate: timestamp("stock_date"),
   stockUpdatedAt: timestamp("stock_updated_at"),
-  showOnSite: boolean("show_on_site").default(false).notNull(),
+  showOnSite: boolean("show_on_site").default(true).notNull(),
   minQuantityConsideredHigh: real("min_quantity_considered_high"),
   coverImage: text("cover_image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

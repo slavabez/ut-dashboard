@@ -4,8 +4,7 @@ import React from "react";
 import { getNomenclatureInfo } from "@/actions/nomenclature/items";
 import Nomenclature1cLink from "@/app/(protected)/nomenclature/_components/nomenclature-1c-link";
 import PageWrapper from "@/components/layout-components";
-import { H1, H2, H3, Muted } from "@/components/typography";
-import { Badge } from "@/components/ui/badge";
+import { H1, H3, Muted } from "@/components/typography";
 import { formatPrice, timeAgo } from "@/lib/utils";
 
 const NomenclatureDetailsPage = async ({
@@ -53,7 +52,10 @@ const NomenclatureDetailsPage = async ({
     <PageWrapper>
       <H1>
         {response.data.nomenclature.name}
-        <Nomenclature1cLink nomenclatureId={nomenclature.id} />
+        <Nomenclature1cLink
+          nomenclatureId={nomenclature.id}
+          className="h-10 w-10"
+        />
       </H1>
       <Muted>Данные обновлены {timeAgo(nomenclature.updatedAt)}</Muted>
       <Image
@@ -67,32 +69,66 @@ const NomenclatureDetailsPage = async ({
         <dd className="text-right">{nomenclature.manufacturer.name}</dd>
       </dl>
       <dl className="flex justify-between">
-        <dt className="text-gray-500">В наличии</dt>
-        <dd className="text-right font-bold">{nomenclature.stock ?? 0}</dd>
+        <dt className="text-gray-500">Вид ассортимента</dt>
+        <dd className="text-right">{nomenclature.type.name}</dd>
       </dl>
+      <dl className="flex justify-between">
+        <dt className="text-gray-500">В наличии</dt>
+        <dd className="text-right font-bold">
+          {nomenclature.stock ?? 0} {baseUnit?.name ?? "Не найдено"}
+        </dd>
+      </dl>
+      {nomenclature.measurementUnits.map((mu: any) => (
+        <dl className="flex justify-between" key={mu.id}>
+          <dt className="text-gray-500">В переводе в {mu.name}</dt>
+          <dd className="text-right">
+            {(nomenclature.stock / (mu.numerator / mu.denominator)).toFixed(2)}
+          </dd>
+        </dl>
+      ))}
       <dl className="flex justify-between">
         <dt className="text-gray-500">Единица</dt>
         <dd className="text-right">{baseUnit?.name ?? "Не найдено"}</dd>
       </dl>
-      <dl className="flex justify-between">
-        <dt className="text-gray-500">Вид ассортимента</dt>
-        <dd className="text-right">{nomenclature.type.name}</dd>
-      </dl>
-      <H3>Цены</H3>
-      {formattedPrices.map((fp: any) => (
-        <dl key={fp.priceId} className="flex justify-between">
-          <dt className="text-gray-500">{fp.priceName}</dt>
+      <H3>Дополнительные единицы</H3>
+      {nomenclature.measurementUnits.map((mu: any) => (
+        <dl className="flex justify-between" key={mu.id}>
+          <dt className="text-gray-500">{mu.name}</dt>
           <dd className="text-right">
-            {formatPrice(fp.priceValue, true)} за {fp.priceUnit}
+            Коэф.: {mu.numerator / mu.denominator}
+            {baseUnit?.name}
           </dd>
         </dl>
       ))}
-      <H3>Дополнительные единицы</H3>
-      <div>
-        {nomenclature.measurementUnits.map((mu: any) => (
-          <Badge key={mu.id}>{mu.name}</Badge>
-        ))}
-      </div>
+      <H3>Цены</H3>
+      {formattedPrices.map((fp: any) => (
+        <>
+          <dl key={fp.priceId} className="flex justify-between">
+            <dt className="text-gray-500">{fp.priceName}</dt>
+            <dd className="text-right">
+              <span className="font-bold">
+                {formatPrice(fp.priceValue, true)}
+              </span>{" "}
+              за {fp.priceUnit}
+            </dd>
+          </dl>
+          {nomenclature.measurementUnits.map((mu: any) => (
+            <dl className="flex justify-between" key={mu.id}>
+              <dt className="text-gray-500"></dt>
+              <dd className="text-right ">
+                <span className="font-bold">
+                  {formatPrice(
+                    fp.priceValue * (mu.numerator / mu.denominator),
+                    true,
+                  )}
+                </span>
+
+                {` за ${mu.name}`}
+              </dd>
+            </dl>
+          ))}
+        </>
+      ))}
     </PageWrapper>
   );
 };

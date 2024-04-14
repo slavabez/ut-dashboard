@@ -1,13 +1,23 @@
-import { Warehouse } from "lucide-react";
+import { Link2, Warehouse } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 import { getLatestStockSyncTime, getStockWithFilters } from "@/actions/stock";
+import NameSearchInput from "@/app/(protected)/reports/stock/_components/name-search-input";
 import PageWrapper from "@/components/layout-components";
 import { H1, P } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { timeAgo } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatPrice, timeAgo } from "@/lib/utils";
 
 const StockReport = async ({
   searchParams,
@@ -15,15 +25,13 @@ const StockReport = async ({
   searchParams: {
     name?: string;
     manufacturerId?: string;
-    inStockOnly?: string;
   };
 }) => {
-  const { name, manufacturerId, inStockOnly } = searchParams;
+  const { name, manufacturerId } = searchParams;
   const latestSyncTime = await getLatestStockSyncTime();
   const stockResponse = await getStockWithFilters({
     name,
     manufacturerId,
-    inStockOnly,
   });
 
   if (stockResponse.status === "error") {
@@ -43,14 +51,40 @@ const StockReport = async ({
         Остатки товаров на складе
       </H1>
       <P>Остатки обновлены: {timeAgo(latestSyncTime)}</P>
-      <ul>
-        {stockResponse.data.map((ni) => (
-          <Button variant="link" key={ni.id}>
-            <Link href={`/nomenclature/${ni.id}`}>{ni.name}</Link>
-          </Button>
-        ))}
-      </ul>
-      <pre>{JSON.stringify(stockResponse, null, 2)}</pre>
+      <NameSearchInput />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableCell colSpan={2}>Товар</TableCell>
+            <TableCell>Остаток</TableCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {stockResponse.data.map((item, index) => {
+            return (
+              <TableRow key={item.id}>
+                <TableCell className="h-[100px] w-[100px] p-0">
+                  <Link href={`/nomenclature/${item.id}`}>
+                    <Image
+                      src={item.coverImage ?? "https://placehold.co/100"}
+                      alt={item.name}
+                      width={100}
+                      height={100}
+                    />
+                  </Link>
+                </TableCell>
+                <TableCell className="p-2">{item.name}</TableCell>
+                <TableCell className="p-2">
+                  <span className="font-bold">{item.stock}</span>{" "}
+                  {item.baseUnitName}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      {/*<pre>{JSON.stringify(stockResponse, null, 2)}</pre>*/}
     </PageWrapper>
   );
 };
