@@ -26,6 +26,10 @@ const middleware = async (req: NextRequest) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  console.log(
+    `Middleware called for route ${nextUrl.pathname} as role:${role}`,
+  );
+
   if (isApiAuthRoute) {
     return;
   }
