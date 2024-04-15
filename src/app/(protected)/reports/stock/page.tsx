@@ -3,10 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+import { getManufacturersForSelect } from "@/actions/nomenclature/manufacturers";
 import { getLatestStockSyncTime, getStockWithFilters } from "@/actions/stock";
+import ManufacturerSelect from "@/app/(protected)/reports/stock/_components/manufacturer-select";
 import NameSearchInput from "@/app/(protected)/reports/stock/_components/name-search-input";
 import PageWrapper from "@/components/layout-components";
-import { H1, P } from "@/components/typography";
+import LinkButton from "@/components/link-button";
+import { H1, Large, Muted, P } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Table,
@@ -31,6 +34,7 @@ const StockReport = async ({
     name,
     manufacturerId,
   });
+  const allManufacturers = await getManufacturersForSelect();
 
   if (stockResponse.status === "error") {
     return (
@@ -49,7 +53,14 @@ const StockReport = async ({
         Остатки товаров на складе
       </H1>
       <P>Остатки обновлены: {timeAgo(latestSyncTime)}</P>
+      <ManufacturerSelect manufacturers={allManufacturers} />
       <NameSearchInput />
+      <Muted>
+        Товаров в наличии по выбранным критериям: {stockResponse.data.length}{" "}
+        <Link className="text-orange-400" href="/reports/stock">
+          Сбросить фильтры
+        </Link>
+      </Muted>
       <Table>
         <TableHeader>
           <TableRow>
