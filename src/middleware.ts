@@ -12,10 +12,14 @@ import {
 } from "@/routes";
 
 const middleware = async (req: NextRequest) => {
-  // @ts-ignore salt isn't required
   const token = await getToken({
     req,
     secret: env.AUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === "production",
+    salt:
+      process.env.NODE_ENV === "production"
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
   });
   const isLoggedIn = token?.sub;
   const role = token?.role as userRoleValues | undefined;
@@ -28,6 +32,7 @@ const middleware = async (req: NextRequest) => {
 
   console.log(
     `Middleware called for route ${nextUrl.pathname} as role:${role}`,
+    token,
   );
 
   if (isApiAuthRoute) {
