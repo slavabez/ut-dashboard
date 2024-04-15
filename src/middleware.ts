@@ -2,7 +2,6 @@ import { getToken } from "@auth/core/jwt";
 import { NextRequest } from "next/server";
 
 import { userRoleValues } from "@/drizzle/schema";
-import { env } from "@/env";
 import {
   DEFAULT_LOGIN_REDIRECT,
   adminOnlyPrefix,
@@ -14,7 +13,7 @@ import {
 const middleware = async (req: NextRequest) => {
   const token = await getToken({
     req,
-    secret: env.AUTH_SECRET,
+    secret: process.env.AUTH_SECRET!,
     secureCookie: process.env.NODE_ENV === "production",
     salt:
       process.env.NODE_ENV === "production"
@@ -29,11 +28,6 @@ const middleware = async (req: NextRequest) => {
   const isAdminRoute = nextUrl.pathname.startsWith(adminOnlyPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
-  console.log(
-    `Middleware called for route ${nextUrl.pathname} as role:${role}`,
-    token,
-  );
 
   if (isApiAuthRoute) {
     return;
