@@ -1,10 +1,12 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import bcrypt from "bcryptjs";
 import NextAuth, { DefaultSession } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 
-import authConfig from "@/auth.config";
-import { getUserById } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { userRoleValues } from "@/drizzle/schema";
+import { getUserById, getUserByPhoneCached } from "@/lib/user";
+import { LoginSchema } from "@/schemas";
 
 export type ExtendedUser = DefaultSession["user"] & {
   role: userRoleValues;
@@ -23,6 +25,26 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  providers: [
+    Credentials({
+      async authorize(credentials) {
+        const validatedFields = LoginSchema.safeParse(credentials);
+        if (validatedFields.success) {
+          const { phone, password } = validatedFields.data;
+
+          const user = await getUserByPhoneCached(phone);
+          if (!user || !user.password) {
+            return null;
+          }
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (passwordMatch) {
+            return user;
+          }
+        }
+        return null;
+      },
+    }),
+  ],
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
@@ -65,5 +87,4 @@ export const {
   session: {
     strategy: "jwt",
   },
-  ...authConfig,
 });

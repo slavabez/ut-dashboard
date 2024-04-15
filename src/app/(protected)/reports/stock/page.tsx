@@ -1,4 +1,4 @@
-import { Link2, Warehouse } from "lucide-react";
+import { Warehouse } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -8,16 +8,14 @@ import NameSearchInput from "@/app/(protected)/reports/stock/_components/name-se
 import PageWrapper from "@/components/layout-components";
 import { H1, P } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPrice, timeAgo } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 
 const StockReport = async ({
   searchParams,

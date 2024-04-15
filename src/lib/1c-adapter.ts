@@ -16,10 +16,7 @@ import { IPriceFields } from "@/lib/odata/prices";
 import { ISaleContentFields, ISaleFields } from "@/lib/odata/sale";
 import { IStockFields } from "@/lib/odata/stock";
 import { IUserFields } from "@/lib/odata/users";
-import {
-  ISiteSettingsStrict,
-  getLatestSiteSettings,
-} from "@/lib/site-settings";
+import { ISiteSettingsStrict } from "@/lib/site-settings";
 import { normalizePhoneNumber, parseBoolean } from "@/lib/utils";
 
 export interface IParsedUser {

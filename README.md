@@ -42,10 +42,9 @@
   * `./app` - App router base directory
     * `./_components` - Used for locally used components
   * `./components` - Globally scoped components, including ShadCN
-  * `./data` - Data controllers, i.e. domain specific helpers
   * `./drizzle` - Drizzle database schema
   * `./hooks` - React hooks
-  * `./lib` - Helper functions and adapters, including the OData helper, Redis helper and other. Should probably join this with the `data` folder...
+  * `./lib` - Helper functions and adapters and controllers, including the OData helper, Redis helper and other. Should probably join this with the `data` folder...
   * `./schemas` - Validation ZOD schemas 
   * `./scripts` - Helper scripts
 * `./tests` - Playwright e2e tests

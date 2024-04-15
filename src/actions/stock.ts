@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq, gt, ilike, lt } from "drizzle-orm";
+import { and, desc, eq, gt, ilike } from "drizzle-orm";
 
 import { db } from "@/drizzle/db";
 import { nomenclatures, syncLogs } from "@/drizzle/schema";
