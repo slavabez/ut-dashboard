@@ -2,10 +2,10 @@
 
 import { and, asc, eq, gt, inArray, isNotNull } from "drizzle-orm";
 
-import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
 import { manufacturers, nomenclatures, prices } from "@/drizzle/schema";
 import { IActionResponse, NomenclatureWithChildren } from "@/lib/common-types";
+import { injectCountsIntoNomenclature } from "@/lib/nomenclature";
 import { getLatestSiteSettings } from "@/lib/site-settings";
 import { separateListIntoLevels, sortLevelsIntoTree } from "@/lib/utils";
 

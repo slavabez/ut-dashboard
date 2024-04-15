@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 
 import { db } from "@/drizzle/db";
 import { UserSelect, users } from "@/drizzle/schema";
@@ -7,21 +8,13 @@ import { getAllUsers } from "@/lib/odata/users";
 import { getLatestSiteSettings } from "@/lib/site-settings";
 import { normalizePhoneNumber } from "@/lib/utils";
 
-export const getUserByEmail = async (
-  email: string,
-): Promise<UserSelect | null> => {
-  try {
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email));
-    if (existingUser.length === 0) return null;
-    return existingUser[0];
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+export const getUserByPhoneCached = unstable_cache(
+  async (phone) => getUserByPhone(phone),
+  ["user-by-phone"],
+  {
+    revalidate: 60 * 60,
+  },
+);
 
 export const getUserByPhone = async (
   phone: string,

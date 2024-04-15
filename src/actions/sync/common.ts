@@ -8,11 +8,11 @@ import { syncNomenclature } from "@/actions/sync/nomenclature";
 import { syncNomenclatureTypes } from "@/actions/sync/nomenclature-types";
 import { syncPrice } from "@/actions/sync/prices";
 import { syncStock } from "@/actions/sync/stock";
-import { getLatestSyncs, getSyncCount } from "@/data/sync";
 import { db } from "@/drizzle/db";
 import { SyncLogSelect } from "@/drizzle/schema";
 import { currentRole } from "@/lib/auth";
 import { IActionResponse } from "@/lib/common-types";
+import { getLatestSyncs, getSyncCount } from "@/lib/sync";
 
 export const getLatestSyncLogs = async ({
   limit,

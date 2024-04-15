@@ -102,7 +102,7 @@ const EmployeeTracker = (props: IEmployeeTrackerProps) => {
     } else {
       setError("Выберите дату и пользователя");
     }
-  }, []);
+  }, [employeeId, selectedDate]);
 
   return (
     <div className="flex flex-col gap-4">

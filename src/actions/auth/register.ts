@@ -5,10 +5,10 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { getAndParse1CUsers } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { IActionResponse, UserSelectNonSensitive } from "@/lib/common-types";
+import { getAndParse1CUsers } from "@/lib/user";
 import { normalizePhoneNumber } from "@/lib/utils";
 import { RegisterSchema } from "@/schemas";
 
