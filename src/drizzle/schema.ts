@@ -289,6 +289,7 @@ export type NomenclatureTypeInsert = typeof nomenclatureTypes.$inferInsert;
 export type NomenclatureInsert = typeof nomenclatures.$inferInsert;
 export type NomenclatureSelect = typeof nomenclatures.$inferSelect;
 export type ManufacturerInsert = typeof manufacturers.$inferInsert;
+export type ManufacturerSelect = typeof manufacturers.$inferSelect;
 export type MeasurementUnitInsert = typeof measurementUnits.$inferInsert;
 export type PartnerInsert = typeof partners.$inferInsert;
 export type SyncLogInsert = typeof syncLogs.$inferInsert;

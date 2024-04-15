@@ -80,9 +80,15 @@ const NomenclatureDetailsPage = async ({
       </dl>
       {nomenclature.measurementUnits.map((mu: any) => (
         <dl className="flex justify-between" key={mu.id}>
-          <dt className="text-gray-500">В переводе в {mu.name}</dt>
+          <dt className="text-gray-500"></dt>
           <dd className="text-right">
-            {(nomenclature.stock / (mu.numerator / mu.denominator)).toFixed(2)}
+            или{" "}
+            <span className="font-bold">
+              {(nomenclature.stock / (mu.numerator / mu.denominator)).toFixed(
+                2,
+              )}{" "}
+            </span>
+            {mu.name}
           </dd>
         </dl>
       ))}
@@ -102,7 +108,10 @@ const NomenclatureDetailsPage = async ({
       ))}
       <H3>Цены</H3>
       {formattedPrices.map((fp: any) => (
-        <>
+        <div
+          key={fp.priceId}
+          className="space-y-4 rounded-lg border-2 border-orange-500 p-2 shadow-md"
+        >
           <dl key={fp.priceId} className="flex justify-between">
             <dt className="text-gray-500">{fp.priceName}</dt>
             <dd className="text-right">
@@ -127,7 +136,7 @@ const NomenclatureDetailsPage = async ({
               </dd>
             </dl>
           ))}
-        </>
+        </div>
       ))}
     </PageWrapper>
   );

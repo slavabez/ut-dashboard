@@ -60,7 +60,7 @@ const ProfilePage = async () => {
         </LinkButton>
         <LinkButton href="/reports">
           <BadgeDollarSign className="mr-2 h-8 w-8" />
-          Отчёты по продажам
+          Отчёты
         </LinkButton>
         <form action={logout}>
           <Button variant="destructive" className="w-full" type="submit">

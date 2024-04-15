@@ -15,7 +15,6 @@ const NameSearchInput = () => {
     defaultValues: {
       name: currentName,
     },
-    mode: "onChange",
   });
 
   const onSubmit = (data: any) => {

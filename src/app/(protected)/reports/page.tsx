@@ -3,6 +3,7 @@ import {
   BarChartHorizontal,
   HandCoins,
   Package,
+  Warehouse,
 } from "lucide-react";
 import React from "react";
 
@@ -30,6 +31,9 @@ const ReportPage = () => {
         </LinkButton>
         <LinkButton href="/reports/debt">
           <HandCoins className="mr-2" /> Задолженность клиентов
+        </LinkButton>
+        <LinkButton href="/reports/stock">
+          <Warehouse className="mr-2" /> Остатки товаров на складе
         </LinkButton>
       </nav>
     </PageWrapper>
