@@ -56,11 +56,11 @@ const ProfilePage = async () => {
       </div>
       <div className="flex flex-col gap-2">
         <LinkButton href="/orders">
-          <OneCIcon className="mr-2 h-8 w-8" /> Сверка заказов с 1С
+          <OneCIcon className="mr-2 h-8 w-8" /> Мои заказы
         </LinkButton>
         <LinkButton href="/reports">
           <BadgeDollarSign className="mr-2 h-8 w-8" />
-          Отчёты по продажам
+          Отчёты
         </LinkButton>
         <form action={logout}>
           <Button variant="destructive" className="w-full" type="submit">

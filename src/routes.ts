@@ -15,10 +15,12 @@ export const authRoutes = [
   "/auth/reset",
 ];
 
+export const adminOnlyPrefix = "/admin";
+
 /**
  * @description Prefix for API auth routes.
  */
-export const apiAuthPrefix = "/api/auth";
+export const apiAuthPrefix = "/api";
 
 /**
  * @description Default post-login redirect.

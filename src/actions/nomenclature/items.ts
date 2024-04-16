@@ -2,10 +2,11 @@
 
 import { and, asc, eq, gt, inArray, isNotNull } from "drizzle-orm";
 
-import { injectCountsIntoNomenclature } from "@/data/nomenclature";
 import { db } from "@/drizzle/db";
-import { manufacturers, nomenclatures } from "@/drizzle/schema";
-import { NomenclatureWithChildren } from "@/lib/common-types";
+import { manufacturers, nomenclatures, prices } from "@/drizzle/schema";
+import { IActionResponse, NomenclatureWithChildren } from "@/lib/common-types";
+import { injectCountsIntoNomenclature } from "@/lib/nomenclature";
+import { getLatestSiteSettings } from "@/lib/site-settings";
 import { separateListIntoLevels, sortLevelsIntoTree } from "@/lib/utils";
 
 export async function getManufacturerWithNomenclature(manufacturerId: string) {
@@ -96,6 +97,59 @@ export async function getNomenclatureHierarchy(): Promise<
   // Might need to ad Pick<> to the type
   const levels = separateListIntoLevels(withCounts);
   // @ts-ignore
-  const tree = sortLevelsIntoTree(levels);
-  return tree;
+  return sortLevelsIntoTree(levels);
+}
+
+export async function getNomenclatureInfo(
+  id: string,
+): Promise<IActionResponse<any>> {
+  try {
+    const siteSettings = await getLatestSiteSettings();
+    let nom = await db.query.nomenclatures.findFirst({
+      where: eq(nomenclatures.id, id),
+      with: {
+        manufacturer: true,
+        measurementUnits: true,
+        type: true,
+        prices: true,
+      },
+    });
+
+    if (nom?.coverImage) {
+      nom.coverImage = process.env.NEXT_PUBLIC_FILE_URL + nom.coverImage;
+    }
+
+    const linkedPrices = nom?.prices.map((pr) => pr.priceId) ?? [];
+    let priceInfo: any[] = [];
+
+    if (linkedPrices.length > 0) {
+      priceInfo = await db.query.prices.findMany({
+        where: inArray(prices.id, linkedPrices),
+        columns: {
+          id: true,
+          name: true,
+        },
+      });
+    }
+    let baseUnits = [
+      {
+        name: "шт",
+        id: siteSettings.guidsForSync.units.piece,
+      },
+      {
+        name: "кг",
+        id: siteSettings.guidsForSync.units.kilogram,
+      },
+    ];
+
+    return {
+      status: "success",
+      data: { nomenclature: nom, priceInfo, baseUnits },
+    };
+  } catch (e: any) {
+    return {
+      status: "error",
+      error: e.message ?? e,
+    };
+  }
 }

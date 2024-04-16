@@ -1,6 +1,9 @@
 import React from "react";
 
-import { getLatestSyncLogs, getTotalSyncLogs } from "@/actions/sync/common";
+import {
+  getLatestSyncLogsAction,
+  getTotalSyncLogsAction,
+} from "@/actions/sync/common";
 import SyncForm from "@/app/(protected)/admin/sync/_components/SyncForm";
 import SyncLogEntries from "@/app/(protected)/admin/sync/_components/SyncLogEntries";
 import { UniversalPagination } from "@/app/_components/universal-pagination";
@@ -12,12 +15,12 @@ const SyncManufacturersPage = async ({
 }) => {
   const { page } = searchParams;
   const currentPage = page ? parseInt(page as string) : 1;
-  const totalSyncs = await getTotalSyncLogs("manufacturers");
+  const totalSyncs = await getTotalSyncLogsAction("manufacturers");
   if (totalSyncs.status === "error") {
     throw new Error(totalSyncs.error ?? "Ошибка при получении данных");
   }
   const maxPage = Math.ceil(totalSyncs.data / 10);
-  const latestSyncs = await getLatestSyncLogs({
+  const latestSyncs = await getLatestSyncLogsAction({
     limit: 10,
     offset: (currentPage - 1) * 10,
     type: "manufacturers",

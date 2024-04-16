@@ -4,7 +4,7 @@ import { AuthError } from "next-auth";
 import { z } from "zod";
 
 import { signIn } from "@/auth";
-import { getUserByPhone } from "@/data/user";
+import { getUserByPhone } from "@/lib/user";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { LoginSchema } from "@/schemas";
 

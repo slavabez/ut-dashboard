@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { signOut } from "@/auth";
-import { getUserById } from "@/data/user";
 import { db } from "@/drizzle/db";
 import { UserSelect, userRoleValues, users } from "@/drizzle/schema";
 import { ConvertFrom1C } from "@/lib/1c-adapter";
@@ -18,6 +17,7 @@ import {
 } from "@/lib/common-types";
 import { getUserByGuid } from "@/lib/odata/users";
 import { getLatestSiteSettings } from "@/lib/site-settings";
+import { getUserById } from "@/lib/user";
 import { UserUpdateSchema } from "@/schemas";
 
 export async function getAllUsers(): Promise<

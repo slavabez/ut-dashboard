@@ -1,5 +1,5 @@
 DO $$ BEGIN
- CREATE TYPE "user_role" AS ENUM('client', 'employee', 'admin');
+ CREATE TYPE "user_role" AS ENUM('client', 'employee', 'manager', 'admin');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS "nomenclature" (
 	"stock" real,
 	"stock_date" timestamp,
 	"stock_updated_at" timestamp,
-	"show_on_site" boolean DEFAULT false NOT NULL,
+	"show_on_site" boolean DEFAULT true NOT NULL,
 	"min_quantity_considered_high" real,
 	"cover_image" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -92,6 +92,12 @@ CREATE TABLE IF NOT EXISTS "price_to_nomenclature" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "price_to_nomenclature_price_id_nomenclature_id_pk" PRIMARY KEY("price_id","nomenclature_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "session" (
+	"sessionToken" text PRIMARY KEY NOT NULL,
+	"userId" uuid NOT NULL,
+	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "site_settings" (
@@ -160,6 +166,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "price_to_nomenclature" ADD CONSTRAINT "price_to_nomenclature_nomenclature_id_nomenclature_id_fk" FOREIGN KEY ("nomenclature_id") REFERENCES "nomenclature"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

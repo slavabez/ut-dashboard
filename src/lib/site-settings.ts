@@ -17,7 +17,7 @@ export interface ISiteSettingsStrict {
     };
     nomenclature: {
       minimumNonDivisibleWeight: string;
-      showOnSite: string;
+      hideOnSite: string;
     };
     units: {
       kilogram: string;
@@ -88,8 +88,8 @@ export function verifySettings(settings: any) {
       "No nomenclature.minimumNonDivisibleWeight guid found in the settings",
     );
   }
-  if (!guids.nomenclature.showOnSite) {
-    throw new Error("No nomenclature.showOnSite guid found in the settings");
+  if (!guids.nomenclature.hideOnSite) {
+    throw new Error("No nomenclature.hideOnSite guid found in the settings");
   }
   if (!guids.units) {
     throw new Error("No units guids found in the settings");

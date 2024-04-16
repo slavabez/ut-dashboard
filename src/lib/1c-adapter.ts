@@ -13,12 +13,10 @@ import {
 } from "@/lib/odata/nomenclature";
 import { IOrderContentFields, IOrderFields } from "@/lib/odata/orders";
 import { IPriceFields } from "@/lib/odata/prices";
+import { ISaleContentFields, ISaleFields } from "@/lib/odata/sale";
 import { IStockFields } from "@/lib/odata/stock";
 import { IUserFields } from "@/lib/odata/users";
-import {
-  ISiteSettingsStrict,
-  getLatestSiteSettings,
-} from "@/lib/site-settings";
+import { ISiteSettingsStrict } from "@/lib/site-settings";
 import { normalizePhoneNumber, parseBoolean } from "@/lib/utils";
 
 export interface IParsedUser {
@@ -75,6 +73,36 @@ export interface IOrderAdditionalProperties {
   finished?: Date;
 }
 
+export interface ISaleItem {
+  line: number;
+  nomenclatureId: string;
+  quantity: number;
+  priceId: string;
+  price: number;
+  sum: number;
+  vat: number;
+  totalSum: number;
+  autoDiscount: number;
+  manualDiscount: number;
+  nomenclatureName: string;
+}
+
+export interface ISale {
+  id: string;
+  number: string;
+  date: Date;
+  posted: boolean;
+  sum: number;
+  paymentType: string;
+  deliveryAddress: string;
+  deliveryType: string;
+  partner: string;
+  comment: string;
+  debt?: number;
+  orderId?: string;
+  items: ISaleItem[];
+}
+
 const assignProperId = (id: string | number) => {
   if (typeof id !== "string") {
     return null;
@@ -86,18 +114,26 @@ const assignProperId = (id: string | number) => {
 };
 
 export class ConvertFrom1C {
-  static async nomenclatureItem(
+  static nomenclatureItem(
     input: Nomenclature1CFields,
-  ): Promise<NomenclatureInsert> {
-    const guids = await getLatestSiteSettings();
+    siteSettings: ISiteSettingsStrict,
+  ): NomenclatureInsert {
+    const { guidsForSync } = siteSettings;
     const minWeightProperty = input.ДополнительныеРеквизиты.find(
       (req) =>
         req.Свойство_Key ===
-        guids.guidsForSync.nomenclature.minimumNonDivisibleWeight,
+        guidsForSync.nomenclature.minimumNonDivisibleWeight,
     );
     let minimumWeight = 0;
     if (minWeightProperty) {
       minimumWeight = parseFloat(minWeightProperty.Значение as string);
+    }
+    const hideOnSiteProperty = input.ДополнительныеРеквизиты.find(
+      (req) => req.Свойство_Key === guidsForSync.nomenclature.hideOnSite,
+    );
+    let showOnSite = true;
+    if (hideOnSiteProperty) {
+      showOnSite = !parseBoolean(hideOnSiteProperty.Значение);
     }
     return {
       id: input.Ref_Key,
@@ -112,6 +148,7 @@ export class ConvertFrom1C {
       typeId: assignProperId(input.ВидНоменклатуры_Key),
       manufacturerId: assignProperId(input.Производитель_Key ?? 0),
       isFolder: input.IsFolder,
+      showOnSite,
       minimumWeight,
     };
   }
@@ -253,16 +290,15 @@ export class ConvertFrom1C {
     };
   }
 
-  static async injectAdditionalPropertiesIntoOrders(
+  static injectAdditionalPropertiesIntoOrders(
     orders: IOrder[],
+    siteSettings: ISiteSettingsStrict,
     data: {
       Объект: string;
       Свойство_Key: string;
       Значение: string;
     }[],
   ) {
-    const siteSettings = await getLatestSiteSettings();
-
     data.forEach((di) => {
       if (!di.Значение) return;
       const order = orders.find((o) => o.id === di?.Объект);
@@ -286,6 +322,42 @@ export class ConvertFrom1C {
     });
 
     return orders;
+  }
+
+  static sale(
+    input: ISaleFields,
+    items?: ISaleContentFields[],
+    saleDebt?: number,
+  ): ISale {
+    return {
+      id: input.Ref_Key,
+      number: input.Number,
+      date: new Date(input.Date),
+      sum: input.СуммаДокумента,
+      comment: input.Комментарий,
+      posted: input.Posted,
+      deliveryAddress: input.АдресДоставки,
+      deliveryType: input.СпособДоставки,
+      partner: input.Партнер.Description,
+      paymentType: input.ФормаОплаты,
+      debt: saleDebt ? saleDebt : 0,
+      orderId: input.ЗаказКлиента,
+      items: Array.isArray(items)
+        ? items.map((i: ISaleContentFields) => ({
+            line: i.LineNumber,
+            nomenclatureId: i.Номенклатура_Key,
+            quantity: i.Количество,
+            priceId: i.Цена_Key,
+            price: i.Цена,
+            sum: i.Сумма,
+            vat: i.СуммаНДС,
+            totalSum: i.СуммаСНДС,
+            autoDiscount: i.СуммаАвтоматическойСкидки,
+            manualDiscount: i.СуммаРучнойСкидки,
+            nomenclatureName: i.Номенклатура.Description,
+          }))
+        : [],
+    };
   }
 }
 
