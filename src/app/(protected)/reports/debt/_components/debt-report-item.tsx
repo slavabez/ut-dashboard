@@ -26,7 +26,7 @@ interface IDebtReportItemProps {
 const DebtReportItem = ({ item }: IDebtReportItemProps) => {
   return (
     <Collapsible>
-      <CollapsibleTrigger className="flex w-full justify-between border-b-2 bg-orange-50 p-4 font-bold">
+      <CollapsibleTrigger className="flex w-full justify-between gap-2 border-b-2 bg-orange-50 p-4 font-bold">
         <div className="text-left font-normal">
           {item.counterpartyName} ({item.documents.length})
         </div>
