@@ -20,8 +20,6 @@ const LinkOpener = () => {
   const [link, setLink] = useState("");
 
   const handleOpenLink = () => {
-    // Determine the type of link
-    // IF it has the text Документ.ЗаказКлиента, then it's an order
     if (link.includes("Документ.ЗаказКлиента")) {
       const ref = link.split("ref=")[1];
       router.push(`/orders/${from1CIdToGuid(ref)}`);
@@ -42,8 +40,9 @@ const LinkOpener = () => {
       <CardHeader>
         <CardTitle>Открыть ссылку из 1С</CardTitle>
         <CardDescription>
-          Сюда можно вставить внешнюю ссылку из 1С. Пока поддерживается только
-          тип ссылки Заказ Клиента
+          Сюда можно вставить внешнюю ссылку из 1С. Поддерживаются:
+          Документ.ЗаказКлиента, Документ.РеализацияТоваровУслуг и
+          Справочник.Номенклатура
         </CardDescription>
       </CardHeader>
       <CardContent>

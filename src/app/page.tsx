@@ -39,7 +39,7 @@ export default function Home() {
           </LinkButton>
           <LinkButton href="/reports">
             <BadgeDollarSign className="mr-2 h-8 w-8" />
-            Отчёты по продажам
+            Отчёты
           </LinkButton>
           <LinkButton href="/admin">
             <CircleUser className="mr-2 h-8 w-8" />

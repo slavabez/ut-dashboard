@@ -1,5 +1,6 @@
 "use client";
 
+import { Delete } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -19,10 +20,17 @@ const NameSearchInput = () => {
 
   const onSubmit = (data: any) => {
     if (data) {
+      form.setValue("name", data.name);
       setCurrentName(data.name);
     } else {
+      form.setValue("name", "");
       setCurrentName("");
     }
+  };
+
+  const handleClear = () => {
+    form.setValue("name", "");
+    setCurrentName("");
   };
 
   return (
@@ -35,9 +43,10 @@ const NameSearchInput = () => {
         placeholder="Наименование товара"
         {...form.register("name")}
       />
-      <Button disabled={!form.formState.isDirty} type="submit">
-        Поиск
+      <Button onClick={handleClear} variant="outline">
+        <Delete />
       </Button>
+      <Button type="submit">Поиск</Button>
     </form>
   );
 };
