@@ -110,10 +110,14 @@ export function normalizePhoneNumber(
   if (typeof phone === "number") {
     return normalizePhoneNumber(phone.toString());
   }
-  // Replace spaces, brackets and dashes
-  let normalized = phone.replace(/[\s()-]/g, "");
+  // Replace spaces, brackets, and dashes
+  let normalized = phone.replace(/[()\-\s]/g, "");
   if (normalized.startsWith("8")) {
-    normalized = normalized.replace("8", "+7");
+    // Replace with +7
+    normalized = "+7" + normalized.slice(1);
+  }
+  if (normalized.startsWith("7")) {
+    normalized = "+" + normalized;
   }
   return normalized;
 }
@@ -167,8 +171,8 @@ export function formatDateShort(date: Date): string {
   return dateFormatterDateOnly.format(date);
 }
 
-export function timeAgo(date: Date | string): string {
-  if (!date) {
+export function timeAgo(date: Date | string | null | undefined): string {
+  if (!date || typeof date === "undefined") {
     return "никогда";
   }
   if (typeof date === "string") {
@@ -213,7 +217,12 @@ export function format1CDocumentNumber(number: string): string {
   return `${parts[0].replace(/^0+/, "")}-${parseInt(parts[1])}`;
 }
 
-export function formatPrice(price: number): string {
+export function formatPrice(price: number, divideByHundred = false): string {
+  if (divideByHundred) {
+    if (divideByHundred) {
+      price = price / 100;
+    }
+  }
   return price.toLocaleString("ru-KZ", {
     style: "currency",
     currency: "KZT",

@@ -204,7 +204,7 @@ export const allNavItems: Map<string, INavItem> = new Map([
     "/reports",
     {
       id: "/reports",
-      name: "Отчёты по продажам",
+      name: "Отчёты",
       href: "/reports",
     },
   ],
@@ -230,6 +230,22 @@ export const allNavItems: Map<string, INavItem> = new Map([
       id: "/reports/sales-by-clients-and-goods",
       name: "Продажи по клиентам и товарам",
       href: "/reports/sales-by-clients-and-goods",
+    },
+  ],
+  [
+    "/reports/debt",
+    {
+      id: "/reports/debt",
+      name: "Задолженность клиентов",
+      href: "/reports/debt",
+    },
+  ],
+  [
+    "/reports/stock",
+    {
+      id: "/reports/stock",
+      name: "Остатки товара",
+      href: "/reports/stock",
     },
   ],
 ]);
@@ -295,6 +311,8 @@ export const subNavItems = new Map<string, INavItem[]>([
       allNavItems.get("/reports/sales-by-goods")!,
       allNavItems.get("/reports/sales-by-clients")!,
       allNavItems.get("/reports/sales-by-clients-and-goods")!,
+      allNavItems.get("/reports/debt")!,
+      allNavItems.get("/reports/stock")!,
     ],
   ],
 ]);

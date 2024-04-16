@@ -36,11 +36,11 @@ const userLinks = [
   },
   {
     href: "/orders",
-    label: "Сверка заказов",
+    label: "Мои заказы",
   },
   {
     href: "/reports",
-    label: "Отчеты по продажам",
+    label: "Отчеты",
   },
 ];
 

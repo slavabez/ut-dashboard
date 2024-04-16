@@ -138,6 +138,15 @@ export async function getPricesWithLatestSyncTime(): Promise<
     }[]
   >
 > {
+  const role = await currentRole();
+
+  if (role !== "admin") {
+    return {
+      status: "error",
+      error: "У нас недостаточно прав для данного действия",
+    };
+  }
+
   const pricesWithLatestSync = await db.execute(sql`
       WITH LatestSyncLogs AS (
           SELECT
@@ -272,7 +281,7 @@ export async function assignInitialSiteSettings(): Promise<
       },
       nomenclature: {
         minimumNonDivisibleWeight: "",
-        showOnSite: "",
+        hideOnSite: "",
       },
       units: {
         kilogram: "",
@@ -304,10 +313,10 @@ export async function assignInitialSiteSettings(): Promise<
       showManufacturerOrder.Ref_Key;
 
   const showOnSite = additionalProperties.find((p) =>
-    p.Имя.startsWith("ПоказыватьТоварНаСайте"),
+    p.Имя.startsWith("СкрыватьТоварНаСайте"),
   );
   if (showOnSite)
-    initialSettings.guidsForSync.nomenclature.showOnSite = showOnSite.Ref_Key;
+    initialSettings.guidsForSync.nomenclature.hideOnSite = showOnSite.Ref_Key;
 
   const minimumNonDivisibleWeight = additionalProperties.find((p) =>
     p.Имя.startsWith("ОбязательнаяКратность"),

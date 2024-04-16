@@ -1,7 +1,7 @@
 import React, { useTransition } from "react";
 
 import { deletePriceFromDb } from "@/actions/site-settings";
-import { syncPrice } from "@/actions/sync/prices";
+import { syncPriceAction } from "@/actions/sync/prices";
 import { Button } from "@/components/ui/button";
 
 interface ISyncAndDeleteButtonsProps {
@@ -22,7 +22,7 @@ const SyncAndDeleteButtons = ({
         disabled={isPending}
         onClick={() => {
           startTransition(() => {
-            syncPrice({ priceId }).then((res) => {
+            syncPriceAction({ priceId }).then((res) => {
               if (res.status === "success") {
                 setSuccess("Цена успешно синхронизирована");
                 setError(undefined);

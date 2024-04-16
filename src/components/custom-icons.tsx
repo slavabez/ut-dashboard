@@ -1,4 +1,6 @@
-export const OneCIcon = (props: React.SVGProps<SVGSVGElement>) => {
+import { SVGProps } from "react";
+
+export const OneCIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width="512px"

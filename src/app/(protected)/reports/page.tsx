@@ -1,11 +1,17 @@
-import { BadgeDollarSign, Package } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BarChartHorizontal,
+  HandCoins,
+  Package,
+  Warehouse,
+} from "lucide-react";
 import React from "react";
 
 import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, P } from "@/components/typography";
 
-const ReportsPage = () => {
+const ReportPage = () => {
   return (
     <PageWrapper>
       <H1>Отчёты</H1>
@@ -21,12 +27,17 @@ const ReportsPage = () => {
           <BadgeDollarSign className="mr-2" /> Продажи по клиентам
         </LinkButton>
         <LinkButton href="/reports/sales-by-clients-and-goods">
-          <BadgeDollarSign className="mr-2" /> Продажи по клиентам и товарам
-          <Package className="ml-2" />
+          <BarChartHorizontal className="mr-2" /> Продажи по клиентам и товарам
+        </LinkButton>
+        <LinkButton href="/reports/debt">
+          <HandCoins className="mr-2" /> Задолженность клиентов
+        </LinkButton>
+        <LinkButton href="/reports/stock">
+          <Warehouse className="mr-2" /> Остатки товаров на складе
         </LinkButton>
       </nav>
     </PageWrapper>
   );
 };
 
-export default ReportsPage;
+export default ReportPage;

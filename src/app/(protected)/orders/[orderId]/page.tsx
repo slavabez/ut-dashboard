@@ -4,6 +4,7 @@ import React from "react";
 import { getOrderById } from "@/actions/orders";
 import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
 import OrderStatusBadge from "@/app/(protected)/orders/_components/order-status-badge";
+import PageWrapper from "@/components/layout-components";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -29,7 +30,9 @@ const OrderDetailsPage = async ({
   if (orderResponse.status === "error") {
     return (
       <div className="p-4">
-        <h1 className="my-2 text-center text-xl font-semibold">📦 Заказ</h1>
+        <h1 className="my-4 flex justify-center gap-2 text-center text-xl font-semibold">
+          <Package /> Заказ
+        </h1>
         <div className="text-center text-red-500">{orderResponse.error}</div>
       </div>
     );
@@ -38,12 +41,12 @@ const OrderDetailsPage = async ({
   const order = orderResponse.data;
 
   return (
-    <div>
-      <h1 className="my-4 flex justify-center gap-2 text-center text-xl font-semibold">
+    <PageWrapper>
+      <h1 className=" flex justify-center gap-2 text-center text-xl font-semibold">
         <Package /> Заказ №{format1CDocumentNumber(order.number)}
         <Order1cLink orderId={order.id} />
       </h1>
-      <div className="flex flex-col gap-4 px-4">
+      <div className="flex flex-col gap-4">
         <dl className="flex justify-between">
           <dt className="text-gray-500">Клиент</dt>
           <dd className="text-right">{order.partner}</dd>
@@ -131,7 +134,7 @@ const OrderDetailsPage = async ({
           </TableRow>
         </TableFooter>
       </Table>
-    </div>
+    </PageWrapper>
   );
 };
 

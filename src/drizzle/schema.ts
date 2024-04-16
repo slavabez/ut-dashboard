@@ -178,7 +178,7 @@ export const nomenclatures = pgTable("nomenclature", {
   stock: real("stock"),
   stockDate: timestamp("stock_date"),
   stockUpdatedAt: timestamp("stock_updated_at"),
-  showOnSite: boolean("show_on_site").default(false).notNull(),
+  showOnSite: boolean("show_on_site").default(true).notNull(),
   minQuantityConsideredHigh: real("min_quantity_considered_high"),
   coverImage: text("cover_image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -289,6 +289,7 @@ export type NomenclatureTypeInsert = typeof nomenclatureTypes.$inferInsert;
 export type NomenclatureInsert = typeof nomenclatures.$inferInsert;
 export type NomenclatureSelect = typeof nomenclatures.$inferSelect;
 export type ManufacturerInsert = typeof manufacturers.$inferInsert;
+export type ManufacturerSelect = typeof manufacturers.$inferSelect;
 export type MeasurementUnitInsert = typeof measurementUnits.$inferInsert;
 export type PartnerInsert = typeof partners.$inferInsert;
 export type SyncLogInsert = typeof syncLogs.$inferInsert;

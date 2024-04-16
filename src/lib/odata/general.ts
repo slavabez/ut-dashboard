@@ -39,11 +39,13 @@ interface IODataRequestProperties {
   orderBy?: string;
   top?: number;
   skip?: number;
+  cacheExpiration?: number;
 }
 
 export async function fetchOData(
   fullUrl: string,
   authHeader: string,
+  cacheEx = 300,
 ): Promise<any> {
   const cacheKey = `odata:${fullUrl}`;
   const cachedData = await redis.get(cacheKey);
@@ -73,7 +75,7 @@ export async function fetchOData(
     throw new Error(odataResponse["odata.error"].message.value);
   }
 
-  await redis.setex(cacheKey, 5 * 60, JSON.stringify(odataResponse.value));
+  await redis.setex(cacheKey, cacheEx, JSON.stringify(odataResponse.value));
 
   return odataResponse.value as unknown as ODataResponseArray;
 }
@@ -86,6 +88,7 @@ export async function getSpecificODataResponseArray({
   orderBy,
   top,
   skip,
+  cacheExpiration,
 }: IODataRequestProperties) {
   const authHeader = env.ODATA_API_AUTH_HEADER;
   const baseUrl = env.ODATA_API_URL;
@@ -116,7 +119,7 @@ export async function getSpecificODataResponseArray({
   }
   try {
     const fullUrl = `${baseUrl}${path}?${params}`;
-    return await fetchOData(fullUrl, authHeader);
+    return await fetchOData(fullUrl, authHeader, cacheExpiration);
   } catch (e) {
     console.error("Error while getting OData response", e);
     throw e;

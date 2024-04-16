@@ -18,11 +18,11 @@ export default function Home() {
       <UL>
         <li>Сверка заказов</li>
         <li>Отчёты по продажам</li>
+        <li>Задолженность клиентов</li>
       </UL>
       <H2>Функционал в разработке</H2>
       <UL>
         <li>Прайс листы с разными ценами</li>
-        <li>Список и сверка долгов</li>
         <li>Контроль торговых агентов</li>
       </UL>
       <nav>
@@ -39,7 +39,7 @@ export default function Home() {
           </LinkButton>
           <LinkButton href="/reports">
             <BadgeDollarSign className="mr-2 h-8 w-8" />
-            Отчёты по продажам
+            Отчёты
           </LinkButton>
           <LinkButton href="/admin">
             <CircleUser className="mr-2 h-8 w-8" />

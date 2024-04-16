@@ -1,5 +1,5 @@
 {
-  "id": "784d302f-dd0f-46b3-ae89-0fc7a300a0da",
+  "id": "5e05bc30-9aca-401d-95cd-8c1a2904a1f8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -321,7 +321,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": true
         },
         "min_quantity_considered_high": {
           "name": "min_quantity_considered_high",
@@ -603,6 +603,48 @@
       },
       "uniqueConstraints": {}
     },
+    "session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "sessionToken": {
+          "name": "sessionToken",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "site_settings": {
       "name": "site_settings",
       "schema": "",
@@ -816,6 +858,7 @@
       "values": {
         "client": "client",
         "employee": "employee",
+        "manager": "manager",
         "admin": "admin"
       }
     }
