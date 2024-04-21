@@ -1,4 +1,14 @@
-import { BadgeDollarSign, CircleUserRound, LogOut } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BarChartHorizontal,
+  CalendarDays,
+  CircleUserRound,
+  HandCoins,
+  LogOut,
+  Package,
+  Truck,
+  Warehouse,
+} from "lucide-react";
 import React from "react";
 
 import { logout } from "@/actions/auth/logout";
@@ -6,7 +16,7 @@ import { getActiveUser } from "@/actions/user/active-user";
 import { OneCIcon } from "@/components/custom-icons";
 import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
-import { H1 } from "@/components/typography";
+import { H1, H2 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { IUserMeta } from "@/lib/common-types";
 import { translateRole } from "@/lib/utils";
@@ -33,8 +43,35 @@ const ProfilePage = async () => {
     <PageWrapper>
       <H1>
         <CircleUserRound className="h-10 w-10" />
-        Профиль
+        Мой раздел
       </H1>
+      <H2>Сверка заказов</H2>
+      <div className="grid grid-cols-2 gap-2">
+        <LinkButton href="/orders/by-date">
+          <CalendarDays className="mr-2" /> Заказы (дата)
+        </LinkButton>
+        <LinkButton href="/orders/by-delivery-date">
+          <Truck className="mr-2" /> Заказы (дост.)
+        </LinkButton>
+      </div>
+      <H2>Отчёты</H2>
+      <div className="grid grid-cols-2 gap-2">
+        <LinkButton href="/reports/sales-by-goods">
+          <Package className="mr-2" /> Продажи (тов.)
+        </LinkButton>
+        <LinkButton href="/reports/sales-by-clients">
+          <BadgeDollarSign className="mr-2" /> Продажи (кл.)
+        </LinkButton>
+        <LinkButton href="/reports/sales-by-clients-and-goods">
+          <BarChartHorizontal className="mr-2" /> Прод. (тов + кл)
+        </LinkButton>
+        <LinkButton href="/reports/debt">
+          <HandCoins className="mr-2" /> Задолженность
+        </LinkButton>
+        <LinkButton href="/reports/stock">
+          <Warehouse className="mr-2" /> Остатки
+        </LinkButton>
+      </div>
 
       <div className="flex flex-col gap-4">
         <dl>
@@ -55,13 +92,6 @@ const ProfilePage = async () => {
         </dl>
       </div>
       <div className="flex flex-col gap-2">
-        <LinkButton href="/orders">
-          <OneCIcon className="mr-2 h-8 w-8" /> Мои заказы
-        </LinkButton>
-        <LinkButton href="/reports">
-          <BadgeDollarSign className="mr-2 h-8 w-8" />
-          Отчёты
-        </LinkButton>
         <form action={logout}>
           <Button variant="destructive" className="w-full" type="submit">
             <LogOut className="mr-2 h-8 w-8" />

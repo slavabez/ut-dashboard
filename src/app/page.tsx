@@ -1,6 +1,7 @@
 import { BadgeDollarSign, CircleUser, Lock, LogIn } from "lucide-react";
 import React from "react";
 
+import LoggedInStatus from "@/app/_components/logged-in-status";
 import { OneCIcon } from "@/components/custom-icons";
 import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
@@ -14,6 +15,7 @@ export default function Home() {
         Данное приложение - портал для сотрудников компании Сказка, ИП Безгачева
         О.А., г. Кокшетау, Казахстан
       </P>
+      <LoggedInStatus />
       <H2>Рабочий функционал</H2>
       <UL>
         <li>Сверка заказов</li>

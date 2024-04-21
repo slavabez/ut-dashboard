@@ -57,12 +57,14 @@ const NomenclatureDetailsPage = async ({
           className="h-10 w-10"
         />
       </H1>
-      <Muted>Данные обновлены {timeAgo(nomenclature.updatedAt)}</Muted>
+      <Muted>Данные обновлены {timeAgo(nomenclature.stockUpdatedAt)}</Muted>
       <Image
         src={nomenclature.coverImage ?? "https://placehold.co/600"}
         alt={nomenclature.name}
         width={600}
         height={600}
+        className="m-auto"
+        priority
       />
       <dl className="flex justify-between">
         <dt className="text-gray-500">Производитель</dt>
