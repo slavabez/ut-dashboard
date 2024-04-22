@@ -267,7 +267,7 @@ export class ConvertFrom1C {
       deliveryAddress: input.АдресДоставки,
       deliveryType: input.СпособДоставки,
       deletionMark: input.DeletionMark,
-      partner: input.Партнер.Description,
+      partner: input?.Партнер?.Description ?? "Партнер не найден",
       comment: input.Комментарий,
       items: [],
     };
