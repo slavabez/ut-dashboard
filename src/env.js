@@ -14,10 +14,10 @@ export const env = createEnv({
     REDIS_PASSWORD: z.string().optional(),
   },
   client: {
-    NEXT_PUBLIC_APP_URL: z.string().min(1),
-    NEXT_PUBLIC_FILE_URL: z.string().min(1),
-    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
-    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
+    NEXT_PUBLIC_APP_URL: z.string().min(1).optional(),
+    NEXT_PUBLIC_FILE_URL: z.string().min(1).optional(),
+    NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
   },
   runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,

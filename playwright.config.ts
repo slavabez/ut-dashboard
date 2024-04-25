@@ -32,7 +32,7 @@ export default defineConfig({
   globalSetup: "./tests/setup/global-setup.ts",
   globalTeardown: "./tests/setup/global-teardown.ts",
 
-  testMatch: "**/*.test.ts",
+  testMatch: "**/*.e2e.ts",
 
   /* Configure projects for major browsers */
   projects: [
