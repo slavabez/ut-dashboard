@@ -3,14 +3,14 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    AUTH_SECRET: z.string().min(1),
-    PG_URL: z.string().min(1),
-    NEXT_PUBLIC_APP_URL: z.string().min(1),
-    NEXT_PUBLIC_FILE_URL: z.string().min(1),
-    ODATA_API_URL: z.string().min(1),
-    ODATA_API_AUTH_HEADER: z.string().min(1),
-    REDIS_HOST: z.string().min(1),
-    REDIS_PORT: z.string().min(1),
+    AUTH_SECRET: z.string().min(1).optional(),
+    PG_URL: z.string().min(1).optional(),
+    NEXT_PUBLIC_APP_URL: z.string().min(1).optional(),
+    NEXT_PUBLIC_FILE_URL: z.string().min(1).optional(),
+    ODATA_API_URL: z.string().min(1).optional(),
+    ODATA_API_AUTH_HEADER: z.string().min(1).optional(),
+    REDIS_HOST: z.string().min(1).optional(),
+    REDIS_PORT: z.string().min(1).optional(),
     REDIS_PASSWORD: z.string().optional(),
   },
   client: {

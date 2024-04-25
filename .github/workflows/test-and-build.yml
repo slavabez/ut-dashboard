@@ -45,17 +45,12 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
-          build-args: VERSION=${{ steps.extract_version.outputs.version }}
-        env:
-          AUTH_SECRET: $ecret$tring
-          PG_URL: postgres://dev_user:dev_password@localhost:54321/skazka-2024
-          ODATA_API_URL: https://endpoint.com
-          ODATA_API_AUTH_HEADER: Auth:authsecret
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
+          build-args: | 
+            VERSION=${{ steps.extract_version.outputs.version }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
