@@ -1,0 +1,54 @@
+name: Node.js CI and Docker Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - production
+
+jobs:
+  build-and-push:
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
+
+      - name: Determine Docker Tag
+        id: docker_tag
+        run: |
+          echo "DOCKER_IMAGE_TAG=git.ipbez.kz/slavabez/skazka-admin-2024:${{ steps.extract_version.outputs.version }}" >> $GITHUB_ENV
+          if [ "${{ github.ref }}" == "refs/heads/production" ]; then
+            echo "DOCKER_IMAGE_TAG=git.ipbez.kz/slavabez/skazka-admin-2024:production" >> $GITHUB_ENV
+          fi
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: git.ipbez.kz
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.DOCKER_IMAGE_TAG }}
+          build-args: VERSION=${{ steps.extract_version.outputs.version }}
