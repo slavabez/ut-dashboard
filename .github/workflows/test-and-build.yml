@@ -52,3 +52,5 @@ jobs:
           build-args: | 
             VERSION=${{ steps.extract_version.outputs.version }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            AUTH_SECRET=Secret$tring
+            
