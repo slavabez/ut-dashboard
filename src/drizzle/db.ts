@@ -4,7 +4,7 @@ import postgres from "postgres";
 import * as schema from "@/drizzle/schema";
 import { env } from "@/env.js";
 
-const client = postgres(env.PG_URL, {
+const client = postgres(env.PG_URL!, {
   max: 20,
 });
 
