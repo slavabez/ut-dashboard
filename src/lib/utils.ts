@@ -21,7 +21,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param items
  */
 export function separateListIntoLevels<
-  T extends { id: string; parentId?: string | null },
+  T extends { id?: string; parentId?: string | null },
 >(items: T[]): { level: number; items: T[] }[] {
   const hierarchyMap: {
     [parentId: string]: T[];
@@ -48,6 +48,7 @@ export function separateListIntoLevels<
 
     result[level] = result[level] || { level, items: [] };
     for (const item of levelItems) {
+      if (!item.id) continue;
       // Check for circular dependency
       if (processedIds.has(item.id)) {
         throw new Error("Circular dependency detected");
