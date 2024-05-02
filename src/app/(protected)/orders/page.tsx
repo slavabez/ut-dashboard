@@ -5,6 +5,8 @@ import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, Muted, P } from "@/components/typography";
 
+export const dynamic = "force-dynamic";
+
 const OrdersPage = () => {
   return (
     <PageWrapper>

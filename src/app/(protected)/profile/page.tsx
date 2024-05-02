@@ -13,13 +13,14 @@ import React from "react";
 
 import { logout } from "@/actions/auth/logout";
 import { getActiveUser } from "@/actions/user/active-user";
-import { OneCIcon } from "@/components/custom-icons";
 import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, H2 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { IUserMeta } from "@/lib/common-types";
 import { translateRole } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 const ProfilePage = async () => {
   const userResponse = await getActiveUser();

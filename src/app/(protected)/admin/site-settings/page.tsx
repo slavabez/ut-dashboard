@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { ISiteSettingsStrict } from "@/lib/site-settings";
 import { timeAgo } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const SiteSettingsPage = async () => {
   const latestSettings = await getSiteSettingsAction();
 

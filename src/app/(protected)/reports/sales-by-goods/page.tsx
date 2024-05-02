@@ -10,6 +10,8 @@ import { H1, Large } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const SalesByGoodsPage = async ({
   searchParams,
 }: {

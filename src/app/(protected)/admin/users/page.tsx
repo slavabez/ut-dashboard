@@ -3,6 +3,8 @@ import React from "react";
 import AddUserForm from "@/app/(protected)/admin/users/_components/add-user";
 import UserList from "@/app/(protected)/admin/users/_components/user-list";
 
+export const dynamic = "force-dynamic";
+
 const UsersAdminPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">

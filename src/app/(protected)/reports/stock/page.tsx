@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/table";
 import { timeAgo } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const StockReport = async ({
   searchParams,
 }: {

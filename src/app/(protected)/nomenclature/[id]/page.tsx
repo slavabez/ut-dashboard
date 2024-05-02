@@ -7,6 +7,8 @@ import PageWrapper from "@/components/layout-components";
 import { H1, H3, Muted } from "@/components/typography";
 import { formatPrice, timeAgo } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const NomenclatureDetailsPage = async ({
   params,
 }: {

@@ -22,6 +22,8 @@ import {
   formatPrice,
 } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const renderDebtAlert = (debt: number) => {
   if (!debt || debt === 0) {
     return (

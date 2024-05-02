@@ -9,6 +9,8 @@ import { H1, Large } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatPrice, getDateFor1C } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const OrdersByOrderDate = async ({
   searchParams,
 }: {

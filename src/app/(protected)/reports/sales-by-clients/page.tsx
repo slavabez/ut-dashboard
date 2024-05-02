@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/table";
 import { formatPrice } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const SalesByClients = async ({
   searchParams,
 }: {

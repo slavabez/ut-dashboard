@@ -7,6 +7,8 @@ import PageWrapper from "@/components/layout-components";
 import { H1 } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+export const dynamic = "force-dynamic";
+
 const DebtReport = async () => {
   const debts = await getDebtForUser();
 

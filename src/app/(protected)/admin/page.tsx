@@ -7,6 +7,8 @@ import LinkButton from "@/components/link-button";
 import { H1 } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+export const dynamic = "force-dynamic";
+
 const AdminPage = async () => {
   const userResponse = await getActiveUser();
 

@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - production
+  pull_request:
+    branches:
+      - main
+      - production
 
 jobs:
   build-and-test:
@@ -49,13 +53,13 @@ jobs:
           context: .
           file: ./Dockerfile
           load: true
-          tags: my-image:latest
+          tags: skazka-admin-2024:test
           build-args: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             AUTH_SECRET=Secret$tring
 
       - name: Start containers
-        run: docker-compose up -d
+        run: docker-compose up -d -f e2e.docker-compose.yml
 
       - name: Run Playwright tests
         run: npm run test:e2e
@@ -75,4 +79,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: my-image:latest
+          tags: git.ipbez.kz/slavabez/skazka-admin-2024:latest

@@ -8,6 +8,8 @@ import SyncForm from "@/app/(protected)/admin/sync/_components/SyncForm";
 import SyncLogEntries from "@/app/(protected)/admin/sync/_components/SyncLogEntries";
 import { UniversalPagination } from "@/app/_components/universal-pagination";
 
+export const dynamic = "force-dynamic";
+
 const SyncPricesPage = async ({
   searchParams,
 }: {

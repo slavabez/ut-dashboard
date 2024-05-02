@@ -6,6 +6,8 @@ import UserForm from "@/app/(protected)/admin/users/_components/user-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-dynamic";
+
 const UserDetailsPage = async ({ params }: { params: { id: string } }) => {
   const userId = params.id;
 
