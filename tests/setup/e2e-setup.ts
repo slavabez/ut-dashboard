@@ -22,16 +22,16 @@ const createNewUser = async (user: UserInsert) => {
         ...user,
         password: hashedPassword,
       },
-      where: eq(users.phone, user.phone ?? ""),
     })
     .returning();
   if (newUser.length === 0) {
-    throw new Error("Failed to create new user");
+    throw new Error(`Failed to create new user ${user.phone}`);
   }
+  console.log(`Created new user ${user.phone}`);
   return newUser[0];
 };
 
-export default async function globalSetup() {
+export default async function e2eSetup() {
   console.log("Global setup starting...");
 
   // Create new users, one for each role

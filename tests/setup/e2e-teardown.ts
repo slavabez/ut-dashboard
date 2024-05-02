@@ -4,14 +4,17 @@ import { users } from "@/drizzle/schema";
 import { testDb } from "@/drizzle/test-db";
 
 const deleteUserByPhone = async (phone: string) => {
-  const deletedUser = await testDb.delete(users).where(eq(users.phone, phone));
+  const deletedUser = await testDb
+    .delete(users)
+    .where(eq(users.phone, phone))
+    .returning();
   if (deletedUser.length === 0) {
-    throw new Error("Failed to delete user");
+    throw new Error(`Failed to delete user ${phone}`);
   }
   return deletedUser[0];
 };
 
-export default async function globalTeardown() {
+export default async function e2eTeardown() {
   console.log("Global teardown starting...");
 
   // Delete the users created in global setup

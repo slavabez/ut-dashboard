@@ -23,14 +23,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG SENTRY_AUTH_TOKEN
-ARG VERSION
 ARG AUTH_SECRET
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV VERSION=$VERSION SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN AUTH_SECRET=$AUTH_SECRET
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN AUTH_SECRET=$AUTH_SECRET
 
 RUN \
     if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
