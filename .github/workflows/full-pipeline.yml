@@ -17,9 +17,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test-db
+          POSTGRES_USER: e2e-user
+          POSTGRES_PASSWORD: e2e-password
         ports:
           - 5432:5432
         options: >-
@@ -31,7 +31,11 @@ jobs:
         image: redis
         ports:
           - 6379:6379
-        options: --entrypoint redis-server
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -47,22 +51,32 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Build
+        run: npm run build
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://e2e-user:e2e-password@postgres:5432/test-db
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+          PORT: 3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          AUTH_SECRET: test-secret-string
+          ODATA_API_URL: ${{ secrets.ODATA_API_URL }}
+          ODATA_API_AUTH_HEADER: ${{ secrets.ODATA_API_AUTH_HEADER }}
+          NEXT_PUBLIC_FILE_URL: ${{ secrets.NEXT_PUBLIC_FILE_URL }}
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           load: true
-          tags: skazka-admin-2024:test
+          tags: skazka-admin-2024:latest
           build-args: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             AUTH_SECRET=Secret$tring
-
-      - name: Start containers
-        run: docker-compose up -d -f e2e.docker-compose.yml
-
-      - name: Run Playwright tests
-        run: npm run test:e2e
 
       - name: Log in to Docker Registry
         uses: docker/login-action@v3

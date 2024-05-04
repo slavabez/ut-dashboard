@@ -59,17 +59,24 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: "npm run start:standalone",
-  //   url: baseURL,
-  //   reuseExistingServer: !process.env.CI,
-  //   env: {
-  //     PORT,
-  //     NODE_ENV: "test",
-  //     AUTH_SECRET: "test-secret",
-  //     PG_URL:
-  //       process.env.PG_URL ??
-  //       "postgresql://postgres:password@localhost:5432/testdb",
-  //   },
-  // },
+  webServer: {
+    command: "npm run start:standalone",
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
+    env: {
+      PORT,
+      NODE_ENV: "test",
+      AUTH_SECRET: "test-secret",
+      PG_URL:
+        process.env.PG_URL ??
+        "postgresql://e2e-user:e2e-password@postgres:5432/test-db",
+      NEXT_PUBLIC_APP_URL:
+        process.env.NEXT_PUBLIC_APP_URL ?? `http://localhost:${PORT}`,
+      ODATA_API_URL: process.env.ODATA_API_URL ?? "",
+      ODATA_API_AUTH_HEADER: process.env.ODATA_API_AUTH_HEADER ?? "",
+      REDIS_HOST: process.env.REDIS_HOST ?? "",
+      REDIS_PORT: process.env.REDIS_PORT ?? "",
+      REDIS_PASSWORD: process.env.REDIS_PASSWORD ?? "",
+    },
+  },
 });
