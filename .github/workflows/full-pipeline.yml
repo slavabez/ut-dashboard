@@ -53,6 +53,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Run Playwright tests
         run: npm run test:e2e
