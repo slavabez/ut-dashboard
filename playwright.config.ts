@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
  * https://github.com/motdotla/dotenv
  */
 require("dotenv").config({
-  path: ".env.test",
+  path: ".env.test.local",
 });
 
 const PORT = process.env.PORT ?? "3000";
@@ -60,7 +60,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run start:standalone",
+    command: "npm run start",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     env: {
