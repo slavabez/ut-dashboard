@@ -66,6 +66,7 @@ jobs:
           PORT: 3000
           NEXT_PUBLIC_APP_URL: http://localhost:3000
           AUTH_SECRET: test-secret-string
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           ODATA_API_URL: ${{ secrets.ODATA_API_URL }}
           ODATA_API_AUTH_HEADER: ${{ secrets.ODATA_API_AUTH_HEADER }}
           NEXT_PUBLIC_FILE_URL: ${{ secrets.NEXT_PUBLIC_FILE_URL }}

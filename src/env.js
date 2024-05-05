@@ -12,6 +12,7 @@ export const env = createEnv({
     REDIS_HOST: z.string().min(1).optional(),
     REDIS_PORT: z.string().min(1).optional(),
     REDIS_PASSWORD: z.string().optional(),
+    SENTRY_AUTH_TOKEN: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1).optional(),
