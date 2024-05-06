@@ -50,14 +50,14 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: manicmade/coolify-actions@v0.0.1
         with:
-          coolify-url: ${{ secrets.COOLIFY_URL }}
-          coolify-app-id: ${{ secrets.COOLIFY_STAGING_APP_ID }}
-          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          coolifyUrl: ${{ secrets.COOLIFY_URL }}
+          coolifyAppId: ${{ secrets.COOLIFY_STAGING_APP_ID }}
+          coolifyToken: ${{ secrets.COOLIFY_TOKEN }}
 
       - name: Deploy to Coolify (Production)
         if: github.ref == 'refs/heads/production'
         uses: manicmade/coolify-actions@v0.0.1
         with:
-          coolify-url: ${{ secrets.COOLIFY_URL }}
-          coolify-app-id: ${{ secrets.COOLIFY_PROD_APP_ID }}
-          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          coolifyUrl: ${{ secrets.COOLIFY_URL }}
+          coolifyAppId: ${{ secrets.COOLIFY_PROD_APP_ID }}
+          coolifyToken: ${{ secrets.COOLIFY_TOKEN }}
