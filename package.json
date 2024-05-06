@@ -1,6 +1,6 @@
 {
   "name": "skazka-admin-2024",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3063",
@@ -15,8 +15,9 @@
     "db:clear": "tsx src/scripts/clear.ts",
     "migration:drop": "drizzle-kit drop",
     "studio": "drizzle-kit studio",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e-ui": "playwright test --ui"
   },
   "prettier": {
     "importOrder": [
@@ -85,22 +86,28 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
+    "@testing-library/react": "^15.0.4",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^9.0.8",
+    "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.0.1",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "jsdom": "^24.0.0",
+    "next-router-mock": "^0.9.13",
     "pg": "^8.11.3",
     "postcss": "^8",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.13",
     "tailwindcss": "^3.3.0",
     "tsx": "^4.7.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.5.0"
   }
 }

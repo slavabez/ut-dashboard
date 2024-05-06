@@ -17,6 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { formatPrice } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 interface IReportDataItem {
   partner: string;
   manufacturers: {

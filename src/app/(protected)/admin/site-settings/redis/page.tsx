@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { formatBytes } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const RedisInfo = async () => {
   const redisInfoResponse = await getRedisCacheInfo();
   if (redisInfoResponse.status === "error") {

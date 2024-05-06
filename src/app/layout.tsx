@@ -1,3 +1,4 @@
+import packageJson from "../../package.json";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Metadata } from "next";
@@ -26,12 +27,12 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   return (
-    <SessionProvider session={session}>
-      <CSPostHogProvider>
-        <html lang="ru">
-          <body
-            className={`${inter.className} flex min-h-screen w-screen max-w-full flex-col`}
-          >
+    <html lang="ru">
+      <body
+        className={`${inter.className} flex min-h-screen w-screen max-w-full flex-col`}
+      >
+        <SessionProvider session={session}>
+          <CSPostHogProvider>
             <header className="flex w-full flex-col bg-orange-500 p-4 text-white">
               <div className="mx-auto flex w-full max-w-[800px] items-center justify-between">
                 <Link className="text-2xl" href="/">
@@ -46,12 +47,12 @@ export default async function RootLayout({
             </main>
             <footer className="bg-orange-500 p-2 text-white">
               <div className="mx-auto max-w-[800px] text-center">
-                Сказка, панель управления
+                Сказка, панель управления, {packageJson.version}, 2024
               </div>
             </footer>
-          </body>
-        </html>
-      </CSPostHogProvider>
-    </SessionProvider>
+          </CSPostHogProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

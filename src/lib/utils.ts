@@ -8,11 +8,6 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "medium",
 });
 
-const dateFormatterShort = new Intl.DateTimeFormat("ru-RU", {
-  timeStyle: "short",
-  dateStyle: "short",
-});
-
 const dateFormatterDateOnly = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "medium",
 });
@@ -26,26 +21,24 @@ export function cn(...inputs: ClassValue[]) {
  * @param items
  */
 export function separateListIntoLevels<
-  T extends { id?: string | null; parentId?: string | null },
+  T extends { id?: string; parentId?: string | null },
 >(items: T[]): { level: number; items: T[] }[] {
   const hierarchyMap: {
     [parentId: string]: T[];
   } = {};
+  const processedIds = new Set<string>();
 
   // Group items by parentId
-  for (const type of items) {
-    const parentId = type.parentId || "";
+  for (const item of items) {
+    const parentId = item.parentId || "";
     if (!hierarchyMap[parentId]) {
       hierarchyMap[parentId] = [];
     }
-    hierarchyMap[parentId]?.push(type);
+    hierarchyMap[parentId].push(item);
   }
 
   // Create a unified array for each hierarchy level
-  const result: {
-    level: number;
-    items: T[];
-  }[] = [];
+  const result: { level: number; items: T[] }[] = [];
 
   function processHierarchyLevel(parentId: string, level: number) {
     const levelItems = hierarchyMap[parentId] || [];
@@ -53,15 +46,26 @@ export function separateListIntoLevels<
       return;
     }
 
-    for (const levelItem of levelItems) {
-      result[level] = result[level] || { level, items: [] };
-      result[level]?.items.push(levelItem);
-      processHierarchyLevel(levelItem.id ?? "", level + 1);
+    result[level] = result[level] || { level, items: [] };
+    for (const item of levelItems) {
+      if (!item.id) continue;
+      // Check for circular dependency
+      if (processedIds.has(item.id)) {
+        throw new Error("Circular dependency detected");
+      }
+      if (item.id) {
+        processedIds.add(item.id);
+      }
+
+      result[level].items.push(item);
+      if (item.id) {
+        processHierarchyLevel(item.id, level + 1);
+      }
     }
   }
 
   processHierarchyLevel("", 0);
-  return result;
+  return result.filter((r) => r);
 }
 
 export function sortLevelsIntoTree<

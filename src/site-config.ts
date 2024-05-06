@@ -251,7 +251,7 @@ export const allNavItems: Map<string, INavItem> = new Map([
 ]);
 
 export const getBreadcrumbsForPath = (path: string): IBreadcrumbItem[] => {
-  const pathParts = path.split("/").filter((p) => p);
+  const pathParts = path ? path.split("/").filter((p) => p) : [];
   const breadcrumbs: IBreadcrumbItem[] = [allNavItems.get("/")!];
   let href = "";
   for (let i = 0; i < pathParts.length; i++) {

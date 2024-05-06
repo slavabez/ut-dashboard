@@ -5,7 +5,7 @@ import postgres from "postgres";
 import { env } from "@/env.js";
 
 (async () => {
-  const client = postgres(env.PG_URL, {
+  const client = postgres(env.PG_URL!, {
     max: 1,
   });
 

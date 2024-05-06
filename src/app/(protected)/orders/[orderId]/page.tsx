@@ -21,6 +21,8 @@ import {
   translateDeliveryType,
 } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const OrderDetailsPage = async ({
   params,
 }: {

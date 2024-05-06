@@ -11,6 +11,8 @@ import PageWrapper from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, P } from "@/components/typography";
 
+export const dynamic = "force-dynamic";
+
 const ReportPage = () => {
   return (
     <PageWrapper>

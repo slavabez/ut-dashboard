@@ -7,6 +7,8 @@ import EmployeeTracker from "@/app/(protected)/manager/_components/employee-trac
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-dynamic";
+
 const ManagerHomePage = async () => {
   const employeeListResponse = await getAllUsers();
   if (employeeListResponse.status === "error") {

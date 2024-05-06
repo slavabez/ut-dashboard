@@ -7,6 +7,8 @@ import {
 import NomenclatureFilterList from "@/app/(protected)/admin/nomenclature/_components/NomenclatureFilterList";
 import NomenclatureList from "@/app/(protected)/admin/nomenclature/_components/NomenclatureList";
 
+export const dynamic = "force-dynamic";
+
 const NomenclaturePage = async ({
   searchParams,
 }: {

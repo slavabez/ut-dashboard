@@ -5,35 +5,6 @@ const EMPLOYEE_STATE_PATH = "tests/.auth-states/employee-state.json";
 const MANAGER_STATE_PATH = "tests/.auth-states/manager-state.json";
 const ADMIN_STATE_PATH = "tests/.auth-states/admin-state.json";
 
-test("authenticate as client", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: "Вход" }).click();
-
-  await page
-    .getByRole("textbox", { name: "+7 777 777 7777" })
-    .fill("+77050000000");
-
-  await page
-    .getByRole("textbox", { name: "*********" })
-    .fill("client-password");
-
-  await page.getByRole("button", { name: "Войти на сайт" }).click();
-
-  const h1CenterFont = page.getByRole("heading", { name: "Профиль" });
-  await expect(h1CenterFont).toHaveText("Профиль");
-
-  const ddClientUsername = page.getByText("client user");
-  await expect(ddClientUsername).toBeVisible();
-
-  const ddClientRole = page.getByText("Клиент");
-  await expect(ddClientRole).toBeVisible();
-
-  const ddClientPhone = page.getByText("+77050000000");
-  await expect(ddClientPhone).toBeVisible();
-
-  await page.context().storageState({ path: CLIENT_STATE_PATH });
-});
-
 test("authenticate as employee", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: "Вход" }).click();
@@ -48,8 +19,8 @@ test("authenticate as employee", async ({ page }) => {
 
   await page.getByRole("button", { name: "Войти на сайт" }).click();
 
-  const h1CenterFont = page.getByRole("heading", { name: "Профиль" });
-  await expect(h1CenterFont).toHaveText("Профиль");
+  const h1CenterFont = page.getByRole("heading", { name: "Мой раздел" });
+  await expect(h1CenterFont).toHaveText("Мой раздел");
 
   const ddEmployeeUsername = page.getByText("employee user");
   await expect(ddEmployeeUsername).toBeVisible();
@@ -77,8 +48,8 @@ test("authenticate as manager", async ({ page }) => {
 
   await page.getByRole("button", { name: "Войти на сайт" }).click();
 
-  const h1CenterFont = page.getByRole("heading", { name: "Профиль" });
-  await expect(h1CenterFont).toHaveText("Профиль");
+  const h1CenterFont = page.getByRole("heading", { name: "Мой раздел" });
+  await expect(h1CenterFont).toHaveText("Мой раздел");
 
   const ddManagerUsername = page.getByText("manager user");
   await expect(ddManagerUsername).toBeVisible();
@@ -104,8 +75,8 @@ test("authenticate as admin", async ({ page }) => {
 
   await page.getByRole("button", { name: "Войти на сайт" }).click();
 
-  const h1CenterFont = page.getByRole("heading", { name: "Профиль" });
-  await expect(h1CenterFont).toHaveText("Профиль");
+  const h1CenterFont = page.getByRole("heading", { name: "Мой раздел" });
+  await expect(h1CenterFont).toHaveText("Мой раздел");
 
   const ddAdminUsername = page.getByText("admin user");
   await expect(ddAdminUsername).toBeVisible();

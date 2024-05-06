@@ -7,7 +7,8 @@
 * **Next Auth** for custom credentials login via **1C**
 * Integration with 1C via **OData REST API**
 * **Redis** for caching frequently accessed settings and OData API requests
-* **Sentry** to error and performance tracking across the whole application
+* **Sentry** for error and performance tracking across the whole application
+* **PostHog** for tracking user interaction and general app usage
 * **shadcn/ui** components for most of the UI
 
 ## Features
@@ -32,7 +33,6 @@
 
 * Online catalogue of the products, including the detailed information about the product, stock and prices
 
-
 ## Project structure
 
 * `./drizzle` - Drizzle Postgres migrations
@@ -53,6 +53,10 @@
 ## CI structure
 
 1. Project has two main git branches, `main` and `production`.
-2. `main` branch triggers a docker image build, which is pushed to a private docker registry and then deployed to https://dev.admin.ipbez.kz/admin/users
+2. `main` branch triggers a pipeline that does the following:
+    * Runs `npm install` and runs `npm run test`
+    * A docker image is built and tagged `main`
+    * The image is pushed to a private docker registry,
+    * Coolify deploy webhook is triggered to re-deploy to https://staging.dashboard.ipbez.kz/
 3. `production` branch does the same, except tags the image `production` and deploys to https://dashboard.ipbez.kz
-4. E2E tests are a work in progress and will be integrated into the pipeline, making sure the docker build command is only executed on successful tests.
+4. E2E tests using Playwright are a work in progress and will be integrated into the pipeline.

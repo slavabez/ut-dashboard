@@ -6,6 +6,8 @@ import PageWrapper from "@/components/layout-components";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getAllPriceTypesFrom1C } from "@/lib/odata/prices";
 
+export const dynamic = "force-dynamic";
+
 const AdminPricesPage = async () => {
   const allPricesResponse = await getPricesWithLatestSyncTime();
 
