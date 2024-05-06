@@ -44,6 +44,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: git.ipbez.kz/slavabez/skazka-admin-2024:${{ github.ref_name }}
-          secret-envs:
+          secrets:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             AUTH_SECRET=${{ secrets.AUTH_SECRET }}
