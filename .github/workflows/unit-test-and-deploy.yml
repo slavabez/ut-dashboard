@@ -1,0 +1,57 @@
+name: Build project, run unit tests, deploy to Docker registry
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  pull_request:
+    branches:
+      - main
+      - production
+
+jobs:
+  build-and-test:
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: skazka-admin-2024:latest
+          build-args: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        if: success()
+        with:
+          registry: git.ipbez.kz
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Push Docker image
+        uses: docker/build-push-action@v5
+        if: success()
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: git.ipbez.kz/slavabez/skazka-admin-2024:${{ github.ref_name }}

@@ -8,8 +8,7 @@ require("dotenv").config({
   path: ".env.test.local",
 });
 
-const PORT = process.env.PORT ?? "3000";
-const baseURL = `http://localhost:${PORT}`;
+const E2E_BASE_URL = process.env.E2E_BASE_URL;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -23,14 +22,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL,
+    baseURL: E2E_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
   },
-  globalSetup: "./tests/setup/e2e-setup.ts",
-  globalTeardown: "./tests/setup/e2e-teardown.ts",
-
   testMatch: "**/*.e2e.ts",
-
   projects: [
     {
       name: "chromium",
@@ -59,24 +54,24 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: "npm run dev",
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    env: {
-      PORT,
-      NODE_ENV: "test",
-      AUTH_SECRET: "test-secret",
-      PG_URL:
-        process.env.PG_URL ??
-        "postgresql://e2e-user:e2e-password@postgres:5432/test-db",
-      NEXT_PUBLIC_APP_URL:
-        process.env.NEXT_PUBLIC_APP_URL ?? `http://localhost:${PORT}`,
-      ODATA_API_URL: process.env.ODATA_API_URL ?? "",
-      ODATA_API_AUTH_HEADER: process.env.ODATA_API_AUTH_HEADER ?? "",
-      REDIS_HOST: process.env.REDIS_HOST ?? "",
-      REDIS_PORT: process.env.REDIS_PORT ?? "",
-      REDIS_PASSWORD: process.env.REDIS_PASSWORD ?? "",
-    },
-  },
+  // webServer: {
+  //   command: "npm run dev",
+  //   url: baseURL,
+  //   reuseExistingServer: !process.env.CI,
+  //   env: {
+  //     PORT,
+  //     NODE_ENV: "test",
+  //     AUTH_SECRET: "test-secret",
+  //     PG_URL:
+  //       process.env.PG_URL ??
+  //       "postgresql://e2e-user:e2e-password@postgres:5432/test-db",
+  //     NEXT_PUBLIC_APP_URL:
+  //       process.env.NEXT_PUBLIC_APP_URL ?? `http://localhost:${PORT}`,
+  //     ODATA_API_URL: process.env.ODATA_API_URL ?? "",
+  //     ODATA_API_AUTH_HEADER: process.env.ODATA_API_AUTH_HEADER ?? "",
+  //     REDIS_HOST: process.env.REDIS_HOST ?? "",
+  //     REDIS_PORT: process.env.REDIS_PORT ?? "",
+  //     REDIS_PASSWORD: process.env.REDIS_PASSWORD ?? "",
+  //   },
+  // },
 });
