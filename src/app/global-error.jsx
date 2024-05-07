@@ -1,6 +1,6 @@
 "use client";
 
-import PageWrapper from "../components/layout-components";
+import { PageWrapper } from "../components/layout-components";
 import * as Sentry from "@sentry/nextjs";
 import Error from "next/error";
 import { useEffect } from "react";

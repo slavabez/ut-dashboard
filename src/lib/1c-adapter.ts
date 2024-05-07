@@ -234,6 +234,9 @@ export class ConvertFrom1C {
       case guids.guidsForSync.user.siteRoleAdminValue:
         siteRole = "admin";
         break;
+      case guids.guidsForSync.user.siteRoleManagerValue:
+        siteRole = "manager";
+        break;
       default:
         siteRole = null;
         break;

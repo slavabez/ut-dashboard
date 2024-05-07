@@ -4,7 +4,7 @@ import React from "react";
 import { getOrderById } from "@/actions/orders";
 import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
 import OrderStatusBadge from "@/app/(protected)/orders/_components/order-status-badge";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,

@@ -4,7 +4,7 @@ import React from "react";
 
 import ManufacturerSelect from "@/app/(protected)/reports/stock/_components/manufacturer-select";
 import NameSearchInput from "@/app/(protected)/reports/stock/_components/name-search-input";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, Muted, P } from "@/components/typography";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

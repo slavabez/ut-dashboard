@@ -2,7 +2,7 @@ import React from "react";
 
 import { getActiveUser } from "@/actions/user/active-user";
 import LinkOpener from "@/app/(protected)/_components/link-opener";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1 } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

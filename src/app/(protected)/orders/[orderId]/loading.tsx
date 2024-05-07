@@ -2,7 +2,7 @@ import { Package } from "lucide-react";
 import React from "react";
 
 import Order1cLink from "@/app/(protected)/orders/_components/order-1c-link";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { PageWrapper } from "@/components/layout-components";
+import { H1 } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 
 export default function Error({
@@ -16,10 +18,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="m-4 flex flex-col items-center justify-center space-y-4 text-center">
-      <h2 className="text-2xl">Упс! Ошибочка</h2>
+    <PageWrapper>
+      <H1>Упс! Ошибочка</H1>
       <p>{error.message}</p>
       <Button onClick={() => reset()}>Попробовать еще раз</Button>
-    </div>
+    </PageWrapper>
   );
 }

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
 import Link from "next/link";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 import UserAvatarMenu from "@/app/(protected)/_components/user-avatar-menu";
 import Breadcrumbs from "@/app/_components/breadcrumbs";
@@ -42,9 +42,7 @@ export default async function RootLayout({
               </div>
             </header>
             <Breadcrumbs />
-            <main className="mx-auto h-full w-full max-w-[800px] flex-grow items-center justify-center">
-              {children}
-            </main>
+            {children}
             <footer className="bg-orange-500 p-2 text-white">
               <div className="mx-auto max-w-[800px] text-center">
                 Сказка, панель управления, {packageJson.version}, 2024
