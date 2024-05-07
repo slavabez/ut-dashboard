@@ -6,7 +6,7 @@ import {
   initialiseSite,
 } from "@/actions/site-settings";
 import SiteSettingsForm from "@/app/(protected)/admin/site-settings/_components/site-settings-form";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, P } from "@/components/typography";
 import { Alert } from "@/components/ui/alert";

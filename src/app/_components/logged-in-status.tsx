@@ -28,6 +28,17 @@ const LoggedInStatus = async () => {
           <LinkButton href="/admin">Перейти в админку</LinkButton>
         </div>
       );
+    case "manager":
+      return (
+        <div className="flex flex-col gap-4">
+          <P>
+            Вы вошли как <span className="font-bold">{user.name}</span>
+          </P>
+          <LinkButton href="/manager">
+            Перейти в раздел для менеджеров
+          </LinkButton>
+        </div>
+      );
     default:
       return null;
   }

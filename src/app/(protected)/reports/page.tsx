@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, P } from "@/components/typography";
 

@@ -3,7 +3,7 @@ import React from "react";
 
 import { getDebtForUser } from "@/actions/sale-document";
 import DebtReportItem from "@/app/(protected)/reports/debt/_components/debt-report-item";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1 } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 

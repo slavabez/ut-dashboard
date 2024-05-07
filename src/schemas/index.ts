@@ -2,7 +2,7 @@ import * as z from "zod";
 
 import { UserRoleMap } from "@/drizzle/schema";
 
-const PHONE_REGEX = /^(8|\+7)[\d\-()]+$/;
+const PHONE_REGEX = /^(8|\+7)[\d\-\s()]+$/;
 const PHONE_SCHEMA = z
   .string()
   .min(11, {
@@ -18,7 +18,9 @@ const PHONE_SCHEMA = z
 
 export const LoginSchema = z.object({
   phone: PHONE_SCHEMA,
-  password: z.string(),
+  password: z.string().min(1, {
+    message: "Пароль не может быть пустым",
+  }),
 });
 
 export const RegisterSchema = z.object({

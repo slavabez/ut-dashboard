@@ -14,6 +14,7 @@ export interface ISiteSettingsStrict {
       siteRole: string;
       siteRoleAdminValue: string;
       siteRoleEmployeeValue: string;
+      siteRoleManagerValue: string;
     };
     nomenclature: {
       minimumNonDivisibleWeight: string;
@@ -79,6 +80,9 @@ export function verifySettings(settings: any) {
   }
   if (!guids.user.siteRoleEmployeeValue) {
     throw new Error("No user.siteRoleEmployeeValue guid found in the settings");
+  }
+  if (!guids.user.siteRoleManagerValue) {
+    throw new Error("No user.siteRoleManagerValue guid found in the settings");
   }
   if (!guids.nomenclature) {
     throw new Error("No nomenclature guids found in the settings");

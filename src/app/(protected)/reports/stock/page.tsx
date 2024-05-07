@@ -7,7 +7,7 @@ import { getManufacturersForSelect } from "@/actions/nomenclature/manufacturers"
 import { getLatestStockSyncTime, getStockWithFilters } from "@/actions/stock";
 import ManufacturerSelect from "@/app/(protected)/reports/stock/_components/manufacturer-select";
 import NameSearchInput from "@/app/(protected)/reports/stock/_components/name-search-input";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, Muted, P } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {

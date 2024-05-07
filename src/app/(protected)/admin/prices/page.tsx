@@ -2,7 +2,7 @@ import React from "react";
 
 import { getPricesWithLatestSyncTime } from "@/actions/site-settings";
 import PriceAdminSection from "@/app/(protected)/admin/prices/_components/price-admin-section";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getAllPriceTypesFrom1C } from "@/lib/odata/prices";
 

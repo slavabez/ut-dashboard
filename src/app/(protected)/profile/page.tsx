@@ -13,7 +13,7 @@ import React from "react";
 
 import { logout } from "@/actions/auth/logout";
 import { getActiveUser } from "@/actions/user/active-user";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, H2 } from "@/components/typography";
 import { Button } from "@/components/ui/button";

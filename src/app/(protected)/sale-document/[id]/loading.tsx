@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 import Sale1CLink from "@/app/(protected)/sale-document/_components/sale-1c-link";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";

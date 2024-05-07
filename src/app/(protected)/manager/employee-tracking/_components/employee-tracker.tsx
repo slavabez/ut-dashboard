@@ -5,7 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useState, useTransition } from "react";
 import Map, { Layer, Marker, Source } from "react-map-gl/maplibre";
 
-import { getOrdersForUserForDate } from "@/actions/orders";
+import { getOrdersForUserByDateWithAdditionalFields } from "@/actions/orders";
 import FormError from "@/components/form-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,31 +78,31 @@ const EmployeeTracker = (props: IEmployeeTrackerProps) => {
   useEffect(() => {
     if (employeeId && selectedDate) {
       startTransition(() => {
-        getOrdersForUserForDate(employeeId, getDateFor1C(selectedDate)).then(
-          (data) => {
-            if (data.status === "error") {
-              setError(data.error);
-            }
-            if (data.status === "success") {
-              setOrders(data.data);
-              const points = data.data
-                .filter((o) => {
-                  return (
-                    !!o.additionalProperties?.lon &&
-                    !!o.additionalProperties?.lat
-                  );
-                })
-                .map(orderToPoint);
-              setPoints(points);
-              setPath(pointsToPath(points));
-            }
-          },
-        );
+        getOrdersForUserByDateWithAdditionalFields(
+          employeeId,
+          getDateFor1C(selectedDate),
+        ).then((data) => {
+          if (data.status === "error") {
+            setError(data.error);
+          }
+          if (data.status === "success") {
+            setOrders(data.data);
+            const points = data.data
+              .filter((o) => {
+                return (
+                  !!o.additionalProperties?.lon && !!o.additionalProperties?.lat
+                );
+              })
+              .map(orderToPoint);
+            setPoints(points);
+            setPath(pointsToPath(points));
+          }
+        });
       });
     } else {
       setError("Выберите дату и пользователя");
     }
-  }, [employeeId, selectedDate]);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">

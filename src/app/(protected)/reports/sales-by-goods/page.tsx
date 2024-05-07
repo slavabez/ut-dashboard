@@ -5,7 +5,7 @@ import { getSalesByGoods } from "@/actions/reports";
 import PieChart from "@/app/(protected)/reports/_components/pie-chart";
 import ReportInnerTable from "@/app/(protected)/reports/_components/report-inner-table";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, Large } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
