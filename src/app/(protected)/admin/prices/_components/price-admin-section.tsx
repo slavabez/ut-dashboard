@@ -6,7 +6,7 @@ import AddPriceForm from "@/app/(protected)/admin/prices/_components/add-price-f
 import PriceList from "@/app/(protected)/admin/prices/_components/price-list";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, H2, Muted } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 

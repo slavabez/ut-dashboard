@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 import CardWrapper from "@/components/auth/card-wrapper";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 
 const AuthErrorPage = () => {
   return (

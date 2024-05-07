@@ -25,6 +25,12 @@ jobs:
       - name: Install NPM dependencies
         run: npm install
 
+      - name: Install NPM dependencies
+        run: npm run build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+
       - name: Run unit tests
         run: npm run test
 
