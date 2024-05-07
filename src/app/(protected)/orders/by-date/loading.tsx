@@ -1,7 +1,7 @@
 import { CalendarDays } from "lucide-react";
 import React from "react";
 
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1 } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";

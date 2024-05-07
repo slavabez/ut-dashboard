@@ -278,6 +278,7 @@ export async function assignInitialSiteSettings(): Promise<
         siteRole: "",
         siteRoleAdminValue: "",
         siteRoleEmployeeValue: "",
+        siteRoleManagerValue: "",
       },
       nomenclature: {
         minimumNonDivisibleWeight: "",
@@ -363,6 +364,14 @@ export async function assignInitialSiteSettings(): Promise<
   if (siteRoleEmployeeValue)
     initialSettings.guidsForSync.user.siteRoleEmployeeValue =
       siteRoleEmployeeValue.Ref_Key;
+
+  const siteRoleManagerValue = propertyValues.find((p) =>
+    p.Description.startsWith("Менеджер"),
+  );
+
+  if (siteRoleManagerValue)
+    initialSettings.guidsForSync.user.siteRoleManagerValue =
+      siteRoleManagerValue.Ref_Key;
 
   const latitude = additionalProperties.find(
     (p) => p.Description === "АгентПлюсДокументШирота",

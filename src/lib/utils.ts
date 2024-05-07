@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { SyncFormType } from "@/app/(protected)/admin/sync/_components/SyncForm";
+import { IOrder } from "@/lib/1c-adapter";
 
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   timeStyle: "short",
@@ -289,4 +290,72 @@ export function formatBytes(bytes: number, decimals = 2): string {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
+
+export function calculateGeoAverages(
+  orders: IOrder[],
+): { avgLat: number; avgLon: number; zoom: number } | null {
+  let totalLat = 0;
+  let totalLon = 0;
+  let minLat = Number.MAX_VALUE;
+  let maxLat = Number.MIN_VALUE;
+  let minLon = Number.MAX_VALUE;
+  let maxLon = Number.MIN_VALUE;
+  let count = 0;
+  orders.forEach((order) => {
+    if (order.additionalProperties?.lat && order.additionalProperties?.lon) {
+      let lat = order.additionalProperties.lat;
+      let lon = order.additionalProperties.lon;
+
+      totalLat += lat;
+      totalLon += lon;
+
+      // Update min and max lats and lons
+      minLat = Math.min(minLat, lat);
+      maxLat = Math.max(maxLat, lat);
+      minLon = Math.min(minLon, lon);
+      maxLon = Math.max(maxLon, lon);
+
+      count++;
+    }
+  });
+
+  if (count === 0)
+    return {
+      avgLat: 0,
+      avgLon: 0,
+      zoom: 5,
+    };
+
+  // Define a function to calculate the zoom level based on lat and lon range
+  let calculateZoom = (
+    minLat: number,
+    maxLat: number,
+    minLon: number,
+    maxLon: number,
+  ): number => {
+    const diffLat = maxLat - minLat;
+    const diffLon = maxLon - minLon;
+    const latZoom = Math.round(-1.44 * Math.log(diffLat) + 8);
+    const lonZoom = Math.round(-1.44 * Math.log(diffLon) + 8);
+    return Math.min(latZoom, lonZoom);
+  };
+
+  return {
+    avgLat: totalLat / count,
+    avgLon: totalLon / count,
+    zoom: calculateZoom(minLat, maxLat, minLon, maxLon),
+  };
+}
+
+export function sortOrdersByAgentDateCreated(orders: IOrder[]) {
+  return orders.sort((a, b) => {
+    if (a.additionalProperties?.started && b.additionalProperties?.started) {
+      return (
+        b.additionalProperties.started.getDate() -
+        a.additionalProperties.started.getDate()
+      );
+    }
+    return 0;
+  });
 }

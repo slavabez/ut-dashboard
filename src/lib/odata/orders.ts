@@ -91,7 +91,7 @@ export async function getOrderContent(
   }) as Promise<IOrderContentFields[]>;
 }
 
-export interface IOrderAdditionaFields {
+export interface IOrderAdditionalFields {
   Объект: string;
   Свойство_Key: string;
   Значение: string;
@@ -99,19 +99,19 @@ export interface IOrderAdditionaFields {
 
 export async function getOrderAdditionalProperties(
   orderId: string,
-): Promise<IOrderAdditionaFields[]> {
+): Promise<IOrderAdditionalFields[]> {
   return getSpecificODataResponseArray({
     path: "InformationRegister_ДополнительныеСведения",
     filter: `Объект eq cast(guid'${orderId}', 'Document_ЗаказКлиента')`,
     select: "Объект,Свойство_Key,Значение",
-  }) as Promise<IOrderAdditionaFields[]>;
+  }) as Promise<IOrderAdditionalFields[]>;
 }
 
 export async function getMultipleOrderAdditionalProperties(
   orderIds: string[],
-): Promise<IOrderAdditionaFields[]> {
+): Promise<IOrderAdditionalFields[]> {
   const MAX_IDS_REQUEST = 20;
-  const results: IOrderAdditionaFields[][] = [];
+  const results: IOrderAdditionalFields[][] = [];
 
   // TODO: test this thoroughly
 
@@ -123,7 +123,7 @@ export async function getMultipleOrderAdditionalProperties(
         .map((oi) => `Объект eq cast(guid'${oi}', 'Document_ЗаказКлиента')`)
         .join(" or "),
       select: "Объект,Свойство_Key,Значение",
-    })) as Promise<IOrderAdditionaFields[]>;
+    })) as Promise<IOrderAdditionalFields[]>;
     results.push(await chunkResult);
   }
 

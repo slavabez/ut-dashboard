@@ -1,9 +1,10 @@
 import { BadgeDollarSign, CircleUser, Lock, LogIn } from "lucide-react";
 import React from "react";
 
+import ButtonContainer from "@/app/_components/button-container";
 import LoggedInStatus from "@/app/_components/logged-in-status";
 import { OneCIcon } from "@/components/custom-icons";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, H2, P, UL } from "@/components/typography";
 
@@ -28,7 +29,7 @@ export default function Home() {
         <li>Контроль торговых агентов</li>
       </UL>
       <nav>
-        <ul className="flex flex-col items-stretch space-y-2 text-lg text-orange-500">
+        <ButtonContainer>
           <LinkButton href="/auth/register">
             <Lock className="mr-2 h-8 w-8" /> Регистрация
           </LinkButton>
@@ -37,7 +38,7 @@ export default function Home() {
             Вход
           </LinkButton>
           <LinkButton href="/orders">
-            <OneCIcon className="mr-2 h-8 w-8" /> Сверка заказов с 1С
+            <OneCIcon className="mr-2 h-8 w-8" /> Заказы в 1С
           </LinkButton>
           <LinkButton href="/reports">
             <BadgeDollarSign className="mr-2 h-8 w-8" />
@@ -47,7 +48,7 @@ export default function Home() {
             <CircleUser className="mr-2 h-8 w-8" />
             Админка
           </LinkButton>
-        </ul>
+        </ButtonContainer>
       </nav>
     </PageWrapper>
   );

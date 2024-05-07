@@ -142,7 +142,7 @@ export const getOrderById = async (
   };
 };
 
-export async function getOrdersForUserForDate(
+export async function getOrdersForUserByDateWithAdditionalFields(
   userId: string,
   day: string,
 ): Promise<IActionResponse<IOrder[]>> {

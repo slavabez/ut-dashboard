@@ -25,7 +25,14 @@ export async function getAllUsers(): Promise<
 > {
   const role = await currentRole();
 
-  if (role !== "admin") {
+  if (!role) {
+    return {
+      status: "error",
+      error: "Вы не вошли",
+    };
+  }
+
+  if (!["manager", "admin"].includes(role)) {
     return {
       status: "error",
       error: "У вас недостаточно прав для этого действия",

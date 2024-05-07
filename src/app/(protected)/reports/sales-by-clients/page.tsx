@@ -6,7 +6,7 @@ import {
   getSalesByClients,
 } from "@/actions/reports";
 import { ReportsDateRangePicker } from "@/app/(protected)/reports/_components/reports-date-picker";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, Large, Muted } from "@/components/typography";
 import { Separator } from "@/components/ui/separator";
 import {

@@ -248,6 +248,41 @@ const SiteSettingsForm = (props: ISiteSettingsFormProps) => {
               );
             }}
           />
+          <FormField
+            name="guidsForSync.user.siteRoleManagerValue"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Значение Менеджер</FormLabel>
+                  <FormDescription>
+                    Значение &apos;Менеджер&apos; дополнительного реквизита из
+                    1С &apos;Роль на сайте&apos;
+                  </FormDescription>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите значение" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {guidsFrom1C?.propertyValues?.map((property: any) => (
+                        <SelectItem
+                          key={property.Ref_Key}
+                          value={property.Ref_Key}
+                        >
+                          {property.Description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <Separator />
           <h2 className="text-lg font-bold">Для номенклатуры</h2>
           <FormField

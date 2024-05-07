@@ -4,7 +4,7 @@ import React from "react";
 import { getOrdersByDate } from "@/actions/orders";
 import OrderDatePicker from "@/app/(protected)/orders/_components/order-date-picker";
 import OrderList from "@/app/(protected)/orders/_components/order-list";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1, Large } from "@/components/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatPrice, getDateFor1C } from "@/lib/utils";

@@ -4,7 +4,7 @@ import React from "react";
 
 import { getSaleDocumentDetails } from "@/actions/sale-document";
 import Sale1CLink from "@/app/(protected)/sale-document/_components/sale-1c-link";
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

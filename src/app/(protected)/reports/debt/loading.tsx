@@ -1,7 +1,7 @@
 import { HandCoins } from "lucide-react";
 import React from "react";
 
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import { H1 } from "@/components/typography";
 
 const DebtLoadingPage = () => {

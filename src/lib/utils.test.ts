@@ -1,4 +1,5 @@
 import {
+  calculateGeoAverages,
   from1CIdToGuid,
   fromGuidTo1CId,
   getDateFor1C,
@@ -6,6 +7,8 @@ import {
   separateListIntoLevels,
 } from "./utils";
 import { describe, expect, test } from "vitest";
+
+import { IOrder } from "@/lib/1c-adapter";
 
 describe("separateListIntoLevels function", () => {
   test("should correctly separate a list into hierarchy levels", async () => {
@@ -184,5 +187,103 @@ describe("fromGuidTo1CId function", () => {
 
   test("should throw an error for empty input", async () => {
     expect(() => fromGuidTo1CId("")).toThrow("Invalid GUID");
+  });
+});
+
+describe("calculateGeoAverages function", () => {
+  test("should correctly calculate geo averages", async () => {
+    const orders: IOrder[] = [
+      {
+        id: "1",
+        number: "A100",
+        date: new Date(),
+        sum: 10000,
+        status: "Delivered",
+        paymentType: "Cash",
+        deliveryDate: "2022-12-15",
+        deliveryAddress: "123, Street name, City, Country",
+        deliveryType: "Delivery",
+        deletionMark: false,
+        partner: "Company A",
+        comment: "Some Comment",
+        items: [],
+        additionalProperties: {
+          lat: 40.712776,
+          lon: -74.005974,
+        },
+      },
+      {
+        id: "2",
+        number: "A101",
+        date: new Date(),
+        sum: 15000,
+        status: "Delivered",
+        paymentType: "Credit Card",
+        deliveryDate: "2022-12-18",
+        deliveryAddress: "456, Street name, City, Country",
+        deliveryType: "Pickup",
+        deletionMark: false,
+        partner: "Company B",
+        comment: "Another Comment",
+        items: [],
+        additionalProperties: {
+          lat: 34.052235,
+          lon: -118.243683,
+        },
+      },
+    ];
+
+    const result = calculateGeoAverages(orders);
+
+    expect(result).toEqual({
+      avgLat: 37.3825055,
+      avgLon: -96.1248285,
+      zoom: 1,
+    });
+  });
+
+  test("should handle orders without lat and lon values", async () => {
+    const orders: IOrder[] = [
+      {
+        id: "1",
+        number: "A100",
+        date: new Date(),
+        sum: 10000,
+        status: "Delivered",
+        paymentType: "Cash",
+        deliveryDate: "2022-12-15",
+        deliveryAddress: "123, Street name, City, Country",
+        deliveryType: "Delivery",
+        deletionMark: false,
+        partner: "Company A",
+        comment: "Some Comment",
+        items: [],
+        additionalProperties: {},
+      },
+      {
+        id: "2",
+        number: "A101",
+        date: new Date(),
+        sum: 15000,
+        status: "Delivered",
+        paymentType: "Credit Card",
+        deliveryDate: "2022-12-18",
+        deliveryAddress: "456, Street name, City, Country",
+        deliveryType: "Pickup",
+        deletionMark: false,
+        partner: "Company B",
+        comment: "Another Comment",
+        items: [],
+        additionalProperties: {},
+      },
+    ];
+
+    const result = calculateGeoAverages(orders);
+
+    expect(result).toEqual({
+      avgLat: 0,
+      avgLon: 0,
+      zoom: 5,
+    });
   });
 });

@@ -1,7 +1,7 @@
 import { CalendarDays, Truck } from "lucide-react";
 import React from "react";
 
-import PageWrapper from "@/components/layout-components";
+import { PageWrapper } from "@/components/layout-components";
 import LinkButton from "@/components/link-button";
 import { H1, Muted, P } from "@/components/typography";
 
