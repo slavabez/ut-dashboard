@@ -13,6 +13,10 @@ const dateFormatterDateOnly = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "medium",
 });
 
+const timeFormatter = new Intl.DateTimeFormat("ru-RU", {
+  timeStyle: "short",
+});
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -176,6 +180,11 @@ export function formatDateShort(date: Date): string {
   return dateFormatterDateOnly.format(date);
 }
 
+export function formatTime(date: Date | undefined): string {
+  if (!date || !isValidDate(date)) return "";
+  return timeFormatter.format(date);
+}
+
 export function timeAgo(date: Date | string | null | undefined): string {
   if (!date || typeof date === "undefined") {
     return "никогда";
@@ -322,9 +331,9 @@ export function calculateGeoAverages(
 
   if (count === 0)
     return {
-      avgLat: 0,
-      avgLon: 0,
-      zoom: 5,
+      avgLat: 53.29,
+      avgLon: 69.39331,
+      zoom: 12,
     };
 
   // Define a function to calculate the zoom level based on lat and lon range
