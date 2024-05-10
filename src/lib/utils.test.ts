@@ -281,9 +281,9 @@ describe("calculateGeoAverages function", () => {
     const result = calculateGeoAverages(orders);
 
     expect(result).toEqual({
-      avgLat: 0,
-      avgLon: 0,
-      zoom: 5,
+      avgLat: 53.29,
+      avgLon: 69.39331,
+      zoom: 12,
     });
   });
 });
