@@ -129,12 +129,8 @@
           "name": "measurement_unit_nomenclature_id_nomenclature_id_fk",
           "tableFrom": "measurement_unit",
           "tableTo": "nomenclature",
-          "columnsFrom": [
-            "nomenclature_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["nomenclature_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -212,12 +208,8 @@
           "name": "nomenclature_type_parent_id_fkey",
           "tableFrom": "nomenclature_type",
           "tableTo": "nomenclature_type",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -369,12 +361,8 @@
           "name": "nomenclature_type_id_nomenclature_type_id_fk",
           "tableFrom": "nomenclature",
           "tableTo": "nomenclature_type",
-          "columnsFrom": [
-            "type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["type_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -382,12 +370,8 @@
           "name": "nomenclature_manufacturer_id_manufacturer_id_fk",
           "tableFrom": "nomenclature",
           "tableTo": "manufacturer",
-          "columnsFrom": [
-            "manufacturer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["manufacturer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -569,12 +553,8 @@
           "name": "price_to_nomenclature_price_id_price_id_fk",
           "tableFrom": "price_to_nomenclature",
           "tableTo": "price",
-          "columnsFrom": [
-            "price_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["price_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -582,12 +562,8 @@
           "name": "price_to_nomenclature_nomenclature_id_nomenclature_id_fk",
           "tableFrom": "price_to_nomenclature",
           "tableTo": "nomenclature",
-          "columnsFrom": [
-            "nomenclature_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["nomenclature_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -595,10 +571,7 @@
       "compositePrimaryKeys": {
         "price_to_nomenclature_price_id_nomenclature_id_pk": {
           "name": "price_to_nomenclature_price_id_nomenclature_id_pk",
-          "columns": [
-            "price_id",
-            "nomenclature_id"
-          ]
+          "columns": ["price_id", "nomenclature_id"]
         }
       },
       "uniqueConstraints": {}
@@ -632,12 +605,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -743,12 +712,8 @@
           "name": "sync_log_price_id_price_id_fk",
           "tableFrom": "sync_log",
           "tableTo": "price",
-          "columnsFrom": [
-            "price_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["price_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -838,16 +803,12 @@
         "user_phone_unique": {
           "name": "user_phone_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "phone"
-          ]
+          "columns": ["phone"]
         },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     }

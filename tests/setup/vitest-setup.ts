@@ -11,7 +11,7 @@ beforeAll(() => {
     useSearchParams: vi.fn().mockImplementation(() => {
       const router = useRouter();
       return new URLSearchParams(router.query as unknown as string);
-    })
+    }),
   }));
 });
 
