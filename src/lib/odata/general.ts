@@ -53,12 +53,12 @@ export async function fetchOData(
   if (cachedData) {
     // Cache hit, return parsed cached data
     if (process.env.NODE_ENV !== "production") {
-      console.log(`Cache hit for ${cacheKey}`);
+      console.info(`Cache hit for ${cacheKey}`);
     }
     return JSON.parse(cachedData);
   }
   if (process.env.NODE_ENV !== "production") {
-    console.log(`Cache miss for ${cacheKey}, fetching...`);
+    console.info(`Cache miss for ${cacheKey}, fetching...`);
   }
 
   // Cache miss, proceed with fetch
